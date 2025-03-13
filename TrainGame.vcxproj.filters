@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="vendor\template\opencl.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\template\opengl.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\template\surface.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\template\template.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\template\tmpl8math.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderable.cpp">
+      <Filter>Engine\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\LineSegment.cpp">
+      <Filter>Engine\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Grid.cpp">
+      <Filter>Engine\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\InputManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="vendor\template\common.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\template\opencl.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\template\opengl.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\template\precomp.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\template\surface.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\template\tmpl8math.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderable.h">
+      <Filter>Engine\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\LineSegment.h">
+      <Filter>Engine\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Grid.h">
+      <Filter>Engine\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\InputManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>template</Filter>
+    </None>
+    <None Include="vendor\template\LICENSE">
+      <Filter>template</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="template">
+      <UniqueIdentifier>{c65d8edd-a382-4ee7-9af9-5d04810e2884}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{11fbbeb3-362a-4df1-9f8e-cb17fd5ece21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Renderables">
+      <UniqueIdentifier>{5cefb866-4d07-48cf-9aa8-05d00a1f17d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="template\kernels">
+      <UniqueIdentifier>{96ad1716-f468-46c6-8f16-5accbc19d76c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{c0771e46-ab48-476a-bc10-d1da5c744f46}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
