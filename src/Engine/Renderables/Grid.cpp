@@ -4,14 +4,14 @@
 #include "Camera/Camera.h"
 #include "LineSegment.h"
 
-void Grid::Render(const Camera& camera, Surface& drawSurface)
+void Engine::Grid::Render(const Camera& camera, Surface& drawSurface)
 {
 	const float cameraZoomLevel = camera.GetZoomLevel();
 
 	const float2 topLeftWorldPos = camera.GetTopLeft();
 	const float2 bottomRightWorldPos = camera.GetBottomRight();
 
-	for (const auto& gridData : gridLineData)
+	for (const auto& gridData : m_gridLineData)
 	{
 		if (cameraZoomLevel < gridData.minZoomLevel || cameraZoomLevel > gridData.maxZoomLevel)
 		{
@@ -40,7 +40,7 @@ void Grid::Render(const Camera& camera, Surface& drawSurface)
 	}
 }
 
-void Grid::AddGrid(uint color, int pixelDistance, float minZoomLevel, float maxZoomLevel)
+void Engine::Grid::AddGrid(uint color, int pixelDistance, float minZoomLevel, float maxZoomLevel)
 {
-	gridLineData.emplace_back(color, pixelDistance, minZoomLevel, maxZoomLevel);
+	m_gridLineData.emplace_back(color, pixelDistance, minZoomLevel, maxZoomLevel);
 }

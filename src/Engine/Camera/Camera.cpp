@@ -3,12 +3,12 @@
 
 #include "InputManager.h"
 
-void Camera::Init( Engine::InputManager* input )
+void Engine::Camera::Init( Engine::InputManager* input )
 {
 	m_inputManager = input;
 }
 
-void Camera::Update( float deltaTime )
+void Engine::Camera::Update( float deltaTime )
 {
 	float2 dir = { 0.f };
 	float zoomDir = 1;
@@ -35,7 +35,7 @@ void Camera::Update( float deltaTime )
 	SetZoomLevel( GetZoomLevel() * zoomDir );
 }
 
-float2 Camera::GetTopLeft() const
+float2 Engine::Camera::GetTopLeft() const
 {
 	const float2 resFloat = make_float2( m_resolution );
 	const float zoomAmount = resFloat.x / m_wishWidthSize;
@@ -43,7 +43,7 @@ float2 Camera::GetTopLeft() const
 	return  m_position - (resFloat * 0.5f) / zoomAmount;
 }
 
-float2 Camera::GetBottomRight() const
+float2 Engine::Camera::GetBottomRight() const
 {
 	const float2 resFloat = make_float2( m_resolution );
 	const float zoomAmount = resFloat.x / m_wishWidthSize;
@@ -51,17 +51,17 @@ float2 Camera::GetBottomRight() const
 	return m_position + (resFloat * 0.5f) / zoomAmount;
 }
 
-float Camera::GetZoomLevel() const
+float Engine::Camera::GetZoomLevel() const
 {
 	return static_cast<float>(m_resolution.x) / m_wishWidthSize;
 }
 
-float2 Camera::GetCameraPosition( const float2& worldPosition ) const
+float2 Engine::Camera::GetCameraPosition( const float2& worldPosition ) const
 {
 	return (worldPosition - GetTopLeft()) * GetZoomLevel();
 }
 
-float2 Camera::GetWorldPosition( const float2& localPosition ) const
+float2 Engine::Camera::GetWorldPosition( const float2& localPosition ) const
 {
 
 	return localPosition / GetZoomLevel() + GetTopLeft();

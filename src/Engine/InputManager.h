@@ -13,11 +13,9 @@ namespace Engine {
 	public:
 		InputManager() = default;
 
-
 		void UpdateMousePosition( const int2& mousePos );
 
 		void UpdateScrollDelta( const float scrollDelta ) { m_scrollDelta = scrollDelta; }
-
 
 		void HandleKeyDown( const int key ) { m_keys[key] = KeyState::Just_Down; }
 		void HandleKeyUp( const int key ) { m_keys[key] = KeyState::Just_Up; }
@@ -25,9 +23,7 @@ namespace Engine {
 		void HandleMouseDown( const int button ) { m_mouseButtons[button] = KeyState::Just_Down; }
 		void HandleMouseUp( const int button ) { m_mouseButtons[button] = KeyState::Just_Up; }
 
-
 		void Update( float deltaTime );
-
 
 		[[nodiscard]] bool IsKeyDown( int key ) const;
 		[[nodiscard]] bool IsKeyUp( int key ) const;

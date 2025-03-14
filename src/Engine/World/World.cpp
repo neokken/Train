@@ -70,7 +70,7 @@ void Engine::World::DestroyObject( GameObject* obj )
 	obj->Destroy();
 }
 
-const Camera& Engine::World::GetCamera() const
+const Engine::Camera& Engine::World::GetCamera() const
 {
 	return m_camera;
 }
