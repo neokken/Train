@@ -13,6 +13,7 @@ void Camera::Update( float deltaTime )
 	float2 dir = { 0.f };
 	float zoomDir = 1;
 
+
 	if (m_inputManager->IsKeyDown( GLFW_KEY_W ))
 		dir.y -= 1.f;
 	if (m_inputManager->IsKeyDown( GLFW_KEY_S ))
@@ -22,16 +23,15 @@ void Camera::Update( float deltaTime )
 	if (m_inputManager->IsKeyDown( GLFW_KEY_D ))
 		dir.x += 1.f;
 
-	if (m_inputManager->IsKeyDown( GLFW_KEY_R ))
-		zoomDir += .5f * deltaTime;
-	if (m_inputManager->IsKeyDown( GLFW_KEY_F ))
-		zoomDir -= .5f * deltaTime;
-
+	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
 
 	if (sqrLength( dir ) > 0.f)
 		dir = normalize( dir );
 
-	SetPosition( GetPosition() + dir * 50.f * deltaTime );
+	float evaluatedMoveSpeed = m_moveSpeed;
+	if (m_inputManager->IsKeyDown( GLFW_KEY_LEFT_SHIFT )) evaluatedMoveSpeed *= 2.0f;
+
+	SetPosition( GetPosition() + dir * evaluatedMoveSpeed * deltaTime );
 	SetZoomLevel( GetZoomLevel() * zoomDir );
 }
 

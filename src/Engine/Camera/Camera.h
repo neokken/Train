@@ -31,6 +31,9 @@ private:
 
 	int2 m_resolution;
 	float m_wishWidthSize;
+	
+	float m_scrollSensitivity = 10.0f;
+	float m_moveSpeed = 150.0f;
 
 	Engine::InputManager* m_inputManager;
 };
