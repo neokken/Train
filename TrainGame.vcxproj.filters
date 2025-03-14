@@ -38,6 +38,9 @@
     <ClCompile Include="src\Engine\Camera\Camera.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Buildings\Building.cpp">
+      <Filter>Game\Buildings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -83,6 +86,9 @@
     <ClInclude Include="src\Engine\Camera\Camera.h">
       <Filter>Engine\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Buildings\Building.h">
+      <Filter>Game\Buildings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -119,6 +125,9 @@
     </Filter>
     <Filter Include="Engine\Camera">
       <UniqueIdentifier>{5022b4c9-8a9d-4f9c-a37d-66de7714b96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Buildings">
+      <UniqueIdentifier>{58cb971e-30af-4758-bff9-0a081309f68b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

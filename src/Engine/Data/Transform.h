@@ -2,7 +2,7 @@
 
 namespace Engine {
 	struct Transform {
-		float3 position;
-		float3 scale;
+		float2 position;
+		float2 scale;
 	};
 }

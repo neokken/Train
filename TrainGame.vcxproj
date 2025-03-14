@@ -79,7 +79,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <OpenMPSupport Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</OpenMPSupport>
     </ClCompile>
     <Link>
@@ -115,7 +115,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -129,6 +129,7 @@
     <ClCompile Include="src\Engine\Renderables\LineSegment.cpp" />
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
+    <ClCompile Include="src\Game\Buildings\Building.cpp" />
     <ClCompile Include="vendor\template\opencl.cpp" />
     <ClCompile Include="vendor\template\opengl.cpp" />
     <ClCompile Include="vendor\template\surface.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\Engine\Renderables\LineSegment.h" />
     <ClInclude Include="src\Engine\Renderables\Renderable.h" />
     <ClInclude Include="src\Engine\World\World.h" />
+    <ClInclude Include="src\Game\Buildings\Building.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

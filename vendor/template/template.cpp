@@ -83,7 +83,7 @@ void ErrorCallback( int, const char* description )
 }
 
 // Application entry point
-void main()
+int main()
 {
 	// open a window
 	if (!glfwInit()) FatalError( "glfwInit failed." );

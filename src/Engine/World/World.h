@@ -1,5 +1,9 @@
 #pragma once
 
+// TODO: Either pointerize or include these in any dependency with World.h
+#include "Renderables/Grid.h"
+#include "Camera/Camera.h"
+
 namespace Engine {
 
 	class GameObject;
@@ -18,6 +22,8 @@ namespace Engine {
 		void AddObject( GameObject* obj );
 		void DestroyObject( GameObject* obj );
 
+		const Camera& GetCamera() const;
+		Surface* GetRenderTarget() const;
 	private:
 		std::vector<GameObject*> m_objects;
 
