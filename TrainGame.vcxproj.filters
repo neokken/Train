@@ -41,6 +41,27 @@
     <ClCompile Include="src\Game\Buildings\Building.cpp">
       <Filter>Game\Buildings</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_demo.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_draw.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_glfw.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_opengl3.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_tables.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_widgets.cpp">
+      <Filter>Vendor\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -128,6 +149,12 @@
     </Filter>
     <Filter Include="Game\Buildings">
       <UniqueIdentifier>{58cb971e-30af-4758-bff9-0a081309f68b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor">
+      <UniqueIdentifier>{154d7373-fb40-4314-93fb-831af533856b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\ImGui">
+      <UniqueIdentifier>{1555562d-3722-4b1c-a9f1-d5c0fb33d27e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

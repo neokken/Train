@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>src;vendor\template;.;vendor\include\zlib;vendor\include\GLFW;vendor\include\glad;vendor\include\cl;vendor\include;src\Engine;vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\template;.;vendor\include\zlib;vendor\include\GLFW;vendor\include\glad;vendor\include\cl;vendor\include;src\Engine;vendor;vendor\include\ImGui</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
@@ -130,6 +130,13 @@
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
     <ClCompile Include="src\Game\Buildings\Building.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="vendor\template\opencl.cpp" />
     <ClCompile Include="vendor\template\opengl.cpp" />
     <ClCompile Include="vendor\template\surface.cpp" />

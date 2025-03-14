@@ -13,16 +13,25 @@
 void Application::Init()
 {
 	m_world.Init( screen, &m_inputManager );
+
 }
 
 // -----------------------------------------------------------
 // Main application tick function - Executed once per frame
 // -----------------------------------------------------------
-void Application::Tick(const float deltaTime)
+void Application::Tick( const float deltaTime )
 {
-	screen->Clear(0x2f3e46);
+	m_frameTimer.reset();
+	screen->Clear( 0x2f3e46 );
 
 	// Update logic
 	m_world.Update( deltaTime );
-	m_inputManager.Update(deltaTime);
+	m_inputManager.Update( deltaTime );
+}
+
+void Tmpl8::Application::UI()
+{
+	ImGui::Begin( "Window" );
+	ImGui::Text( "Frametime: %fms", m_frameTimer.elapsed() * 1000 );
+	ImGui::End();
 }

@@ -21,6 +21,7 @@ public:
 	void Init() override;
 	void Tick( float deltaTime ) override;
 	void Shutdown() override {}
+	void UI() override;
 
 	// input handling
 	void MouseUp(const int button) override { m_inputManager.HandleMouseUp(button); }
@@ -30,11 +31,11 @@ public:
 
 	void KeyUp(const int key) override		{ m_inputManager.HandleKeyUp(key); }
 	void KeyDown(const int key) override	{ m_inputManager.HandleKeyDown(key); }
-
-
 private:
 	Engine::InputManager m_inputManager{};
 	Engine::World m_world;
+
+	Timer m_frameTimer;
 };
 
 } // namespace Tmpl8

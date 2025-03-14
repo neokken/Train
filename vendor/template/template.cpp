@@ -5,6 +5,10 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
+
 #pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
 
 using namespace Tmpl8;
@@ -135,11 +139,22 @@ int main()
 	printf( "Working directory: %s\n", getcwd( dir, 2048 ) );
 #endif
 	// initialize application
+
+
 	InitRenderTarget( SCRWIDTH, SCRHEIGHT );
 	Surface* screen = new Surface( SCRWIDTH, SCRHEIGHT );
 	app = new Application();
 	app->screen = screen;
 	app->Init();
+
+	// ImGui init
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL( window, true );
+	ImGui_ImplOpenGL3_Init();
+	ImGui::StyleColorsDark();
+	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = "./imgui.ini";
 	// done, enter main loop
 #if 0
 	// crt shader, https://github.com/libretro/slang-shaders/tree/master/crt/shaders/hyllian
@@ -332,7 +347,7 @@ int main()
 	static Timer timer;
 	while (!glfwWindowShouldClose( window ))
 	{
-		deltaTime = min( 1.f/30.f, timer.elapsed() );
+		deltaTime = min( 1.f / 30.f, timer.elapsed() );
 		timer.reset();
 		app->Tick( deltaTime );
 		// send the rendering result to the screen using OpenGL
@@ -343,12 +358,24 @@ int main()
 			shader->SetInputTexture( 0, "c", renderTarget );
 			DrawQuad();
 			shader->Unbind();
+
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			app->UI();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+
 			glfwSwapBuffers( window );
 			glfwPollEvents();
 		}
 		if (!running) break;
 	}
 	// close down
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
 	app->Shutdown();
 	Kernel::KillCL();
 	glfwDestroyWindow( window );
@@ -1363,7 +1390,7 @@ extern "C" {
 		}
 	}
 	static int glad_gl_get_extensions( const char** out_exts, char*** out_exts_i ) {
-	#if defined(GL_ES_VERSION_3_0) || defined(GL_VERSION_3_0)
+#if defined(GL_ES_VERSION_3_0) || defined(GL_VERSION_3_0)
 		if (glad_glGetStringi != NULL && glad_glGetIntegerv != NULL) {
 			unsigned int index = 0;
 			unsigned int num_exts_i = 0;
@@ -1393,15 +1420,15 @@ extern "C" {
 
 			return 1;
 		}
-	#else
+#else
 		GLAD_UNUSED( out_exts_i );
-	#endif
+#endif
 		if (glad_glGetString == NULL) {
 			return 0;
 		}
 		*out_exts = (const char*)glad_glGetString( GL_EXTENSIONS );
 		return 1;
-	}
+		}
 	static int glad_gl_has_extension( const char* exts, char** exts_i, const char* ext ) {
 		if (exts_i) {
 			unsigned int index;
@@ -1549,8 +1576,8 @@ extern "C" {
 		int i;
 
 		for (i = 0; i < length; ++i) {
-		#if GLAD_PLATFORM_WIN32
-		#if GLAD_PLATFORM_UWP
+#if GLAD_PLATFORM_WIN32
+#if GLAD_PLATFORM_UWP
 			size_t buffer_size = (strlen( lib_names[i] ) + 1) * sizeof( WCHAR );
 			LPWSTR buffer = (LPWSTR)malloc( buffer_size );
 			if (buffer != NULL) {
@@ -1559,28 +1586,28 @@ extern "C" {
 					handle = (void*)LoadPackagedLibrary( buffer, 0 );
 				}
 				free( (void*)buffer );
-			}
-		#else
+	}
+#else
 			handle = (void*)LoadLibraryA( lib_names[i] );
-		#endif
-		#else
+#endif
+#else
 			handle = dlopen( lib_names[i], RTLD_LAZY | RTLD_LOCAL );
-		#endif
+#endif
 			if (handle != NULL) {
 				return handle;
 			}
-		}
+	}
 
 		return NULL;
-	}
+}
 
 	static void glad_close_dlopen_handle( void* handle ) {
 		if (handle != NULL) {
-		#if GLAD_PLATFORM_WIN32
+#if GLAD_PLATFORM_WIN32
 			FreeLibrary( (HMODULE)handle );
-		#else
+#else
 			dlclose( handle );
-		#endif
+#endif
 		}
 	}
 
@@ -1589,11 +1616,11 @@ extern "C" {
 			return NULL;
 		}
 
-	#if GLAD_PLATFORM_WIN32
+#if GLAD_PLATFORM_WIN32
 		return (GLADapiproc)GetProcAddress( (HMODULE)handle, name );
-	#else
+#else
 		return GLAD_GNUC_EXTENSION( GLADapiproc ) dlsym( handle, name );
-	#endif
+#endif
 	}
 
 #endif /* GLAD_LOADER_LIBRARY_C_ */
@@ -1621,16 +1648,16 @@ extern "C" {
 	static void* _glad_GL_loader_handle = NULL;
 
 	static void* glad_gl_dlopen_handle( void ) {
-	#if GLAD_PLATFORM_APPLE
+#if GLAD_PLATFORM_APPLE
 		static const char* NAMES[] = {
 			"../Frameworks/OpenGL.framework/OpenGL",
 			"/Library/Frameworks/OpenGL.framework/OpenGL",
 			"/System/Library/Frameworks/OpenGL.framework/OpenGL",
 			"/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL"
 		};
-	#elif GLAD_PLATFORM_WIN32
+#elif GLAD_PLATFORM_WIN32
 		static const char* NAMES[] = { "opengl32.dll" };
-	#else
+#else
 		static const char* NAMES[] = {
 		#if defined(__CYGWIN__)
 			"libGL-1.so",
@@ -1638,7 +1665,7 @@ extern "C" {
 			"libGL.so.1",
 			"libGL.so"
 		};
-	#endif
+#endif
 
 		if (_glad_GL_loader_handle == NULL) {
 			_glad_GL_loader_handle = glad_get_dlopen_handle( NAMES, sizeof( NAMES ) / sizeof( NAMES[0] ) );
@@ -1651,15 +1678,15 @@ extern "C" {
 		struct _glad_gl_userptr userptr;
 
 		userptr.handle = handle;
-	#if GLAD_PLATFORM_APPLE || defined(__HAIKU__)
+#if GLAD_PLATFORM_APPLE || defined(__HAIKU__)
 		userptr.gl_get_proc_address_ptr = NULL;
-	#elif GLAD_PLATFORM_WIN32
+#elif GLAD_PLATFORM_WIN32
 		userptr.gl_get_proc_address_ptr =
 			(GLADglprocaddrfunc)glad_dlsym_handle( handle, "wglGetProcAddress" );
-	#else
+#else
 		userptr.gl_get_proc_address_ptr =
 			(GLADglprocaddrfunc)glad_dlsym_handle( handle, "glXGetProcAddressARB" );
-	#endif
+#endif
 
 		return userptr;
 	}
