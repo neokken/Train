@@ -17,20 +17,26 @@
     <ClCompile Include="vendor\template\tmpl8math.cpp">
       <Filter>template</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Camera.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine\Renderable.cpp">
+    <ClCompile Include="src\Engine\Renderables\Renderable.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\LineSegment.cpp">
+    <ClCompile Include="src\Engine\Renderables\LineSegment.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Grid.cpp">
+    <ClCompile Include="src\Engine\Renderables\Grid.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\InputManager.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\World\World.cpp">
+      <Filter>Engine\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\GameObject\GameObject.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Camera\Camera.cpp">
+      <Filter>Engine\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,20 +59,29 @@
     <ClInclude Include="vendor\template\tmpl8math.h">
       <Filter>template</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Camera.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Renderable.h">
+    <ClInclude Include="src\Engine\Renderables\Renderable.h">
       <Filter>Engine\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\LineSegment.h">
+    <ClInclude Include="src\Engine\Renderables\LineSegment.h">
       <Filter>Engine\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Grid.h">
+    <ClInclude Include="src\Engine\Renderables\Grid.h">
       <Filter>Engine\Renderables</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\InputManager.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\World\World.h">
+      <Filter>Engine\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\GameObject\GameObject.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Data\Transform.h">
+      <Filter>Engine\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Camera\Camera.h">
+      <Filter>Engine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +107,18 @@
     </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{c0771e46-ab48-476a-bc10-d1da5c744f46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\World">
+      <UniqueIdentifier>{80375fdf-3d9f-417e-a4c4-559484556de0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameObject">
+      <UniqueIdentifier>{0b9b4109-26fa-4d80-a41a-aa3d2e3e24f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Data">
+      <UniqueIdentifier>{31659d66-b3df-4eee-8241-10392c3a854b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{5022b4c9-8a9d-4f9c-a37d-66de7714b96f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

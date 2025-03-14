@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "LineSegment.h"
 
-#include "Camera.h"
+#include "Camera/Camera.h"
 
 void LineSegment::Render(const Camera& camera, Surface& drawSurface)
 {

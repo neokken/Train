@@ -121,12 +121,14 @@
   </ItemDefinitionGroup>
   <!-- END Custom section -->
   <ItemGroup>
-    <ClCompile Include="src\Engine\Camera.cpp" />
+    <ClCompile Include="src\Engine\Camera\Camera.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Engine\Grid.cpp" />
+    <ClCompile Include="src\Engine\GameObject\GameObject.cpp" />
+    <ClCompile Include="src\Engine\Renderables\Grid.cpp" />
     <ClCompile Include="src\Engine\InputManager.cpp" />
-    <ClCompile Include="src\Engine\LineSegment.cpp" />
-    <ClCompile Include="src\Engine\Renderable.cpp" />
+    <ClCompile Include="src\Engine\Renderables\LineSegment.cpp" />
+    <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
+    <ClCompile Include="src\Engine\World\World.cpp" />
     <ClCompile Include="vendor\template\opencl.cpp" />
     <ClCompile Include="vendor\template\opengl.cpp" />
     <ClCompile Include="vendor\template\surface.cpp" />
@@ -139,12 +141,15 @@
     <ClCompile Include="vendor\template\tmpl8math.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine\Camera.h" />
+    <ClInclude Include="src\Engine\Camera\Camera.h" />
     <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\Engine\Grid.h" />
+    <ClInclude Include="src\Engine\Data\Transform.h" />
+    <ClInclude Include="src\Engine\GameObject\GameObject.h" />
+    <ClInclude Include="src\Engine\Renderables\Grid.h" />
     <ClInclude Include="src\Engine\InputManager.h" />
-    <ClInclude Include="src\Engine\LineSegment.h" />
-    <ClInclude Include="src\Engine\Renderable.h" />
+    <ClInclude Include="src\Engine\Renderables\LineSegment.h" />
+    <ClInclude Include="src\Engine\Renderables\Renderable.h" />
+    <ClInclude Include="src\Engine\World\World.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

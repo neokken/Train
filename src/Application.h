@@ -3,9 +3,11 @@
 // IGAD/NHTV/BUAS/UU - Jacco Bikker - 2006-2024
 
 #pragma once
-#include "Camera.h"
-#include "Grid.h"
+#include "Camera/Camera.h"
+#include "Renderables/Grid.h"
 #include "InputManager.h"
+
+#include "World/World.h"
 
 namespace Tmpl8
 {
@@ -31,12 +33,8 @@ public:
 
 
 private:
-
-	InputManager m_inputManager{};
-	Camera m_camera{int2(0,0)};
-
-
-	Grid grid;
+	Engine::InputManager m_inputManager{};
+	Engine::World m_world;
 };
 
 } // namespace Tmpl8

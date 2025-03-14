@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "Grid.h"
 
-#include "Camera.h"
+#include "Camera/Camera.h"
 #include "LineSegment.h"
 
 void Grid::Render(const Camera& camera, Surface& drawSurface)
