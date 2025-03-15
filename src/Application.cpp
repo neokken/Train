@@ -33,9 +33,16 @@ void Application::Tick( const float deltaTime )
 	//DEBUG BEHAVIOUR
 	if (m_inputManager.IsKeyDown(GLFW_KEY_B))
 	{
-		Engine::UIManager::settings.debugMode = false;
+		Engine::UIManagerSettings settings = Engine::UIManager::GetSettings();
+		settings.debugMode = false;
+		Engine::UIManager::SetSettings(settings);
 	}
-	else if (m_inputManager.IsKeyDown(GLFW_KEY_V)) Engine::UIManager::settings.debugMode = true;
+	else if (m_inputManager.IsKeyDown(GLFW_KEY_V))
+	{
+		Engine::UIManagerSettings settings = Engine::UIManager::GetSettings();
+		settings.debugMode = true;
+		Engine::UIManager::SetSettings(settings);
+	}
 }
 
 void Tmpl8::Application::UI()

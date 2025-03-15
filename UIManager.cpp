@@ -18,7 +18,6 @@ void Engine::UIManager::StartFrame()
 		ImGui::DockSpaceOverViewport(1, 0);
 	else
 		ImGui::DockSpaceOverViewport(1, 0, ImGuiDockNodeFlags_PassthruCentralNode);
-
 }
 
 void Engine::UIManager::Render()
@@ -89,10 +88,25 @@ bool Engine::UIManager::BeginDebugWindow( const char* name, ImGuiWindowFlags fla
 	return ImGui::Begin(name, &open, flags);
 }
 
+void Engine::UIManager::EndGameplayWindow()
+{
+	ImGui::End();
+}
+
 void Engine::UIManager::EndDebugWindow()
 {
 	if (!settings.debugMode) return;
 	ImGui::End();
+}
+
+Engine::UIManagerSettings Engine::UIManager::GetSettings()
+{
+	return settings;
+}
+
+void Engine::UIManager::SetSettings( const UIManagerSettings setSettings )
+{
+	settings = setSettings;
 }
 
 Engine::UIManagerSettings Engine::UIManager::settings;
