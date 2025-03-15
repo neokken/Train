@@ -50,13 +50,17 @@ void Engine::UIManager::DrawMainWindow( const uint texture )
 	ImGui::Begin("Main", &open, flags);
 	ImGui::SetCursorPos(ImVec2(0, 0));
 	ImVec2 imageSize;
-	if ((ImGui::GetWindowHeight()) * ASPECT_RATIO < ImGui::GetWindowWidth())
-	{
-		imageSize = ImVec2((ImGui::GetWindowSize().y) * ASPECT_RATIO, (ImGui::GetWindowSize().y));
-	}
+	if (settings.allowMainWindowStretching) imageSize = ImGui::GetWindowSize();
 	else
 	{
-		imageSize = ImVec2((ImGui::GetWindowSize().x), (ImGui::GetWindowSize().x) * 1 / ASPECT_RATIO);
+		if ((ImGui::GetWindowHeight()) * ASPECT_RATIO < ImGui::GetWindowWidth())
+		{
+			imageSize = ImVec2((ImGui::GetWindowSize().y) * ASPECT_RATIO, (ImGui::GetWindowSize().y));
+		}
+		else
+		{
+			imageSize = ImVec2((ImGui::GetWindowSize().x), (ImGui::GetWindowSize().x) * 1 / ASPECT_RATIO);
+		}
 	}
 	ImGui::Image(texture, imageSize);
 	ImVec2 windowPos = ImGui::GetWindowPos();
