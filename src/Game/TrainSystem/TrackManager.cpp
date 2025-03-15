@@ -49,8 +49,7 @@ void TrackManager::ConnectSegments(const TrackSegmentID segmentA_ID, const Track
 
     if (connectedNodeID == TrackNodeID::Invalid)
     {
-        //TODO: this should not crash the program since there is no danger, however log this. (but we dont have a logger yet)
-        throw std::runtime_error("TrackSegments don't share a common node.");
+        Engine::Logger::Warn( "TrackSegments don't share a common node." );
     }
 
     TrackNode& connectedNode = GetTrackNode(connectedNodeID);
