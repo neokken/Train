@@ -72,18 +72,21 @@ void Engine::World::Update( float deltaTime )
 		m_objects.end()
 	);
 
+	// Update pass
 	m_camera.Update(deltaTime);
-
-	// Render part
-	m_grid.Render(m_camera, *m_renderTarget);
-
-	// TODO: Move up to the updating part, this is a temp solution to draw over the grid
 	for (auto& obj : m_objects)
 	{
 		obj->Update(deltaTime);
 	}
-
 	m_trackDebugger.Update(m_camera);
+
+	// Render pass
+	m_grid.Render(m_camera, *m_renderTarget);
+
+	for (auto& obj : m_objects)
+	{
+		obj->Render(m_camera, *m_renderTarget);
+	}
 
 	m_trackDebugger.Render(m_camera, *m_renderTarget);
 }
