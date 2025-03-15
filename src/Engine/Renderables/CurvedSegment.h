@@ -21,17 +21,17 @@ namespace Engine
 		void SetupPoints( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
 		                  float hardness );
 		void Render( const Camera& camera, Surface& drawSurface ) override;
-		void RenderWorldPos( const Camera& camera, Surface& drawSurface );
+		void RenderWorldPos( const Camera& camera, Surface& drawSurface ) const;
 		void RenderLocalPos( Surface& drawSurface );
 
-		void RenderBezierPoints( const Camera& camera, Surface& drawSurface );
+		void RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const;
 
 	private:
 		float2 m_lineStart{0.f};
 		float2 m_lineEnd{0.f};
 		float2 m_startMidPoint{0.f};
 		float2 m_endMidPoint{0.f};
-		const float m_STEPSIZE{1.f / 10.f};
+		float m_stepSize{1.f / 10.f};
 		uint m_color{0xffffffff};
 		static void DrawCircle( const Camera& camera, Surface& targetSurface, int segmentCount, const float2& center,
 		                        float circleSize, uint color );

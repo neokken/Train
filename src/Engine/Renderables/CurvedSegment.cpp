@@ -8,7 +8,7 @@ Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, 
                                       const float2& lEndDir, const float hardness, const uint color,
                                       const uint drawSteps )
 	: m_color(color)
-	, m_STEPSIZE(1.f/static_cast<float>(drawSteps))
+	  , m_stepSize(1.f / static_cast<float>(drawSteps))
 {
 	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness);
 }
@@ -31,10 +31,10 @@ void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 	RenderWorldPos(camera, drawSurface);
 }
 
-void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawSurface )
+void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawSurface ) const
 {
 	float2 lastPoint = m_lineStart;
-	float t = m_STEPSIZE;
+	float t = m_stepSize;
 	while (t <= 1.0001f)
 	{
 		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
@@ -47,15 +47,15 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 
 		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, cubic, m_color);
 		lastPoint = cubic;
-		t += m_STEPSIZE;
+		t += m_stepSize;
 	}
 }
 
-void Engine::CurvedSegment::RenderLocalPos( Surface& drawSurface )
+void Engine::CurvedSegment::RenderLocalPos( Surface& /*drawSurface*/ )
 {
 }
 
-void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& drawSurface )
+void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const
 {
 	DrawCircle(camera, drawSurface, 10, m_lineStart, 10.f, 0x80ff80);
 	DrawCircle(camera, drawSurface, 10, m_lineEnd, 10.f, 0xff8080);
