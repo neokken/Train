@@ -28,7 +28,6 @@ void Engine::UIManager::Render()
 
 void Engine::UIManager::DrawMainWindow( const uint texture )
 {
-	static bool open = true;
 	ImGui::SetNextWindowSize(ImVec2(SCRWIDTH, SCRHEIGHT), ImGuiCond_Appearing);
 
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -46,7 +45,7 @@ void Engine::UIManager::DrawMainWindow( const uint texture )
 		ImGui::SetNextWindowDockID(1, ImGuiCond_FirstUseEver);
 	}
 
-	ImGui::Begin("Main", &open, flags);
+	ImGui::Begin("Main", nullptr, flags);
 	ImGui::SetCursorPos(ImVec2(0, 0));
 	ImVec2 imageSize;
 	if (settings.allowMainWindowStretching) imageSize = ImGui::GetWindowSize();
@@ -77,15 +76,13 @@ int2 Engine::UIManager::GetMainWindowCursorPos( const int2& mousePos )
 
 bool Engine::UIManager::BeginGameplayWindow( const char* name, ImGuiWindowFlags flags )
 {
-	static bool open = true;
-	return ImGui::Begin(name, &open, flags);
+	return ImGui::Begin(name, nullptr, flags);
 }
 
 bool Engine::UIManager::BeginDebugWindow( const char* name, ImGuiWindowFlags flags )
 {
 	if (!settings.debugMode) return false;
-	static bool open = true;
-	return ImGui::Begin(name, &open, flags);
+	return ImGui::Begin(name, nullptr, flags);
 }
 
 void Engine::UIManager::EndGameplayWindow()
