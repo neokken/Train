@@ -23,15 +23,18 @@ void Engine::Camera::Update( float deltaTime )
 	if (m_inputManager->IsKeyDown( GLFW_KEY_D ))
 		dir.x += 1.f;
 
-	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
-
-	if (sqrLength( dir ) > 0.f)
-		dir = normalize( dir );
-
 	float evaluatedMoveSpeed = m_moveSpeed;
 	if (m_inputManager->IsKeyDown( GLFW_KEY_LEFT_SHIFT )) evaluatedMoveSpeed *= 2.0f;
-
 	SetPosition( GetPosition() + dir * evaluatedMoveSpeed * deltaTime );
+
+	if (MouseOverUI()) return;
+
+	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
+
+	if (sqrLength( dir ) > 0.f) {
+		dir = normalize( dir );
+	}
+
 	SetZoomLevel( GetZoomLevel() * zoomDir );
 }
 

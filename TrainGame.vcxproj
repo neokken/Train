@@ -158,6 +158,7 @@
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Engine\Data\Transform.h" />
     <ClInclude Include="src\Engine\GameObject\GameObject.h" />
+    <ClInclude Include="src\Engine\Helpers\Helpers.h" />
     <ClInclude Include="src\Engine\Renderables\Grid.h" />
     <ClInclude Include="src\Engine\InputManager.h" />
     <ClInclude Include="src\Engine\Renderables\LineSegment.h" />

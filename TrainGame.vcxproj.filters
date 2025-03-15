@@ -126,6 +126,7 @@
     </ClInclude>
     <ClInclude Include="IDGenerator.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
+    <ClInclude Include="src\Engine\Helpers\Helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -174,6 +175,9 @@
     </Filter>
     <Filter Include="Game\TrainSystem">
       <UniqueIdentifier>{06e81e24-c92d-4bbf-8738-98b83e560680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Helpers">
+      <UniqueIdentifier>{2eb62a79-8df9-48bc-acfe-88862b2078ca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
