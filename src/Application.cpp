@@ -12,8 +12,8 @@
 // -----------------------------------------------------------
 void Application::Init()
 {
+	Engine::Logger::Init();
 	m_world.Init( screen, &m_inputManager );
-
 }
 
 // -----------------------------------------------------------
@@ -33,7 +33,7 @@ void Tmpl8::Application::UI()
 {
 	ImGui::Begin( "Window" );
 	ImGui::Text( "Frametime: %fms", m_frameTimer.elapsed() * 1000 );
-	
+
 	ImGui::End();
 
 	m_world.UI();

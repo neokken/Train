@@ -81,10 +81,8 @@ void TrackDebugger::Render(const Engine::Camera& camera, Surface& targetSurface)
 {
 	if (!m_trackManager)
 	{
-		//TODO: this should not crash the program since there is no danger, however log this. (but we don't have a logger yet)
-		throw std::runtime_error("Invalid TrackNode ID");
+		Engine::Logger::Warn( "Invalid TrackNode ID" );
 	}
-
 
 	for (const auto& node : std::views::values(m_trackManager->m_nodes))
 	{

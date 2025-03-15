@@ -22,3 +22,7 @@ constexpr int SCRHEIGHT = 720;
 
 #include "imgui.h"
 #include "Helpers/Helpers.h"
+
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#include "Helpers/Logger.h"
