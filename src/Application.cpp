@@ -5,6 +5,7 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "UIManager.h"
 #include "Renderables/LineSegment.h"
 
 // -----------------------------------------------------------
@@ -13,6 +14,7 @@
 void Application::Init()
 {
 	Engine::Logger::Init();
+	Engine::UIManager::Init();
 	m_world.Init(screen, &m_inputManager);
 }
 

@@ -134,23 +134,22 @@ int main()
 	SetWindowPos( GetConsoleWindow(), HWND_TOP, 0, 0, 1280, 800, 0 );
 	glfwShowWindow( window );
 #endif
+	// ImGui init
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
+	ImGui::StyleColorsDark();
+	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = "./imgui.ini";
+
 	// initialize application
-
-
 	InitRenderTarget( SCRWIDTH, SCRHEIGHT );
 	Surface* screen = new Surface( SCRWIDTH, SCRHEIGHT );
 	app = new Application();
 	app->screen = screen;
 	app->Init();
 
-	// ImGui init
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui_ImplGlfw_InitForOpenGL( window, true );
-	ImGui_ImplOpenGL3_Init();
-	ImGui::StyleColorsDark();
-	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = "./imgui.ini";
 	// done, enter main loop
 #if 0
 	// crt shader, https://github.com/libretro/slang-shaders/tree/master/crt/shaders/hyllian

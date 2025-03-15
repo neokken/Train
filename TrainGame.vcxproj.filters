@@ -80,6 +80,9 @@
     <ClCompile Include="src\Engine\Helpers\Helpers.cpp">
       <Filter>Engine\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Helpers\Logger.h">
       <Filter>Engine\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
