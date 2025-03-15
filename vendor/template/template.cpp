@@ -4,6 +4,7 @@
 
 #include "precomp.h"
 #include "Application.h"
+#include "UIManager.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_glfw.h"
@@ -96,7 +97,7 @@ int main()
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
 	glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
 	glfwWindowHint( GLFW_STENCIL_BITS, GL_FALSE );
-	glfwWindowHint( GLFW_RESIZABLE, GL_FALSE /* easier :) */ );
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 #ifdef FULLSCREEN
 	window = glfwCreateWindow( SCRWIDTH, SCRHEIGHT, "Tmpl8-2024", glfwGetPrimaryMonitor(), 0 );
 #else
@@ -349,19 +350,20 @@ int main()
 		if (frameNr++ > 1)
 		{
 			if (app->screen) renderTarget->CopyFrom( app->screen );
-			shader->Bind();
-			shader->SetInputTexture( 0, "c", renderTarget );
-			DrawQuad();
-			shader->Unbind();
 
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			Engine::UIManager::StartFrame();
+
+			//Render to main window disabled in favor of rendering to imgui
+			//shader->Bind();
+			//shader->SetInputTexture( 0, "c", renderTarget );
+			//DrawQuad();
+			//shader->Unbind();
+
+			Engine::UIManager::DrawMainWindow(renderTarget->ID);
 
 			app->UI();
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+			Engine::UIManager::Render();
 
 			glfwSwapBuffers( window );
 			glfwPollEvents();
