@@ -26,8 +26,7 @@ TrackSegmentID TrackManager::CreateSegment( const TrackNodeID nodeA, const Track
 	return newID;
 }
 
-void TrackManager::ConnectSegments( const TrackSegmentID segmentA_ID, const TrackSegmentID segmentB_ID,
-                                    const bool twoWayConnection )
+void TrackManager::ConnectSegments( const TrackSegmentID segmentA_ID, const TrackSegmentID segmentB_ID, const bool twoWayConnection )
 {
 	const TrackSegment& segmentA = GetTrackSegment(segmentA_ID);
 	const TrackSegment& segmentB = GetTrackSegment(segmentB_ID);

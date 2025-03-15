@@ -49,8 +49,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 		const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-		if (SQRDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) <
-			SEGMENT_SELECTION_DIST_SQ)
+		if (SQRDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.m_id;
 			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
@@ -98,12 +97,9 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		if (segment.m_id == m_hoveredTrackSegment) color = SEGMENT_COLOR_HOVER;
 		if (segment.m_id == m_selectedTrackSegment) color = SEGMENT_COLOR_SELECT;
 		if (segment.m_id == m_hoveredTrackSegment && segment.m_id == m_selectedTrackSegment)
-			color =
-				SEGMENT_COLOR_SELECT_HOVER;
+			color = SEGMENT_COLOR_SELECT_HOVER;
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)
-			&& (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid)
-			&& ranges::find(m_linkedTrackSegments, segment.m_id) != m_linkedTrackSegments.end())
+		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) && (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid) && ranges::find(m_linkedTrackSegments, segment.m_id) != m_linkedTrackSegments.end())
 		{
 			color = SEGMENT_COLOR_LINKED;
 		}
@@ -140,13 +136,9 @@ void TrackDebugger::UI() const
 				ImGui::Text("Connections:");
 				for (const auto& [segmentID, validConnections] : node.m_validConnections)
 				{
-					const int activeConnection = node.m_connectionLever.contains(segmentID)
-						                             ? node.m_connectionLever.at(segmentID)
-						                             : -1;
+					const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
 
-					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID),
-					            static_cast<int>(validConnections.at(activeConnection)),
-					            activeConnection);
+					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
 
 					ImGui::SameLine();
 					for (size_t i = 0; i < validConnections.size(); ++i)
@@ -177,10 +169,8 @@ void TrackDebugger::UI() const
 				TrackNode nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 				TrackNode nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.m_id), nodeA.m_nodePosition.x,
-				            nodeA.m_nodePosition.y);
-				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.m_id), nodeB.m_nodePosition.x,
-				            nodeB.m_nodePosition.y);
+				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.m_id), nodeA.m_nodePosition.x, nodeA.m_nodePosition.y);
+				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.m_id), nodeB.m_nodePosition.x, nodeB.m_nodePosition.y);
 
 				ImGui::Text("Connections:");
 
@@ -263,13 +253,9 @@ void TrackDebugger::UI() const
 			ImGui::Text("Connections:");
 			for (const auto& [segmentID, validConnections] : node.m_validConnections)
 			{
-				const int activeConnection = node.m_connectionLever.contains(segmentID)
-					                             ? node.m_connectionLever.at(segmentID)
-					                             : -1;
+				const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
 
-				ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID),
-				            static_cast<int>(validConnections.at(activeConnection)),
-				            activeConnection);
+				ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
 
 				ImGui::SameLine();
 				for (size_t i = 0; i < validConnections.size(); ++i)
@@ -301,12 +287,8 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSe
 	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-	const std::vector<TrackSegmentID> nodeALinkedSegments = nodeA.m_validConnections.contains(segmentID)
-		                                                        ? nodeA.m_validConnections.at(segmentID)
-		                                                        : std::vector<TrackSegmentID>();
-	const std::vector<TrackSegmentID> nodeBLinkedSegments = nodeB.m_validConnections.contains(segmentID)
-		                                                        ? nodeB.m_validConnections.at(segmentID)
-		                                                        : std::vector<TrackSegmentID>();;
+	const std::vector<TrackSegmentID> nodeALinkedSegments = nodeA.m_validConnections.contains(segmentID) ? nodeA.m_validConnections.at(segmentID) : std::vector<TrackSegmentID>();
+	const std::vector<TrackSegmentID> nodeBLinkedSegments = nodeB.m_validConnections.contains(segmentID) ? nodeB.m_validConnections.at(segmentID) : std::vector<TrackSegmentID>();;
 
 	result.insert(result.end(), nodeALinkedSegments.begin(), nodeALinkedSegments.end());
 	result.insert(result.end(), nodeBLinkedSegments.begin(), nodeBLinkedSegments.end());
@@ -326,8 +308,7 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 	return result;
 }
 
-void TrackDebugger::DrawCircle( const Engine::Camera& camera, Surface& targetSurface, const float2& center,
-                                const float circleSize, const uint color, const int segmentCount )
+void TrackDebugger::DrawCircle( const Engine::Camera& camera, Surface& targetSurface, const float2& center, const float circleSize, const uint color, const int segmentCount )
 {
 	const float segmentCountF = static_cast<float>(segmentCount);
 

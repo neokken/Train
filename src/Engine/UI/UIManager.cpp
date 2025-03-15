@@ -14,10 +14,8 @@ void Engine::UIManager::StartFrame()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	if (settings.debugMode)
-		ImGui::DockSpaceOverViewport(1, 0);
-	else
-		ImGui::DockSpaceOverViewport(1, 0, ImGuiDockNodeFlags_PassthruCentralNode);
+	if (settings.debugMode) ImGui::DockSpaceOverViewport(1, nullptr);
+	else ImGui::DockSpaceOverViewport(1, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 }
 
 void Engine::UIManager::Render()
@@ -34,9 +32,7 @@ void Engine::UIManager::DrawMainWindow( const uint texture )
 
 	if (!settings.debugMode)
 	{
-		flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoNav |
-			ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoBringToFrontOnFocus;
+		flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus;
 		ImGui::SetNextWindowSize(ImVec2(SCRWIDTH, SCRHEIGHT), ImGuiCond_Always);
 		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 	}

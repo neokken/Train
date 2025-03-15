@@ -13,14 +13,10 @@ void Engine::Camera::Update( float deltaTime )
 	float2 dir = {0.f};
 	float zoomDir = 1;
 
-	if (m_inputManager->IsKeyDown(GLFW_KEY_W))
-		dir.y -= 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_S))
-		dir.y += 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_A))
-		dir.x -= 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_D))
-		dir.x += 1.f;
+	if (m_inputManager->IsKeyDown(GLFW_KEY_W)) dir.y -= 1.f;
+	if (m_inputManager->IsKeyDown(GLFW_KEY_S)) dir.y += 1.f;
+	if (m_inputManager->IsKeyDown(GLFW_KEY_A)) dir.x -= 1.f;
+	if (m_inputManager->IsKeyDown(GLFW_KEY_D)) dir.x += 1.f;
 
 	float evaluatedMoveSpeed = m_moveSpeed;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
