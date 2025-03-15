@@ -18,6 +18,12 @@ namespace Engine
 		static int2 GetMainWindowCursorPos( const int2& mousePos );
 		static UIManagerSettings settings;
 
+		static bool BeginGameplayWindow( const char* name, ImGuiWindowFlags flags = 0 );
+		static bool BeginDebugWindow( const char* name, ImGuiWindowFlags flags = 0 );
+
+		static void EndGameplayWindow() { ImGui::End(); };
+		static void EndDebugWindow();
+
 	private:
 		static int2 m_mainWindowPos;
 		static int2 m_mainWindowSize;
