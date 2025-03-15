@@ -26,6 +26,4 @@ constexpr float ASPECT_RATIO = static_cast<float>(SCRWIDTH) / static_cast<float>
 #include <imgui_impl_opengl3.h>
 #include "Helpers/Helpers.h"
 
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
 #include "Helpers/Logger.h"

@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "Camera.h"
 
-#include "InputManager.h"
+#include "Input/InputManager.h"
 
 void Engine::Camera::Init( Engine::InputManager* input )
 {
@@ -25,8 +25,6 @@ void Engine::Camera::Update( float deltaTime )
 	float evaluatedMoveSpeed = m_moveSpeed;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
 	SetPosition(GetPosition() + dir * evaluatedMoveSpeed * deltaTime);
-
-	if (MouseOverUI()) return;
 
 	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
 

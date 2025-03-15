@@ -5,7 +5,7 @@
 #include "precomp.h"
 #include "Application.h"
 
-#include "UIManager.h"
+#include "UI/UIManager.h"
 #include "Renderables/LineSegment.h"
 
 // -----------------------------------------------------------

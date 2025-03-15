@@ -1,8 +1,8 @@
 #include "precomp.h"
 #include "TrackDebugger.h"
 
-#include "InputManager.h"
-#include "UIManager.h"
+#include "Input/InputManager.h"
+#include "UI/UIManager.h"
 #include "Camera/Camera.h"
 #include "Renderables/LineSegment.h"
 
@@ -97,8 +97,9 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		uint color = SEGMENT_COLOR_DEFAULT;
 		if (segment.m_id == m_hoveredTrackSegment) color = SEGMENT_COLOR_HOVER;
 		if (segment.m_id == m_selectedTrackSegment) color = SEGMENT_COLOR_SELECT;
-		if (segment.m_id == m_hoveredTrackSegment && segment.m_id == m_selectedTrackSegment) color =
-			SEGMENT_COLOR_SELECT_HOVER;
+		if (segment.m_id == m_hoveredTrackSegment && segment.m_id == m_selectedTrackSegment)
+			color =
+				SEGMENT_COLOR_SELECT_HOVER;
 
 		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)
 			&& (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid)

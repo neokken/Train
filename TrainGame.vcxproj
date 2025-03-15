@@ -130,7 +130,7 @@
     <ClCompile Include="src\Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="src\Engine\Helpers\Logger.cpp" />
     <ClCompile Include="src\Engine\Renderables\Grid.cpp" />
-    <ClCompile Include="src\Engine\InputManager.cpp" />
+    <ClCompile Include="src\Engine\Input\InputManager.cpp" />
     <ClCompile Include="src\Engine\Renderables\LineSegment.cpp" />
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
@@ -138,7 +138,7 @@
     <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
-    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="src\Engine\UI\UIManager.cpp" />
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -187,7 +187,7 @@
     <ClInclude Include="src\Engine\Helpers\Helpers.h" />
     <ClInclude Include="src\Engine\Helpers\Logger.h" />
     <ClInclude Include="src\Engine\Renderables\Grid.h" />
-    <ClInclude Include="src\Engine\InputManager.h" />
+    <ClInclude Include="src\Engine\Input\InputManager.h" />
     <ClInclude Include="src\Engine\Renderables\LineSegment.h" />
     <ClInclude Include="src\Engine\Renderables\Renderable.h" />
     <ClInclude Include="src\Engine\World\World.h" />
@@ -195,7 +195,7 @@
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
-    <ClInclude Include="UIManager.h" />
+    <ClInclude Include="src\Engine\UI\UIManager.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

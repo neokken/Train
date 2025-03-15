@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "InputManager.h"
 
-#include "UIManager.h"
+#include "UI/UIManager.h"
 
 void Engine::InputManager::UpdateMousePosition( const int2& mousePos )
 {

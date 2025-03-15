@@ -5,7 +5,7 @@
 #pragma once
 #include "Camera/Camera.h"
 #include "Renderables/Grid.h"
-#include "InputManager.h"
+#include "Input/InputManager.h"
 
 #include "World/World.h"
 
