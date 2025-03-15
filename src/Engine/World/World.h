@@ -3,6 +3,9 @@
 // TODO: Either pointerize or include these in any dependency with World.h
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
+#include "Game/TrainSystem/TrackManager.h"
+#include "Game/TrainSystem/Debugger/TrackDebugger.h"
+
 
 namespace Engine {
 
@@ -17,6 +20,7 @@ namespace Engine {
 		// Life cycle functions
 		void Init( Surface* renderTarget, InputManager* inputManager );
 		void Update( float deltaTime );
+		void UI();
 
 		// World management functions
 		void AddObject( GameObject* obj );
@@ -29,6 +33,9 @@ namespace Engine {
 
 		Grid m_grid;
 		Camera m_camera{ int2( 0,0 ) };
+
+		TrackManager m_trackManager;
+		TrackDebugger m_trackDebugger;
 
 		Surface* m_renderTarget = nullptr;
 	};

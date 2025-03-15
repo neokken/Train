@@ -62,6 +62,14 @@
     <ClCompile Include="vendor\include\ImGui\imgui_widgets.cpp">
       <Filter>Vendor\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp">
+      <Filter>Game\TrainSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp">
+      <Filter>Game\TrainSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="IDGenerator.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -110,6 +118,14 @@
     <ClInclude Include="src\Game\Buildings\Building.h">
       <Filter>Game\Buildings</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\TrainSystem\TrackSegment.h">
+      <Filter>Game\TrainSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\TrainSystem\TrackManager.h">
+      <Filter>Game\TrainSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="IDGenerator.h" />
+    <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -155,6 +171,9 @@
     </Filter>
     <Filter Include="Vendor\ImGui">
       <UniqueIdentifier>{1555562d-3722-4b1c-a9f1-d5c0fb33d27e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\TrainSystem">
+      <UniqueIdentifier>{06e81e24-c92d-4bbf-8738-98b83e560680}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
