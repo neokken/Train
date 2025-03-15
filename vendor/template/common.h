@@ -10,6 +10,7 @@
 // default screen resolution
 constexpr int SCRWIDTH = 1280;
 constexpr int SCRHEIGHT = 720;
+constexpr float ASPECT_RATIO = static_cast<float>(SCRWIDTH) / static_cast<float>(SCRHEIGHT);
 // #define FULLSCREEN
 
 // constants
@@ -21,6 +22,8 @@ constexpr int SCRHEIGHT = 720;
 #define LARGE_FLOAT	1e34f
 
 #include "imgui.h"
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include "Helpers/Helpers.h"
 
 #include <spdlog/spdlog.h>

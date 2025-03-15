@@ -5,6 +5,7 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "UIManager.h"
 #include "Renderables/LineSegment.h"
 
 // -----------------------------------------------------------
@@ -13,6 +14,7 @@
 void Application::Init()
 {
 	Engine::Logger::Init();
+	Engine::UIManager::Init();
 	m_world.Init(screen, &m_inputManager);
 }
 
@@ -27,14 +29,22 @@ void Application::Tick( const float deltaTime )
 	// Update logic
 	m_world.Update(deltaTime);
 	m_inputManager.Update(deltaTime);
+
+	//DEBUG BEHAVIOUR
+	if (m_inputManager.IsKeyDown(GLFW_KEY_B))
+	{
+		Engine::UIManager::settings.debugMode = false;
+	}
+	else if (m_inputManager.IsKeyDown(GLFW_KEY_V)) Engine::UIManager::settings.debugMode = true;
 }
 
 void Tmpl8::Application::UI()
 {
-	ImGui::Begin("Window");
-	ImGui::Text("Frametime: %fms", m_frameTimer.elapsed() * 1000);
-
-	ImGui::End();
+	if (Engine::UIManager::BeginDebugWindow("Window"))
+	{
+		ImGui::Text("Frametime: %fms", m_frameTimer.elapsed() * 1000);
+	}
+	Engine::UIManager::EndDebugWindow();
 
 	m_world.UI();
 }
