@@ -1,17 +1,21 @@
 #pragma once
 
-namespace Engine {
-	inline bool MouseOverUI() {
+namespace Engine
+{
+	inline bool MouseOverUI()
+	{
 		ImGuiIO& io = ImGui::GetIO();
 		return io.WantCaptureKeyboard || io.WantCaptureMouse;
 	}
 }
 
-struct ScopedTimer {
+struct ScopedTimer
+{
 	Timer t;
 	const char* name;
 
-	ScopedTimer( const char* funcName ) {
+	ScopedTimer( const char* funcName )
+	{
 		name = funcName;
 	}
 

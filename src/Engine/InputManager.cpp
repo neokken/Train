@@ -1,14 +1,13 @@
 #include "precomp.h"
 #include "InputManager.h"
 
-
-void Engine::InputManager::UpdateMousePosition(const int2& mousePos)
+void Engine::InputManager::UpdateMousePosition( const int2& mousePos )
 {
 	m_mouseDelta = m_mousePosition - mousePos;
 	m_mousePosition = mousePos;
 }
 
-void Engine::InputManager::Update(float)
+void Engine::InputManager::Update( float )
 {
 	for (auto& key : m_keys)
 	{
@@ -38,23 +37,22 @@ void Engine::InputManager::Update(float)
 	m_scrollDelta = 0.f;
 }
 
-bool Engine::InputManager::IsKeyDown(const int key) const
+bool Engine::InputManager::IsKeyDown( const int key ) const
 {
 	return m_keys[key] == KeyState::Just_Down || m_keys[key] == KeyState::Down;
 }
 
-bool Engine::InputManager::IsKeyUp(const int key) const
+bool Engine::InputManager::IsKeyUp( const int key ) const
 {
 	return m_keys[key] == KeyState::Just_Up || m_keys[key] == KeyState::Up;
 }
 
-bool Engine::InputManager::IsKeyJustDown(const int key) const
+bool Engine::InputManager::IsKeyJustDown( const int key ) const
 {
 	return m_keys[key] == KeyState::Just_Down;
 }
 
-bool Engine::InputManager::IsKeyJustUp(const int key) const
+bool Engine::InputManager::IsKeyJustUp( const int key ) const
 {
 	return m_keys[key] == KeyState::Just_Up;
 }
-

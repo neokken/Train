@@ -3,5 +3,5 @@
 
 ScopedTimer::~ScopedTimer()
 {
-	Engine::Logger::Info( "{} tooks {}ms.", name, t.elapsed() * 1000 );
+	Engine::Logger::Info("{} tooks {}ms.", name, t.elapsed() * 1000);
 }

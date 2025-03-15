@@ -10,19 +10,20 @@
 
 Engine::World::~World()
 {
-	for (auto& obj : m_objects) {
+	for (auto& obj : m_objects)
+	{
 		delete obj;
 	}
 }
 
 void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 {
-	m_camera.Init( inputManager );
-	m_camera.SetResolution( int2( SCRWIDTH, SCRHEIGHT ) );
-	m_camera.SetZoomLevel( 1.f );
+	m_camera.Init(inputManager);
+	m_camera.SetResolution(int2(SCRWIDTH, SCRHEIGHT));
+	m_camera.SetZoomLevel(1.f);
 
-	m_grid.AddGrid( 0x354f52, 25 /*, .7f*/ );
-	m_grid.AddGrid( 0x52796f, 100 /*, .33f*/ );
+	m_grid.AddGrid(0x354f52, 25 /*, .7f*/);
+	m_grid.AddGrid(0x52796f, 100 /*, .33f*/);
 
 	m_renderTarget = renderTarget;
 
@@ -30,13 +31,12 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	Game::Building* building = new Game::Building(
 		Engine::Transform{
-			.position = float2( 0.0f ),
-			.scale = float2( 1.0f )
+			.position = float2(0.0f),
+			.scale = float2(1.0f)
 		}
 	);
 
-	AddObject( building );
-
+	AddObject(building);
 
 	// Rails
 	/*
@@ -53,9 +53,9 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
 	const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
 
-	const TrackSegmentID segmentAB =  m_trackManager.CreateSegment(nodeA, nodeB);
-	const TrackSegmentID segmentAC =  m_trackManager.CreateSegment(nodeA, nodeC);
-	const TrackSegmentID segmentAD =  m_trackManager.CreateSegment(nodeA, nodeD);
+	const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
+	const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
+	const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
 
 	m_trackManager.ConnectSegments(segmentAB, segmentAC);
 	m_trackManager.ConnectSegments(segmentAC, segmentAD);
@@ -72,22 +72,20 @@ void Engine::World::Update( float deltaTime )
 		m_objects.end()
 	);
 
-
-	m_camera.Update( deltaTime );
+	m_camera.Update(deltaTime);
 
 	// Render part
-	m_grid.Render( m_camera, *m_renderTarget );
+	m_grid.Render(m_camera, *m_renderTarget);
 
 	// TODO: Move up to the updating part, this is a temp solution to draw over the grid
-	for (auto& obj : m_objects) {
-		obj->Update( deltaTime );
+	for (auto& obj : m_objects)
+	{
+		obj->Update(deltaTime);
 	}
 
 	m_trackDebugger.Update(m_camera);
 
 	m_trackDebugger.Render(m_camera, *m_renderTarget);
-	
-
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -98,8 +96,8 @@ void Engine::World::UI()
 
 void Engine::World::AddObject( GameObject* obj )
 {
-	obj->Init( this );
-	m_objects.push_back( obj );
+	obj->Init(this);
+	m_objects.push_back(obj);
 }
 
 void Engine::World::DestroyObject( GameObject* obj )

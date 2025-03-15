@@ -13,7 +13,7 @@
 void Application::Init()
 {
 	Engine::Logger::Init();
-	m_world.Init( screen, &m_inputManager );
+	m_world.Init(screen, &m_inputManager);
 }
 
 // -----------------------------------------------------------
@@ -22,17 +22,17 @@ void Application::Init()
 void Application::Tick( const float deltaTime )
 {
 	m_frameTimer.reset();
-	screen->Clear( 0x2f3e46 );
+	screen->Clear(0x2f3e46);
 
 	// Update logic
-	m_world.Update( deltaTime );
-	m_inputManager.Update( deltaTime );
+	m_world.Update(deltaTime);
+	m_inputManager.Update(deltaTime);
 }
 
 void Tmpl8::Application::UI()
 {
-	ImGui::Begin( "Window" );
-	ImGui::Text( "Frametime: %fms", m_frameTimer.elapsed() * 1000 );
+	ImGui::Begin("Window");
+	ImGui::Text("Frametime: %fms", m_frameTimer.elapsed() * 1000);
 
 	ImGui::End();
 

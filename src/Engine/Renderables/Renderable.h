@@ -1,7 +1,9 @@
 #pragma once
 
-namespace Engine {
+namespace Engine
+{
 	class Camera;
+
 	class Renderable
 	{
 	public:

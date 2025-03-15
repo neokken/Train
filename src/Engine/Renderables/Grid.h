@@ -1,14 +1,17 @@
 #pragma once
 #include "Renderable.h"
 
-namespace Engine {
+namespace Engine
+{
 	struct GridLineData
 	{
 		GridLineData( const uint color, const int distance, const float minZoom, const float maxZoom )
-			: lineColor( color )
-			, pixelDistance( distance )
-			, minZoomLevel( minZoom )
-			, maxZoomLevel( maxZoom ) {}
+			: lineColor(color)
+			  , pixelDistance(distance)
+			  , minZoomLevel(minZoom)
+			  , maxZoomLevel(maxZoom)
+		{
+		}
 
 		uint lineColor;
 		int pixelDistance;

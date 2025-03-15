@@ -1,13 +1,18 @@
 #pragma once
 
-namespace Engine {
+namespace Engine
+{
 	template <typename T>
-	class IDGenerator {
+	class IDGenerator
+	{
 	public:
-		IDGenerator() : m_nextID( 1 ) {}
+		IDGenerator() : m_nextID(1)
+		{
+		}
 
-		T GenerateID() {
-			return static_cast<T>(m_nextID++);  // Convert to T (ID type)
+		T GenerateID()
+		{
+			return static_cast<T>(m_nextID++); // Convert to T (ID type)
 		}
 
 	private:

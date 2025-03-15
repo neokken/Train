@@ -1,8 +1,7 @@
 #include "precomp.h"
 #include "TrackSegment.h"
 
-
-void TrackNode::AddConnection(const TrackSegmentID from, const TrackSegmentID to)
+void TrackNode::AddConnection( const TrackSegmentID from, const TrackSegmentID to )
 {
 	m_validConnections[from].push_back(to);
 

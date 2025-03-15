@@ -2,10 +2,12 @@
 
 #include "Data/Transform.h"
 
-namespace Engine {
+namespace Engine
+{
 	class World;
 
-	class GameObject {
+	class GameObject
+	{
 	public:
 		GameObject() = default;
 		GameObject( Transform transform );

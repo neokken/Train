@@ -6,13 +6,13 @@
 #include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
 
-
-namespace Engine {
-
+namespace Engine
+{
 	class GameObject;
 	class InputManager;
 
-	class World {
+	class World
+	{
 	public:
 		World() = default;
 		~World();
@@ -28,11 +28,12 @@ namespace Engine {
 
 		const Camera& GetCamera() const;
 		Surface* GetRenderTarget() const;
+
 	private:
 		std::vector<GameObject*> m_objects;
 
 		Grid m_grid;
-		Camera m_camera{ int2( 0,0 ) };
+		Camera m_camera{int2(0, 0)};
 
 		TrackManager m_trackManager;
 		TrackDebugger m_trackDebugger;
