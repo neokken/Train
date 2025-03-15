@@ -62,16 +62,16 @@ void Engine::UIManager::DrawMainWindow( const uint texture )
 	}
 	ImGui::Image(texture, imageSize);
 	ImVec2 windowPos = ImGui::GetWindowPos();
-	m_mainWindowPos = int2(windowPos.x, windowPos.y);
+	m_mainWindowPos = int2(static_cast<int>(windowPos.x), static_cast<int>(windowPos.y));
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	m_mainWindowSize = int2(imageSize.x, imageSize.y);
+	m_mainWindowSize = int2(static_cast<int>(imageSize.x), static_cast<int>(imageSize.y));
 	ImGui::End();
 }
 
 int2 Engine::UIManager::GetMainWindowCursorPos( const int2& mousePos )
 {
 	float2 cursorPos = (mousePos - m_mainWindowPos) / (m_mainWindowSize / float2(SCRWIDTH, SCRHEIGHT));
-	return int2(cursorPos.x, cursorPos.y);
+	return int2(static_cast<int>(cursorPos.x), static_cast<int>(cursorPos.y));
 }
 
 bool Engine::UIManager::BeginGameplayWindow( const char* name, ImGuiWindowFlags flags )
