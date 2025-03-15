@@ -121,7 +121,7 @@
   </ItemDefinitionGroup>
   <!-- END Custom section -->
   <ItemGroup>
-    <ClCompile Include="IDGenerator.cpp" />
+    <ClCompile Include="src\Engine\Helpers\IDGenerator.cpp" />
     <ClCompile Include="src\Engine\Camera\Camera.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Engine\GameObject\GameObject.cpp" />
@@ -153,7 +153,7 @@
     <ClCompile Include="vendor\template\tmpl8math.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IDGenerator.h" />
+    <ClInclude Include="src\Engine\Helpers\IDGenerator.h" />
     <ClInclude Include="src\Engine\Camera\Camera.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Engine\Data\Transform.h" />

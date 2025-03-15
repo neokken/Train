@@ -59,8 +59,6 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	m_trackManager.ConnectSegments(segmentAB, segmentAC);
 	m_trackManager.ConnectSegments(segmentAC, segmentAD);
-
-
 }
 
 void Engine::World::Update( float deltaTime )

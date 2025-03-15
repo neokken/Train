@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "TrackSegment.h"
-#include "IDGenerator.h"
+#include "Helpers/IDGenerator.h"
 
 class TrackManager
 {
@@ -23,8 +23,8 @@ private:
 	[[nodiscard]] TrackSegment& GetTrackSegment(TrackSegmentID id);
 
 private:
-	IDGenerator<TrackNodeID> m_nodeIDGenerator;
-	IDGenerator<TrackSegmentID> m_segmentIDGenerator;
+	Engine::IDGenerator<TrackNodeID> m_nodeIDGenerator;
+	Engine::IDGenerator<TrackSegmentID> m_segmentIDGenerator;
 
 	std::unordered_map<TrackNodeID, TrackNode> m_nodes;
 	std::unordered_map<TrackSegmentID, TrackSegment> m_segments;
