@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+	class Camera;
 	class World;
 
 	class GameObject
@@ -15,6 +16,7 @@ namespace Engine
 
 		void Init( World* world );
 		virtual void Update( float deltaTime ) = 0;
+		virtual void Render( const Camera& camera, Surface& target ) = 0;
 
 		void Destroy();
 		bool MarkedForDestroy() const;
