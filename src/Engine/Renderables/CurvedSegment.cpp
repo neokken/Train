@@ -5,8 +5,10 @@
 #include "Camera/Camera.h"
 
 Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir,
-                                      const float2& lEndDir, const float hardness, const uint color )
+                                      const float2& lEndDir, const float hardness, const uint color,
+                                      const uint drawSteps )
 	: m_color(color)
+	, m_STEPSIZE(1.f/static_cast<float>(drawSteps))
 {
 	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness);
 }

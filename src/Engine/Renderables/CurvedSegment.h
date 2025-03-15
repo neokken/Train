@@ -9,7 +9,7 @@ namespace Engine
 	public:
 		CurvedSegment() = default;
 		CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
-		               float hardness, const uint color );
+		               float hardness, const uint color, const uint drawSteps = 10u );
 		/**
 		 * Set up the mid points for the curve
 		 * @param lStart line start
