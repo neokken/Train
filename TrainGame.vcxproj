@@ -138,13 +138,35 @@
     <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="vendor\include\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="vendor\include\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_glfw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_impl_opengl3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\include\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="vendor\template\opencl.cpp" />
     <ClCompile Include="vendor\template\opengl.cpp" />
     <ClCompile Include="vendor\template\surface.cpp" />
@@ -173,6 +195,7 @@
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
+    <ClInclude Include="UIManager.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

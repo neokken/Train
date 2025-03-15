@@ -2,6 +2,7 @@
 #include "TrackDebugger.h"
 
 #include "InputManager.h"
+#include "UIManager.h"
 #include "Camera/Camera.h"
 #include "Renderables/LineSegment.h"
 
@@ -115,7 +116,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 
 void TrackDebugger::UI() const
 {
-	if (ImGui::Begin("Track Debugger"))
+	if (Engine::UIManager::BeginDebugWindow("Track Debugger"))
 	{
 		// active
 		if (ImGui::CollapsingHeader("Selected Nodes", ImGuiTreeNodeFlags_DefaultOpen))
@@ -287,7 +288,7 @@ void TrackDebugger::UI() const
 			ImGui::Text("Invalid Node ID");
 		}
 	}
-	ImGui::End();
+	Engine::UIManager::EndDebugWindow();
 }
 
 std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const
