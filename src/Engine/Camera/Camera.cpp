@@ -51,18 +51,17 @@ void Engine::Camera::Update( const float deltaTime )
 		const float2 mousePosAfter = GetWorldPosition(mouseScreenPos);
 
 		const float2 offset = mousePosBefore - mousePosAfter;
-
-		dir += offset * m_scrollMouseImpact;
+		SetPosition(GetPosition() + offset);
 	}
-
-	float evaluatedMoveSpeed = m_moveSpeed;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
-	SetPosition(GetPosition() + dir * evaluatedMoveSpeed * deltaTime);
 
 	if (sqrLength(dir) > 0.f)
 	{
 		dir = normalize(dir);
 	}
+
+	float evaluatedMoveSpeed = m_moveSpeed;
+	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
+	SetPosition(GetPosition() + dir * evaluatedMoveSpeed * deltaTime);
 }
 
 float2 Engine::Camera::GetTopLeft() const
