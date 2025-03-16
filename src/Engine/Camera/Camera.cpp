@@ -38,15 +38,16 @@ void Engine::Camera::Update( const float deltaTime )
 	{
 		m_mouseLocked = false;
 	}
+
+	// Zooming
 	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
-	//Move based on zoom
 	if (zoomDir != 1.f)
 	{
+		//Calculate positions before and after zoom to use as offset to zoom into the mouse location
 		const int2 mousePos = m_inputManager->GetMousePos();
 		const float2 mouseScreenPos = float2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 		const float2 mousePosBefore = GetWorldPosition(mouseScreenPos);
 		SetZoomLevel(GetZoomLevel() * zoomDir);
-
 		const float2 mousePosAfter = GetWorldPosition(mouseScreenPos);
 
 		const float2 offset = mousePosBefore - mousePosAfter;
