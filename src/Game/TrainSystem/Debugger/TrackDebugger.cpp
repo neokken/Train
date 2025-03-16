@@ -1,8 +1,10 @@
 #include "precomp.h"
 #include "TrackDebugger.h"
 
-#include "InputManager.h"
+#include "Input/InputManager.h"
+#include "UI/UIManager.h"
 #include "Camera/Camera.h"
+#include "Renderables/Circle.h"
 #include "Renderables/LineSegment.h"
 
 void TrackDebugger::Init( Engine::InputManager* inputManager, TrackManager* trackManager )
@@ -48,8 +50,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 		const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-		if (SQRDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) <
-			SEGMENT_SELECTION_DIST_SQ)
+		if (SQRDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.m_id;
 			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
@@ -88,7 +89,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		if (node.m_id == m_selectedTrackNode) color = NODE_COLOR_SELECT;
 		if (node.m_id == m_selectedTrackNode && node.m_id == m_hoveredTrackNode) color = NODE_COLOR_SELECT_HOVER;
 
-		DrawCircle(camera, targetSurface, node.m_nodePosition, NODE_DISPLAY_SIZE, color);
+		Engine::Circle::RenderWorldPos(camera, targetSurface, node.m_nodePosition, NODE_DISPLAY_SIZE, color);
 	}
 
 	for (const auto& segment : std::views::values(m_trackManager->m_segments))
@@ -96,12 +97,10 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		uint color = SEGMENT_COLOR_DEFAULT;
 		if (segment.m_id == m_hoveredTrackSegment) color = SEGMENT_COLOR_HOVER;
 		if (segment.m_id == m_selectedTrackSegment) color = SEGMENT_COLOR_SELECT;
-		if (segment.m_id == m_hoveredTrackSegment && segment.m_id == m_selectedTrackSegment) color =
-			SEGMENT_COLOR_SELECT_HOVER;
+		if (segment.m_id == m_hoveredTrackSegment && segment.m_id == m_selectedTrackSegment)
+			color = SEGMENT_COLOR_SELECT_HOVER;
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)
-			&& (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid)
-			&& ranges::find(m_linkedTrackSegments, segment.m_id) != m_linkedTrackSegments.end())
+		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) && (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid) && ranges::find(m_linkedTrackSegments, segment.m_id) != m_linkedTrackSegments.end())
 		{
 			color = SEGMENT_COLOR_LINKED;
 		}
@@ -115,7 +114,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 
 void TrackDebugger::UI() const
 {
-	if (ImGui::Begin("Track Debugger"))
+	if (Engine::UIManager::BeginDebugWindow("Track Debugger"))
 	{
 		// active
 		if (ImGui::CollapsingHeader("Selected Nodes", ImGuiTreeNodeFlags_DefaultOpen))
@@ -138,13 +137,9 @@ void TrackDebugger::UI() const
 				ImGui::Text("Connections:");
 				for (const auto& [segmentID, validConnections] : node.m_validConnections)
 				{
-					const int activeConnection = node.m_connectionLever.contains(segmentID)
-						                             ? node.m_connectionLever.at(segmentID)
-						                             : -1;
+					const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
 
-					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID),
-					            static_cast<int>(validConnections.at(activeConnection)),
-					            activeConnection);
+					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
 
 					ImGui::SameLine();
 					for (size_t i = 0; i < validConnections.size(); ++i)
@@ -175,10 +170,8 @@ void TrackDebugger::UI() const
 				TrackNode nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 				TrackNode nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.m_id), nodeA.m_nodePosition.x,
-				            nodeA.m_nodePosition.y);
-				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.m_id), nodeB.m_nodePosition.x,
-				            nodeB.m_nodePosition.y);
+				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.m_id), nodeA.m_nodePosition.x, nodeA.m_nodePosition.y);
+				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.m_id), nodeB.m_nodePosition.x, nodeB.m_nodePosition.y);
 
 				ImGui::Text("Connections:");
 
@@ -261,13 +254,9 @@ void TrackDebugger::UI() const
 			ImGui::Text("Connections:");
 			for (const auto& [segmentID, validConnections] : node.m_validConnections)
 			{
-				const int activeConnection = node.m_connectionLever.contains(segmentID)
-					                             ? node.m_connectionLever.at(segmentID)
-					                             : -1;
+				const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
 
-				ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID),
-				            static_cast<int>(validConnections.at(activeConnection)),
-				            activeConnection);
+				ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
 
 				ImGui::SameLine();
 				for (size_t i = 0; i < validConnections.size(); ++i)
@@ -287,7 +276,7 @@ void TrackDebugger::UI() const
 			ImGui::Text("Invalid Node ID");
 		}
 	}
-	ImGui::End();
+	Engine::UIManager::EndDebugWindow();
 }
 
 std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const
@@ -299,12 +288,8 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSe
 	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-	const std::vector<TrackSegmentID> nodeALinkedSegments = nodeA.m_validConnections.contains(segmentID)
-		                                                        ? nodeA.m_validConnections.at(segmentID)
-		                                                        : std::vector<TrackSegmentID>();
-	const std::vector<TrackSegmentID> nodeBLinkedSegments = nodeB.m_validConnections.contains(segmentID)
-		                                                        ? nodeB.m_validConnections.at(segmentID)
-		                                                        : std::vector<TrackSegmentID>();;
+	const std::vector<TrackSegmentID> nodeALinkedSegments = nodeA.m_validConnections.contains(segmentID) ? nodeA.m_validConnections.at(segmentID) : std::vector<TrackSegmentID>();
+	const std::vector<TrackSegmentID> nodeBLinkedSegments = nodeB.m_validConnections.contains(segmentID) ? nodeB.m_validConnections.at(segmentID) : std::vector<TrackSegmentID>();;
 
 	result.insert(result.end(), nodeALinkedSegments.begin(), nodeALinkedSegments.end());
 	result.insert(result.end(), nodeBLinkedSegments.begin(), nodeBLinkedSegments.end());
@@ -322,25 +307,6 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 		result.insert(result.end(), segmentList.begin(), segmentList.end());
 	}
 	return result;
-}
-
-void TrackDebugger::DrawCircle( const Engine::Camera& camera, Surface& targetSurface, const float2& center,
-                                const float circleSize, const uint color, const int segmentCount )
-{
-	const float segmentCountF = static_cast<float>(segmentCount);
-
-	for (int i = 0; i < segmentCount; i++)
-	{
-		const float iF = static_cast<float>(i);
-
-		const float angle1 = (2.0f * PI * iF) / segmentCountF;
-		const float angle2 = (2.0f * PI * (iF + 1.f)) / segmentCountF;
-
-		float2 p1 = center + float2{circleSize * cos(angle1), circleSize * sin(angle1)};
-		float2 p2 = center + float2{circleSize * cos(angle2), circleSize * sin(angle2)};
-
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, p1, p2, color);
-	}
 }
 
 float TrackDebugger::SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B )

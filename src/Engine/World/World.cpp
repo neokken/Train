@@ -29,12 +29,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	m_trackDebugger.Init(inputManager, &m_trackManager);
 
-	Game::Building* building = new Game::Building(
-		Engine::Transform{
-			.position = float2(0.0f),
-			.scale = float2(1.0f)
-		}
-	);
+	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
 	AddObject(building);
 
@@ -63,14 +58,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 void Engine::World::Update( float deltaTime )
 {
-	m_objects.erase(
-		std::remove_if(
-			m_objects.begin(),
-			m_objects.end(),
-			[]( GameObject* obj ) { return obj->MarkedForDestroy(); }
-		),
-		m_objects.end()
-	);
+	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), []( GameObject* obj ) { return obj->MarkedForDestroy(); }), m_objects.end());
 
 	// Update pass
 	m_camera.Update(deltaTime);

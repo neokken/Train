@@ -1,10 +1,13 @@
 #include "precomp.h"
 #include "InputManager.h"
 
+#include "UI/UIManager.h"
+
 void Engine::InputManager::UpdateMousePosition( const int2& mousePos )
 {
-	m_mouseDelta = m_mousePosition - mousePos;
-	m_mousePosition = mousePos;
+	const int2 actualMousePos = Engine::UIManager::GetMainWindowCursorPos(mousePos);
+	m_mouseDelta = m_mousePosition - actualMousePos;
+	m_mousePosition = actualMousePos;
 }
 
 void Engine::InputManager::Update( float )

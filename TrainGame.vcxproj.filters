@@ -83,6 +83,9 @@
     <ClCompile Include="src\Engine\Renderables\CurvedSegment.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderables\CurvedSegment.h">
       <Filter>Engine\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

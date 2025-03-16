@@ -10,8 +10,7 @@ namespace Engine
 		LineSegment( const float2& lStart, const float2& lEnd, const uint color );
 
 		void Render( const Camera& camera, Surface& drawSurface ) override;
-		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart,
-		                            const float2& lEnd, uint lColor );
+		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lEnd, uint lColor );
 		static void RenderLocalPos( Surface& drawSurface, const float2& lStart, const float2& lEnd, uint lColor );
 
 	private:
