@@ -33,12 +33,19 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 	if (m_selectingSegments)
 	{
 		const TrackNode& node = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(m_lastNodeID);
+
 		for (auto [segmentID, segmentConnections] : node.m_validConnections)
 		{
 			const TrackSegment& segment = static_cast<const TrackManager*>(m_trackManager)->GetTrackSegment(segmentID);
 			const TrackNode& a = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeA);
 			const TrackNode& b = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeB);
 
+			if (node.m_validConnections.size() == 1)
+			{
+				m_lastSegmentID = segment.m_id;
+				m_selectingSegments = false;
+				return;
+			}
 			bool hovered = false;
 
 			if (Engine::SqrDistancePointToSegment(worldPosMouse, a.m_nodePosition, b.m_nodePosition) < 100.0f)
