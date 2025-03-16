@@ -129,6 +129,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="src\Engine\Helpers\Logger.cpp" />
+    <ClCompile Include="src\Engine\Renderables\CurvedSegment.cpp" />
     <ClCompile Include="src\Engine\Renderables\Circle.cpp" />
     <ClCompile Include="src\Engine\Renderables\Grid.cpp" />
     <ClCompile Include="src\Engine\Input\InputManager.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="src\Engine\GameObject\GameObject.h" />
     <ClInclude Include="src\Engine\Helpers\Helpers.h" />
     <ClInclude Include="src\Engine\Helpers\Logger.h" />
+    <ClInclude Include="src\Engine\Renderables\CurvedSegment.h" />
     <ClInclude Include="src\Engine\Renderables\Circle.h" />
     <ClInclude Include="src\Engine\Renderables\Grid.h" />
     <ClInclude Include="src\Engine\Input\InputManager.h" />
