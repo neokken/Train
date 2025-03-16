@@ -7,8 +7,8 @@
 Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir,
                                       const float2& lEndDir, const float hardness, const uint color,
                                       const uint drawSteps )
-	: m_color(color)
-	  , m_stepSize(1.f / static_cast<float>(drawSteps))
+	: m_stepSize(1.f / static_cast<float>(drawSteps))
+	  , m_color(color)
 {
 	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness);
 }
