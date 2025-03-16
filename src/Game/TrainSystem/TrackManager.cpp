@@ -23,6 +23,10 @@ TrackSegmentID TrackManager::CreateSegment( const TrackNodeID nodeA, const Track
 	newSegment.m_nodeB = nodeB;
 
 	m_segments[newID] = newSegment;
+
+	GetTrackNode(nodeA).AddTrackSegment(newID);
+	GetTrackNode(nodeB).AddTrackSegment(newID);
+
 	return newID;
 }
 

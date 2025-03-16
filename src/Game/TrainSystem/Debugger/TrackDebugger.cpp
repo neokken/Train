@@ -138,19 +138,24 @@ void TrackDebugger::UI() const
 				for (const auto& [segmentID, validConnections] : node.m_validConnections)
 				{
 					const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
-
-					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
-
-					ImGui::SameLine();
-					for (size_t i = 0; i < validConnections.size(); ++i)
+					if (activeConnection != -1)
 					{
-						ImGui::Text("%d", validConnections[i]);
-						if (i < validConnections.size() - 1)
+						ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
+						ImGui::SameLine();
+						for (size_t i = 0; i < validConnections.size(); ++i)
 						{
-							ImGui::SameLine();
-							ImGui::Text("|");
-							ImGui::SameLine();
+							ImGui::Text("%d", validConnections[i]);
+							if (i < validConnections.size() - 1)
+							{
+								ImGui::SameLine();
+								ImGui::Text("|");
+								ImGui::SameLine();
+							}
 						}
+					}
+					else
+					{
+						ImGui::Text("Segment %d -> no outgoing connections", static_cast<int>(segmentID));
 					}
 				}
 

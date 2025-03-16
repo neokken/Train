@@ -20,6 +20,7 @@ struct TrackNode
 	TrackNodeID m_id{TrackNodeID::Invalid};
 
 	void AddConnection( TrackSegmentID from, TrackSegmentID to );
+	void AddTrackSegment( TrackSegmentID segmentID );
 };
 
 struct TrackSegment
