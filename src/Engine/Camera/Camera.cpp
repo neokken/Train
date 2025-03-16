@@ -3,12 +3,18 @@
 
 #include "Input/InputManager.h"
 
+Engine::Camera::Camera( const int2& size )
+	: m_resolution{size}
+	  , m_wishWidthSize{static_cast<float>(size.x)}
+{
+}
+
 void Engine::Camera::Init( Engine::InputManager* input )
 {
 	m_inputManager = input;
 }
 
-void Engine::Camera::Update( float deltaTime )
+void Engine::Camera::Update( const float deltaTime )
 {
 	float2 dir = {0.f};
 	float zoomDir = 1;
@@ -17,6 +23,21 @@ void Engine::Camera::Update( float deltaTime )
 	if (m_inputManager->IsKeyDown(GLFW_KEY_S)) dir.y += 1.f;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_A)) dir.x -= 1.f;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_D)) dir.x += 1.f;
+
+	if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+	{
+		m_mouseLocked = true;
+		m_lockedWorldMousePos = GetWorldPosition(m_inputManager->GetMousePos());
+	}
+	if (m_inputManager->IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+	{
+		const float2 diff = m_lockedWorldMousePos - GetWorldPosition(m_inputManager->GetMousePos());
+		SetPosition(GetPosition() + diff);
+	}
+	else
+	{
+		m_mouseLocked = false;
+	}
 
 	float evaluatedMoveSpeed = m_moveSpeed;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
