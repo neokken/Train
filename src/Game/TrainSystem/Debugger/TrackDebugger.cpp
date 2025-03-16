@@ -50,7 +50,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.m_nodeA);
 		const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.m_nodeB);
 
-		if (SQRDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) < SEGMENT_SELECTION_DIST_SQ)
+		if (Engine::SqrDistancePointToSegment(worldPosMouse, nodeA.m_nodePosition, nodeB.m_nodePosition) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.m_id;
 			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
@@ -312,29 +312,4 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 		result.insert(result.end(), segmentList.begin(), segmentList.end());
 	}
 	return result;
-}
-
-float TrackDebugger::SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B )
-{
-	// thanks chatgpt for this code...
-
-	const float2 AB = B - A;
-	const float2 AP = point - A;
-
-	const float AB_lengthSq = sqrLength(AB);
-	if (AB_lengthSq == 0.0f)
-	{
-		// A and B are the same point
-		return sqrLength(AP);
-	}
-
-	// Project point onto the line (parametric t)
-	float t = dot(AP, AB) / AB_lengthSq;
-	t = std::clamp(t, 0.0f, 1.0f); // Clamping t to stay within segment
-
-	// Find the closest point on the segment
-	const float2 closestPoint = {A.x + t * AB.x, A.y + t * AB.y};
-
-	// Compute distance from point to the closest point
-	return sqrLength(point - closestPoint);
 }

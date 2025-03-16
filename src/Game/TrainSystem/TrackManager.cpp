@@ -86,6 +86,19 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 	return it->second;
 }
 
+TrackNodeID TrackManager::GetTrackNodeAtPosition( const float2& pos ) const
+{
+	for (const auto& [nodeID, nodeRef] : m_nodes)
+	{
+		if (nodeRef.m_nodePosition == pos)
+		{
+			return nodeID;
+		}
+	}
+
+	return TrackNodeID::Invalid;
+}
+
 TrackNode& TrackManager::GetTrackNode( const TrackNodeID id )
 {
 	const auto it = m_nodes.find(id);

@@ -25,14 +25,14 @@ namespace Game
 		void SetActive( bool active );
 
 	private:
-		float2 m_nodePreviewPos;
-
 		Engine::InputManager* m_inputManager = nullptr;
 		TrackManager* m_trackManager = nullptr;
 
 		TrackNodeID m_lastNodeID;
 		TrackSegmentID m_lastSegmentID;
 
+		bool m_selectingSegments = false;
+		TrackSegmentID m_selectedTrackSegment;
 		bool m_active = false;
 	};
 }

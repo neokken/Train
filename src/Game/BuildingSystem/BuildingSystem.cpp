@@ -30,6 +30,45 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 	if (!IsActive()) return;
 	float2 worldPosMouse = camera.GetWorldPosition(m_inputManager->GetMousePos());
 
+	if (m_selectingSegments)
+	{
+		const TrackNode& node = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(m_lastNodeID);
+		for (auto [segmentID, segmentConnections] : node.m_validConnections)
+		{
+			const TrackSegment& segment = static_cast<const TrackManager*>(m_trackManager)->GetTrackSegment(segmentID);
+			const TrackNode& a = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeA);
+			const TrackNode& b = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeB);
+
+			bool hovered = false;
+
+			if (Engine::SqrDistancePointToSegment(worldPosMouse, a.m_nodePosition, b.m_nodePosition) < 100.0f)
+			{
+				hovered = true;
+				if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+				{
+					if (m_selectedTrackSegment != segment.m_id)
+					{
+						m_selectedTrackSegment = segment.m_id;
+					}
+					else
+					{
+						m_selectedTrackSegment = TrackSegmentID::Invalid;
+					}
+				}
+
+				Engine::LineSegment::RenderWorldPos(camera, renderTarget, a.m_nodePosition, b.m_nodePosition, hovered ? 0xffff00 : 0xff0000);
+				return;
+			}
+		}
+
+		if (m_selectedTrackSegment != TrackSegmentID::Invalid)
+		{
+			m_selectingSegments = false;
+			m_lastSegmentID = m_selectedTrackSegment;
+		}
+
+		return;
+	}
 	constexpr float gridSize = 100.0f;
 
 	worldPosMouse.x = roundf(worldPosMouse.x / gridSize) * gridSize;
@@ -37,11 +76,20 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 
 	Engine::Circle::RenderWorldPos(camera, renderTarget, worldPosMouse, 10.0f, 0xffffff);
 
-	// TODO: When clicking on an already existing node, give the choice to select to which segment of that node to connect to
-
 	if (m_inputManager->IsMouseJustDown(0))
 	{
-		TrackNodeID currentID = m_trackManager->CreateNode(worldPosMouse);
+		TrackNodeID currentID = m_trackManager->GetTrackNodeAtPosition(worldPosMouse);
+		if (currentID == TrackNodeID::Invalid)
+		{
+			currentID = m_trackManager->CreateNode(worldPosMouse);
+		}
+		else
+		{
+			m_lastNodeID = currentID;
+			m_selectingSegments = true;
+			m_selectedTrackSegment = TrackSegmentID::Invalid;
+			return;
+		}
 
 		if (m_lastNodeID != TrackNodeID::Invalid)
 		{

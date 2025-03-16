@@ -14,6 +14,7 @@ public:
 
 	[[nodiscard]] const TrackNode& GetTrackNode( TrackNodeID id ) const;
 	[[nodiscard]] const TrackSegment& GetTrackSegment( TrackSegmentID id ) const;
+	[[nodiscard]] TrackNodeID GetTrackNodeAtPosition( const float2& pos ) const;
 
 private:
 	//nobody outside this class should touch nodes/segments

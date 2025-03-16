@@ -50,9 +50,6 @@ private:
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
 
-	// TODO: helper math file instead of here
-	static float SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B );
-
 private:
 	TrackManager* m_trackManager{nullptr};
 	Engine::InputManager* m_inputManager{nullptr};
