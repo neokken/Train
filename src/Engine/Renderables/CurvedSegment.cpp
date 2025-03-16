@@ -19,10 +19,13 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 	m_lineStart = lStart;
 	m_lineEnd = lEnd;
 
-	const float2 sMidPointOffset = (lEnd - lStart) * lStartDir;
+	assert(length(lStartDir) > 0);
+	assert(length(lEndDir) > 0);
+
+	const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
 	m_startMidPoint = lStart + sMidPointOffset * hardness;
 
-	const float2 eMidPointOffset = (lStart - lEnd) * lEndDir;
+	const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
 	m_endMidPoint = lEnd + eMidPointOffset * hardness;
 }
 
