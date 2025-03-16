@@ -26,9 +26,6 @@
     <ClCompile Include="src\Engine\Renderables\Grid.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\InputManager.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\World\World.cpp">
       <Filter>Engine\World</Filter>
     </ClCompile>
@@ -83,7 +80,13 @@
     <ClCompile Include="src\Engine\Renderables\CurvedSegment.cpp">
       <Filter>Engine\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="UIManager.cpp">
+    <ClCompile Include="src\Engine\Renderables\Circle.cpp">
+      <Filter>Engine\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Input\InputManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\UIManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -115,9 +118,6 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderables\Grid.h">
       <Filter>Engine\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\InputManager.h">
-      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\World\World.h">
       <Filter>Engine\World</Filter>
@@ -155,7 +155,13 @@
     <ClInclude Include="src\Engine\Renderables\CurvedSegment.h">
       <Filter>Engine\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="UIManager.h">
+    <ClInclude Include="src\Engine\Renderables\Circle.h">
+      <Filter>Engine\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\UI\UIManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Input\InputManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
