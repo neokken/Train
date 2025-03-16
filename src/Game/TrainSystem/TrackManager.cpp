@@ -98,7 +98,7 @@ nlohmann::json TrackManager::SerializeData() const
 	return j;
 }
 
-void TrackManager::loadData( const nlohmann::json& data )
+void TrackManager::LoadData( const nlohmann::json& data )
 {
 	m_nodeIDGenerator.SetSerializableData(data.at("nodeIDNext").get<uint>());
 	m_segmentIDGenerator.SetSerializableData(data.at("segmentIDNext").get<uint>());

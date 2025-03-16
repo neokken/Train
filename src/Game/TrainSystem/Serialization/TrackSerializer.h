@@ -1,7 +1,7 @@
 #pragma once
 
 #include <json.hpp>
-#include "game/TrainSystem/TrackSegment.h"
+#include "Game/TrainSystem/TrackSegment.h"
 
 // ** type Serialization **
 

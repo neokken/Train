@@ -19,7 +19,7 @@ public:
 
 	// saving & loading data
 	[[nodiscard]] nlohmann::json SerializeData() const;
-	void loadData( const nlohmann::json& data );
+	void LoadData( const nlohmann::json& data );
 
 private:
 	//nobody outside this class should touch nodes/segments

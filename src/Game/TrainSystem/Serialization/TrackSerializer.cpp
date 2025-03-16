@@ -8,23 +8,23 @@ using json = nlohmann::json;
 // ** Track Node id Serialization **
 void to_json( nlohmann::json& j, const TrackNodeID& id )
 {
-	j = static_cast<int>(id);
+	j = static_cast<uint32_t>(id);
 }
 
 void from_json( const nlohmann::json& j, TrackNodeID& id )
 {
-	id = static_cast<TrackNodeID>(j.get<int>());
+	id = static_cast<TrackNodeID>(j.get<uint32_t>());
 }
 
 // ** Segment Node id Serialization **
 void to_json( nlohmann::json& j, const TrackSegmentID& id )
 {
-	j = static_cast<int>(id);
+	j = static_cast<uint32_t>(id);
 }
 
 void from_json( const nlohmann::json& j, TrackSegmentID& id )
 {
-	id = static_cast<TrackSegmentID>(j.get<int>());
+	id = static_cast<TrackSegmentID>(j.get<uint32_t>());
 }
 
 // ** DATA Serialization **
@@ -48,7 +48,7 @@ void from_json( const nlohmann::json& j, TrackNode& node )
 	std::vector<float> pos = j.at("nodePosition").get<std::vector<float>>();
 	node.m_nodePosition = {pos[0], pos[1]};
 
-	node.m_id = static_cast<TrackNodeID>(j.at("id").get<int>());
+	node.m_id = j.at("id").get<TrackNodeID>();
 }
 
 // ** Track Segment Serialization **
