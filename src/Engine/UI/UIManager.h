@@ -4,7 +4,7 @@ namespace Engine
 {
 	struct UIManagerSettings
 	{
-		bool debugMode = false;
+		bool debugMode = true;
 		bool allowMainWindowStretching = false;
 	};
 

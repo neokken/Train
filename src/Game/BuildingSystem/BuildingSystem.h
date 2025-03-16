@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Game/TrainSystem/TrackSegment.h"
+
 namespace Engine
 {
 	class Camera;
@@ -28,8 +30,8 @@ namespace Game
 		Engine::InputManager* m_inputManager = nullptr;
 		TrackManager* m_trackManager = nullptr;
 
-		// TODO: Should be TrackNodeID but I don't wanna include the whole thing here
-		uint32_t m_lastNodeID = 0;
+		TrackNodeID m_lastNodeID;
+		TrackSegmentID m_lastSegmentID;
 
 		bool m_active = false;
 	};

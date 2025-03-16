@@ -23,8 +23,6 @@ void Game::BuildingSystem::Update( float /*deltaTime*/ )
 	}
 
 	if (!IsActive()) return;
-
-	// TODO: Implement mouse reading
 }
 
 void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& renderTarget )
@@ -39,22 +37,34 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 
 	Engine::Circle::RenderWorldPos(camera, renderTarget, worldPosMouse, 10.0f, 0xffffff);
 
+	// TODO: When clicking on an already existing node, give the choice to select to which segment of that node to connect to
+
 	if (m_inputManager->IsMouseJustDown(0))
 	{
-		uint32_t currentID = static_cast<uint32_t>(m_trackManager->CreateNode(worldPosMouse));
+		TrackNodeID currentID = m_trackManager->CreateNode(worldPosMouse);
 
-		if (static_cast<TrackNodeID>(m_lastNodeID) != TrackNodeID::Invalid)
+		if (m_lastNodeID != TrackNodeID::Invalid)
 		{
-			m_trackManager->CreateSegment((TrackNodeID)m_lastNodeID, (TrackNodeID)currentID);
+			TrackSegmentID segmentID = m_trackManager->CreateSegment(m_lastNodeID, currentID);
+
+			if (m_lastSegmentID != TrackSegmentID::Invalid)
+			{
+				m_trackManager->ConnectSegments(m_lastSegmentID, segmentID);
+			}
+
+			m_lastSegmentID = segmentID;
 		}
 
 		m_lastNodeID = currentID;
-
-		// TODO: Connect segments
 	}
 }
 
 void Game::BuildingSystem::SetActive( bool active )
 {
+	if (active == false)
+	{
+		m_lastSegmentID = TrackSegmentID::Invalid;
+		m_lastNodeID = TrackNodeID::Invalid;
+	}
 	m_active = active;
 }
