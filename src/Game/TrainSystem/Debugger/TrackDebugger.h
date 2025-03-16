@@ -50,9 +50,6 @@ private:
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
 
-	// TODO: circle renderable instead?
-	static void DrawCircle( const Engine::Camera& camera, Surface& targetSurface, const float2& center, float circleSize, uint color, int segmentCount = 12 );
-
 	// TODO: helper math file instead of here
 	static float SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B );
 
