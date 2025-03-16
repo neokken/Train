@@ -141,6 +141,7 @@
     <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
     <ClCompile Include="src\Engine\UI\UIManager.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -200,6 +201,7 @@
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
     <ClInclude Include="src\Engine\UI\UIManager.h" />
+    <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

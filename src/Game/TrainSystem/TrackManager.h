@@ -2,6 +2,8 @@
 #include "TrackSegment.h"
 #include "Helpers/IDGenerator.h"
 
+#include <json.hpp>
+
 class TrackManager
 {
 public:
@@ -14,6 +16,10 @@ public:
 
 	[[nodiscard]] const TrackNode& GetTrackNode( TrackNodeID id ) const;
 	[[nodiscard]] const TrackSegment& GetTrackSegment( TrackSegmentID id ) const;
+
+	// saving & loading data
+	[[nodiscard]] nlohmann::json SerializeData() const;
+	void loadData( const nlohmann::json& data );
 
 private:
 	//nobody outside this class should touch nodes/segments

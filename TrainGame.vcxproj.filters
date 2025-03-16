@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -89,6 +89,7 @@
     <ClCompile Include="src\Engine\UI\UIManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\Engine\Input\InputManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
