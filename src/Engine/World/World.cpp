@@ -28,6 +28,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	m_renderTarget = renderTarget;
 
 	m_trackDebugger.Init(inputManager, &m_trackManager);
+	m_buildingSystem.Init(inputManager, &m_trackManager);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
@@ -67,6 +68,7 @@ void Engine::World::Update( float deltaTime )
 		obj->Update(deltaTime);
 	}
 	m_trackDebugger.Update(m_camera);
+	m_buildingSystem.Update(deltaTime);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
@@ -77,6 +79,7 @@ void Engine::World::Update( float deltaTime )
 	}
 
 	m_trackDebugger.Render(m_camera, *m_renderTarget);
+	m_buildingSystem.Render(m_camera, *m_renderTarget);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

@@ -5,6 +5,9 @@
 #include "Camera/Camera.h"
 #include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
+#include "Game/BuildingSystem/BuildingSystem.h"
+
+// TODO: World should stay a generic class and there should be one inherited in Game namespace
 
 namespace Engine
 {
@@ -37,6 +40,7 @@ namespace Engine
 
 		TrackManager m_trackManager;
 		TrackDebugger m_trackDebugger;
+		Game::BuildingSystem m_buildingSystem;
 
 		Surface* m_renderTarget = nullptr;
 	};
