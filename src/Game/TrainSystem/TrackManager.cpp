@@ -22,6 +22,9 @@ TrackSegmentID TrackManager::CreateSegment( const TrackNodeID nodeA, const Track
 	newSegment.m_nodeA = nodeA;
 	newSegment.m_nodeB = nodeB;
 
+	// later this is will be replaced with a curved distance calculations
+	newSegment.m_distance = length(GetTrackNode(nodeA).m_nodePosition - GetTrackNode(nodeB).m_nodePosition);
+
 	m_segments[newID] = newSegment;
 	return newID;
 }

@@ -171,7 +171,7 @@ void TrackDebugger::UI() const
 
 				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.m_id), nodeA.m_nodePosition.x, nodeA.m_nodePosition.y);
 				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.m_id), nodeB.m_nodePosition.x, nodeB.m_nodePosition.y);
-
+				ImGui::Text("Segment length: %.2f", segment.m_distance);
 				ImGui::Text("Connections:");
 
 				if (m_linkedTrackSegments.empty())
@@ -235,6 +235,9 @@ void TrackDebugger::UI() const
 
 					ImGui::TableSetColumnIndex(2);
 					ImGui::Text("%d", static_cast<int>(segment.m_nodeB));
+
+					ImGui::TableSetColumnIndex(3);
+					ImGui::Text("%d", static_cast<int>(segment.m_distance));
 				}
 				ImGui::EndTable();
 			}
