@@ -39,18 +39,30 @@ void Engine::Camera::Update( const float deltaTime )
 		m_mouseLocked = false;
 	}
 
+	// Zooming
+	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
+	if (zoomDir != 1.f)
+	{
+		//Calculate positions before and after zoom to use as offset to zoom into the mouse location
+		const int2 mousePos = m_inputManager->GetMousePos();
+		const float2 mouseScreenPos = float2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		const float2 mousePosBefore = GetWorldPosition(mouseScreenPos);
+		SetZoomLevel(GetZoomLevel() * zoomDir);
+		const float2 mousePosAfter = GetWorldPosition(mouseScreenPos);
+
+		const float2 offset = mousePosBefore - mousePosAfter;
+
+		dir += offset * m_scrollMouseImpact;
+	}
+
 	float evaluatedMoveSpeed = m_moveSpeed;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
 	SetPosition(GetPosition() + dir * evaluatedMoveSpeed * deltaTime);
-
-	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
 
 	if (sqrLength(dir) > 0.f)
 	{
 		dir = normalize(dir);
 	}
-
-	SetZoomLevel(GetZoomLevel() * zoomDir);
 }
 
 float2 Engine::Camera::GetTopLeft() const
