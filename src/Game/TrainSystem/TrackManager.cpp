@@ -1,5 +1,8 @@
 ﻿#include "precomp.h"
 #include "TrackManager.h"
+#include "Serialization/TrackSerializer.h"
+
+using json = nlohmann::json;
 
 TrackNodeID TrackManager::CreateNode( const float2& position )
 {
@@ -80,6 +83,28 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 	}
 
 	return it->second;
+}
+
+nlohmann::json TrackManager::SerializeData() const
+{
+	nlohmann::json j;
+
+	j["nodeIDNext"] = m_nodeIDGenerator.GetSerializableData();
+	j["segmentIDNext"] = m_segmentIDGenerator.GetSerializableData();
+
+	j["nodes"] = m_nodes;
+	j["segments"] = m_segments;
+
+	return j;
+}
+
+void TrackManager::LoadData( const nlohmann::json& data )
+{
+	m_nodeIDGenerator.SetSerializableData(data.at("nodeIDNext").get<uint>());
+	m_segmentIDGenerator.SetSerializableData(data.at("segmentIDNext").get<uint>());
+
+	m_nodes = data.at("nodes").get<std::unordered_map<TrackNodeID, TrackNode>>();
+	m_segments = data.at("segments").get<std::unordered_map<TrackSegmentID, TrackSegment>>();
 }
 
 TrackNode& TrackManager::GetTrackNode( const TrackNodeID id )
