@@ -28,11 +28,6 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 
 void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 {
-	RenderWorldPos(camera, drawSurface);
-}
-
-void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawSurface ) const
-{
 	float2 lastPoint = m_lineStart;
 	float t = m_stepSize;
 	while (t <= 1.0001f)
@@ -49,10 +44,6 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 		lastPoint = cubic;
 		t += m_stepSize;
 	}
-}
-
-void Engine::CurvedSegment::RenderLocalPos( Surface& /*drawSurface*/ )
-{
 }
 
 void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const

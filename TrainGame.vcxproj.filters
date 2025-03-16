@@ -80,6 +80,9 @@
     <ClCompile Include="src\Engine\Helpers\Helpers.cpp">
       <Filter>Engine\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Renderables\CurvedSegment.cpp">
+      <Filter>Engine\Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Helpers\Logger.h">
       <Filter>Engine\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderables\CurvedSegment.h">
+      <Filter>Engine\Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

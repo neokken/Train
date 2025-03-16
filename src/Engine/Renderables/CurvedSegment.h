@@ -21,8 +21,6 @@ namespace Engine
 		void SetupPoints( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
 		                  float hardness );
 		void Render( const Camera& camera, Surface& drawSurface ) override;
-		void RenderWorldPos( const Camera& camera, Surface& drawSurface ) const;
-		void RenderLocalPos( Surface& drawSurface );
 
 		void RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const;
 
