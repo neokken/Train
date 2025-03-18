@@ -4,6 +4,7 @@
 #include "Input/InputManager.h"
 #include "UI/UIManager.h"
 #include "Camera/Camera.h"
+#include "Renderables/Circle.h"
 #include "Renderables/LineSegment.h"
 
 void TrackDebugger::Init( Engine::InputManager* inputManager, TrackManager* trackManager )
@@ -88,7 +89,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		if (node.m_id == m_selectedTrackNode) color = NODE_COLOR_SELECT;
 		if (node.m_id == m_selectedTrackNode && node.m_id == m_hoveredTrackNode) color = NODE_COLOR_SELECT_HOVER;
 
-		DrawCircle(camera, targetSurface, node.m_nodePosition, NODE_DISPLAY_SIZE, color);
+		Engine::Circle::RenderWorldPos(camera, targetSurface, node.m_nodePosition, NODE_DISPLAY_SIZE, color);
 	}
 
 	for (const auto& segment : std::views::values(m_trackManager->m_segments))
@@ -309,24 +310,6 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 		result.insert(result.end(), segmentList.begin(), segmentList.end());
 	}
 	return result;
-}
-
-void TrackDebugger::DrawCircle( const Engine::Camera& camera, Surface& targetSurface, const float2& center, const float circleSize, const uint color, const int segmentCount )
-{
-	const float segmentCountF = static_cast<float>(segmentCount);
-
-	for (int i = 0; i < segmentCount; i++)
-	{
-		const float iF = static_cast<float>(i);
-
-		const float angle1 = (2.0f * PI * iF) / segmentCountF;
-		const float angle2 = (2.0f * PI * (iF + 1.f)) / segmentCountF;
-
-		float2 p1 = center + float2{circleSize * cos(angle1), circleSize * sin(angle1)};
-		float2 p2 = center + float2{circleSize * cos(angle2), circleSize * sin(angle2)};
-
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, p1, p2, color);
-	}
 }
 
 float TrackDebugger::SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B )

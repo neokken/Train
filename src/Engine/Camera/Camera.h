@@ -9,9 +9,7 @@ namespace Engine
 	public:
 		Camera() = delete;
 
-		explicit Camera( const int2& size ) : m_resolution{size}, m_wishWidthSize{static_cast<float>(size.x)}
-		{
-		}
+		explicit Camera( const int2& size );
 
 		void Init( Engine::InputManager* input );
 
@@ -38,8 +36,12 @@ namespace Engine
 		float m_wishWidthSize;
 
 		float m_scrollSensitivity = 10.0f;
+		float m_scrollMouseImpact = 2.f;
 		float m_moveSpeed = 150.0f;
 
-		Engine::InputManager* m_inputManager;
+		Engine::InputManager* m_inputManager{nullptr};
+
+		float2 m_lockedWorldMousePos{};
+		bool m_mouseLocked{false};
 	};
 }
