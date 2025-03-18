@@ -29,52 +29,31 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 {
 	if (!IsActive()) return;
 	float2 worldPosMouse = camera.GetWorldPosition(m_inputManager->GetMousePos());
+	TrackSegmentID hoveredSegment = TrackSegmentID::Invalid;
 
 	if (m_selectingSegments)
 	{
-		const TrackNode& node = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(m_lastNodeID);
+		const TrackNode& node = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(m_selectingNodeID);
 
+		bool anyHovered = false;
 		for (auto [segmentID, segmentConnections] : node.m_validConnections)
 		{
+			bool hovered = false;
 			const TrackSegment& segment = static_cast<const TrackManager*>(m_trackManager)->GetTrackSegment(segmentID);
 			const TrackNode& a = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeA);
 			const TrackNode& b = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(segment.m_nodeB);
 
-			if (node.m_validConnections.size() == 1)
-			{
-				m_lastSegmentID = segment.m_id;
-				m_selectingSegments = false;
-				return;
-			}
-			bool hovered = false;
-
 			if (Engine::SqrDistancePointToSegment(worldPosMouse, a.m_nodePosition, b.m_nodePosition) < 100.0f)
 			{
-				hovered = true;
-				if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+				if (!anyHovered)
 				{
-					if (m_selectedTrackSegment != segment.m_id)
-					{
-						m_selectedTrackSegment = segment.m_id;
-					}
-					else
-					{
-						m_selectedTrackSegment = TrackSegmentID::Invalid;
-					}
+					anyHovered = true;
+					hovered = true;
+					hoveredSegment = segment.m_id;
 				}
-
-				Engine::LineSegment::RenderWorldPos(camera, renderTarget, a.m_nodePosition, b.m_nodePosition, hovered ? 0xffff00 : 0xff0000);
-				return;
 			}
+			Engine::LineSegment::RenderWorldPos(camera, renderTarget, a.m_nodePosition, b.m_nodePosition, hovered ? 0xffff00 : 0xff0000);
 		}
-
-		if (m_selectedTrackSegment != TrackSegmentID::Invalid)
-		{
-			m_selectingSegments = false;
-			m_lastSegmentID = m_selectedTrackSegment;
-		}
-
-		return;
 	}
 	constexpr float gridSize = 100.0f;
 
@@ -85,6 +64,15 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 
 	if (m_inputManager->IsMouseJustDown(0))
 	{
+		if (m_selectingSegments)
+		{
+			if (hoveredSegment == TrackSegmentID::Invalid) return;
+			m_selectingSegments = false;
+			m_lastSegmentID = hoveredSegment;
+			printf("Selected segment.\n");
+			return;
+		}
+
 		TrackNodeID currentID = m_trackManager->GetTrackNodeAtPosition(worldPosMouse);
 		if (currentID == TrackNodeID::Invalid)
 		{
@@ -92,10 +80,17 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 		}
 		else
 		{
-			m_lastNodeID = currentID;
-			m_selectingSegments = true;
-			m_selectedTrackSegment = TrackSegmentID::Invalid;
-			return;
+			if (TrackSegmentID id = TryAutoSelectSegment(currentID); id != TrackSegmentID::Invalid)
+			{
+				m_lastSegmentID = id;
+			}
+			else
+			{
+				m_selectingNodeID = currentID;
+				m_selectingSegments = true;
+				m_selectedTrackSegment = TrackSegmentID::Invalid;
+				return;
+			}
 		}
 
 		if (m_lastNodeID != TrackNodeID::Invalid)
@@ -122,4 +117,18 @@ void Game::BuildingSystem::SetActive( bool active )
 		m_lastNodeID = TrackNodeID::Invalid;
 	}
 	m_active = active;
+}
+
+TrackSegmentID Game::BuildingSystem::TryAutoSelectSegment( const TrackNodeID& id ) const
+{
+	if (id == TrackNodeID::Invalid) return TrackSegmentID::Invalid;
+	const TrackNode& node = static_cast<const TrackManager*>(m_trackManager)->GetTrackNode(id);
+
+	if (node.m_validConnections.size() == 1)
+	{
+		auto it = node.m_validConnections.begin();
+		return it->first;
+	}
+
+	return TrackSegmentID::Invalid;
 }

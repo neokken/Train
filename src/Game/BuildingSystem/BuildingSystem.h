@@ -29,10 +29,17 @@ namespace Game
 		TrackManager* m_trackManager = nullptr;
 
 		TrackNodeID m_lastNodeID;
+		TrackNodeID m_selectingNodeID;
 		TrackSegmentID m_lastSegmentID;
 
 		bool m_selectingSegments = false;
 		TrackSegmentID m_selectedTrackSegment;
 		bool m_active = false;
+
+		TrackSegmentID TryAutoSelectSegment( const TrackNodeID& id ) const;
+
+		// 0 building rails
+		// 1 creating junctions
+		uint m_mode = 0;
 	};
 }

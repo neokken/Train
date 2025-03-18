@@ -90,6 +90,7 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
+    <ClCompile Include="src\Game\BuildingSystem\BuildingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -166,6 +167,7 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
+    <ClInclude Include="src\Game\BuildingSystem\BuildingSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
