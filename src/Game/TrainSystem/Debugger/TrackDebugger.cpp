@@ -135,8 +135,15 @@ void TrackDebugger::UI() const
 				const auto& node = m_trackManager->m_nodes.at(m_selectedTrackNode);
 				ImGui::Text("Position: (%.2f, %.2f)", node.m_nodePosition.x, node.m_nodePosition.y);
 				ImGui::Text("Connections:");
+
 				for (const auto& [segmentID, validConnections] : node.m_validConnections)
 				{
+					if (node.m_connectionLever.at(segmentID) == -1)
+					{
+						ImGui::Text("Segment %d -> end", segmentID);
+						continue;
+					}
+
 					const int activeConnection = node.m_connectionLever.contains(segmentID) ? node.m_connectionLever.at(segmentID) : -1;
 
 					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
@@ -156,7 +163,7 @@ void TrackDebugger::UI() const
 
 				if (node.m_validConnections.empty())
 				{
-					ImGui::Text("No outgoing connections.");
+					ImGui::Text("No in or outgoing connections.");
 				}
 			}
 			else

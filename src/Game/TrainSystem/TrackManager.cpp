@@ -28,13 +28,13 @@ TrackSegmentID TrackManager::CreateSegment( const TrackNodeID nodeA_ID, const Tr
 	TrackNode& nodeA = GetMutableTrackNode(nodeA_ID);
 	TrackNode& nodeB = GetMutableTrackNode(nodeB_ID);
 
-	if (nodeA.m_connectionLever.contains(newID))
+	if (!nodeA.m_connectionLever.contains(newID))
 	{
 		nodeA.m_connectionLever[newID] = -1;
 		nodeA.m_validConnections[newID];
 	}
 
-	if (nodeB.m_connectionLever.contains(newID))
+	if (!nodeB.m_connectionLever.contains(newID))
 	{
 		nodeB.m_connectionLever[newID] = -1;
 		nodeB.m_validConnections[newID];
@@ -118,7 +118,7 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 TrackSegmentID TrackManager::GetNextSegmentPositive( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
-	const TrackNode node = GetTrackNode(segment.m_nodeA);
+	const TrackNode node = GetTrackNode(segment.m_nodeB);
 
 	const int connectionDir = node.m_connectionLever.at(id);
 	if (connectionDir == -1) return TrackSegmentID::Invalid;
@@ -126,10 +126,10 @@ TrackSegmentID TrackManager::GetNextSegmentPositive( const TrackSegmentID id ) c
 	return node.m_validConnections.at(id).at(connectionDir);
 }
 
-TrackSegmentID TrackManager::GetNextSegmentNegative( TrackSegmentID id ) const
+TrackSegmentID TrackManager::GetNextSegmentNegative( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
-	const TrackNode node = GetTrackNode(segment.m_nodeB);
+	const TrackNode node = GetTrackNode(segment.m_nodeA);
 
 	const int connectionDir = node.m_connectionLever.at(id);
 	if (connectionDir == -1) return TrackSegmentID::Invalid;

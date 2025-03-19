@@ -3,10 +3,10 @@
 
 class TrackManager;
 
-class TrainWalker
+class TrackWalker
 {
 public:
-	TrainWalker() = default;
+	TrackWalker() = default;
 	void Init( const TrackManager* tm );
 
 	// returns true if moved the full m_distance
@@ -18,10 +18,16 @@ public:
 
 	[[nodiscard]] bool IsValid() const;
 
+	[[nodiscard]] TrackSegmentID GetCurrentTrackSegment() const { return m_currentSegmentID; }
+	void SetCurrentTrackSegment( TrackSegmentID newSegmentID, float newDistance );
+
+	void ImGuiDebugViewer();
+
 private:
 	const TrackManager* m_trackManager{nullptr};
 
 	TrackSegmentID m_currentSegmentID{TrackSegmentID::Invalid};
 
 	float m_distance{0.f};
+	bool m_flipMoveDir{false};
 };
