@@ -69,11 +69,14 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 			if (hoveredSegment == TrackSegmentID::Invalid) return;
 			m_selectingSegments = false;
 			m_lastSegmentID = hoveredSegment;
-			printf("Selected segment.\n");
-			return;
 		}
 
 		TrackNodeID currentID = m_trackManager->GetTrackNodeAtPosition(worldPosMouse);
+		if (m_selectingNodeID != TrackNodeID::Invalid)
+		{
+			currentID = m_selectingNodeID;
+		}
+
 		if (currentID == TrackNodeID::Invalid)
 		{
 			currentID = m_trackManager->CreateNode(worldPosMouse);
@@ -84,7 +87,7 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 			{
 				m_lastSegmentID = id;
 			}
-			else
+			else if (m_selectingNodeID == TrackNodeID::Invalid)
 			{
 				m_selectingNodeID = currentID;
 				m_selectingSegments = true;
@@ -106,6 +109,7 @@ void Game::BuildingSystem::Render( const Engine::Camera& camera, Surface& render
 		}
 
 		m_lastNodeID = currentID;
+		m_selectingNodeID = TrackNodeID::Invalid;
 	}
 }
 
