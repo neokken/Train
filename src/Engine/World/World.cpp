@@ -7,6 +7,9 @@
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
 #include "Game/Buildings/Building.h"
+#include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
+#include "Game/TrainSystem/TrainWalker/TrackWalker.h"
+#include "UI/UIManager.h"
 
 Engine::World::~World()
 {
@@ -56,6 +59,14 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	m_trackManager.ConnectSegments(segmentAC, segmentAD);
 
 	//Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
+
+	TrackWalker tWalker;
+	tWalker.Init(&m_trackManager);
+	tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
+
+	TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
+
+	AddObject(tmVis);
 }
 
 void Engine::World::Update( float deltaTime )
@@ -85,6 +96,21 @@ void Engine::World::Update( float deltaTime )
 void Engine::World::UI()
 {
 	m_trackDebugger.UI();
+
+	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
+	{
+		for (int i = 0; i < m_objects.size(); i++)
+		{
+			std::string name = std::to_string(i);
+			if (ImGui::TreeNode(name.c_str()))
+			{
+				m_objects.at(i)->ImGuiDebugViewer();
+
+				ImGui::TreePop();
+			}
+		}
+	}
+	Engine::UIManager::EndDebugWindow();
 }
 
 void Engine::World::AddObject( GameObject* obj )

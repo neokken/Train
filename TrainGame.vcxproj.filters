@@ -90,6 +90,8 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrainWalker\TrackWalker.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -166,6 +168,8 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrainWalker\TrackWalker.h" />
+    <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">

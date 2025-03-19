@@ -29,5 +29,6 @@ struct TrackSegment
 	TrackNodeID m_nodeA{TrackNodeID::Invalid};
 	TrackNodeID m_nodeB{TrackNodeID::Invalid};
 
+	float m_distance{0.f};
 	// later stuff will be added like, distance, curvature etc...
 };
