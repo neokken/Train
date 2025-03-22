@@ -3,7 +3,7 @@
 
 void TrackNode::AddConnection( const TrackSegmentID from, const TrackSegmentID to )
 {
-	m_validConnections[from].push_back(to);
+	if (m_validConnections[from].empty()) m_connectionLever[from] = 0;
 
-	if (!m_connectionLever.contains(from)) m_connectionLever[from] = 0;
+	m_validConnections[from].push_back(to);
 }
