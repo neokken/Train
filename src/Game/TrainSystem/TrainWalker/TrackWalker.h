@@ -9,7 +9,7 @@ public:
 	TrackWalker() = default;
 	void Init( const TrackManager* tm );
 
-	// returns true if moved the full m_distance
+	// returns true if moved the full
 	bool Move( float distance );
 
 	[[nodiscard]] const float& GetDistance() const { return m_distance; }

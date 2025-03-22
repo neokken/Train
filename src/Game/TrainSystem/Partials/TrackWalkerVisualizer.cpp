@@ -17,19 +17,17 @@ void TrackWalkerVisualizer::Update( const float deltaTime )
 
 void TrackWalkerVisualizer::Render( const Engine::Camera& camera, Surface& target )
 {
-	const float2 halfScale = m_transform.scale * 0.5f * 10.f; //10 is default scale for TrackWalkerVisualizer
+	const float2 halfScale = m_transform.scale * 0.5f * 10.f;
 
-	// Define the four corners of the box
 	const float2 topLeft = m_transform.position - halfScale;
 	const float2 topRight = m_transform.position + float2(halfScale.x, -halfScale.y);
 	const float2 bottomLeft = m_transform.position + float2(-halfScale.x, halfScale.y);
 	const float2 bottomRight = m_transform.position + halfScale;
 
-	// Draw the four edges
-	Engine::LineSegment::RenderWorldPos(camera, target, topLeft, topRight, m_color); // Top edge
-	Engine::LineSegment::RenderWorldPos(camera, target, topRight, bottomRight, m_color); // Right edge
-	Engine::LineSegment::RenderWorldPos(camera, target, bottomRight, bottomLeft, m_color); // Bottom edge
-	Engine::LineSegment::RenderWorldPos(camera, target, bottomLeft, topLeft, m_color); // Left edge
+	Engine::LineSegment::RenderWorldPos(camera, target, topLeft, topRight, m_color);
+	Engine::LineSegment::RenderWorldPos(camera, target, topRight, bottomRight, m_color);
+	Engine::LineSegment::RenderWorldPos(camera, target, bottomRight, bottomLeft, m_color);
+	Engine::LineSegment::RenderWorldPos(camera, target, bottomLeft, topLeft, m_color);
 }
 
 void TrackWalkerVisualizer::ImGuiDebugViewer()

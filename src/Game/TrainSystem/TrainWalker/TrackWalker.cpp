@@ -110,9 +110,9 @@ float2 TrackWalker::GetPosition() const
 
 bool TrackWalker::IsValid() const
 {
-	bool valid = m_trackManager->DoesSegmentExists(m_currentSegmentID);
-	valid &= m_distance <= m_trackManager->GetTrackSegment(m_currentSegmentID).m_distance;
-	valid &= m_distance >= 0.f;
+	bool valid = m_trackManager->DoesSegmentExists(m_currentSegmentID)
+		&& m_distance <= m_trackManager->GetTrackSegment(m_currentSegmentID).m_distance
+		&& m_distance >= 0.f;
 
 	return valid;
 }
