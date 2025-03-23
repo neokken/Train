@@ -7,6 +7,8 @@
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
 #include "Game/Buildings/Building.h"
+#include "Game/Buildings/Factory.h"
+
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "UI/UIManager.h"
@@ -25,16 +27,14 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	m_camera.SetResolution(int2(SCRWIDTH, SCRHEIGHT));
 	m_camera.SetZoomLevel(1.f);
 
-	m_grid.AddGrid(0x354f52, 25 /*, .7f*/);
-	m_grid.AddGrid(0x52796f, 100 /*, .33f*/);
+	m_grid.AddGrid(0x354f52, GRID_SIZE / 4);
+	m_grid.AddGrid(0x52796f, GRID_SIZE);
 
 	m_renderTarget = renderTarget;
 
 	m_trackDebugger.Init(inputManager, &m_trackManager);
 
-	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
-
-	AddObject(building);
+	AddObject(new Game::Factory(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)}));
 
 	// Rails
 	/*
@@ -45,28 +45,33 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	 *	going south there is a split where you can choose
 	 */
 
-	const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
-	const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
+	//const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
+	//const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
 
-	const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
-	const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
+	//const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
+	//const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
 
-	const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
-	const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
-	const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
+	//const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
+	//const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
+	//const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
 
-	m_trackManager.ConnectSegments(segmentAB, segmentAC);
-	m_trackManager.ConnectSegments(segmentAC, segmentAD);
+	//m_trackManager.ConnectSegments(segmentAB, segmentAC);
+	//m_trackManager.ConnectSegments(segmentAC, segmentAD);
 
-	//Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
+	////Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
 
-	TrackWalker tWalker;
-	tWalker.Init(&m_trackManager);
-	tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
+	//TrackWalker tWalker;
+	//tWalker.Init(&m_trackManager);
+	//tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
 
-	TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
+	//TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
 
-	AddObject(tmVis);
+	//AddObject(tmVis);
+
+	for (const auto& obj : m_objects)
+	{
+		obj->Start();
+	}
 }
 
 void Engine::World::Update( float deltaTime )
@@ -132,4 +137,9 @@ const Engine::Camera& Engine::World::GetCamera() const
 Surface* Engine::World::GetRenderTarget() const
 {
 	return m_renderTarget;
+}
+
+TrackNodeID Engine::World::CreateNode( const float2& position )
+{
+	return m_trackManager.CreateNode(position);
 }

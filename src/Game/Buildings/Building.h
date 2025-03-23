@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject/GameObject.h"
+#include "Game/TrainSystem/TrackSegment.h"
 
 namespace Game
 {
@@ -11,7 +12,10 @@ namespace Game
 		void Update( float deltaTime ) override;
 		void Render( const Engine::Camera& camera, Surface& target ) override;
 
-	private:
-		float m_time = 0.f;
+		void ImGuiDebugViewer() override;
+
+	protected:
+		void RegisterNode( float2 position );
+		std::vector<TrackNodeID> m_associatedNodes;
 	};
 }

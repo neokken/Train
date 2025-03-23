@@ -27,3 +27,5 @@ constexpr float ASPECT_RATIO = static_cast<float>(SCRWIDTH) / static_cast<float>
 #include "Helpers/Helpers.h"
 
 #include "Helpers/Logger.h"
+
+constexpr int GRID_SIZE = 100;

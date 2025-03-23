@@ -29,6 +29,9 @@ namespace Engine
 		const Camera& GetCamera() const;
 		Surface* GetRenderTarget() const;
 
+		// Proxy funcs to interact with managers
+		TrackNodeID CreateNode( const float2& position );
+
 	private:
 		std::vector<GameObject*> m_objects;
 

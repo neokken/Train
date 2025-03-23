@@ -14,7 +14,9 @@ namespace Engine
 		explicit GameObject( const Transform& transform );
 		virtual ~GameObject() = default;
 
+		// TODO: Remove virtual
 		virtual void Init( World* world );
+		virtual void Start();
 		virtual void Update( float deltaTime ) = 0;
 		virtual void Render( const Camera& camera, Surface& target ) = 0;
 

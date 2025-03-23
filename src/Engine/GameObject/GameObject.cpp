@@ -11,6 +11,10 @@ void Engine::GameObject::Init( World* world )
 	m_world = world;
 }
 
+void Engine::GameObject::Start()
+{
+}
+
 void Engine::GameObject::Destroy()
 {
 	m_destroy = true;
@@ -23,6 +27,5 @@ bool Engine::GameObject::MarkedForDestroy() const
 
 void Engine::GameObject::ImGuiDebugViewer()
 {
-	ImGui::Text("Default view text if ImGuiDebugViewer has not been implemented for child of GameObject");
-	ImGui::Text("If it is you! You are a lazy bum or something..");
+	ImGui::Text("Override <ImGuiDebugViewer> to display GameObject specific content.");
 }
