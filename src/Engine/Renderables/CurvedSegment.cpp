@@ -77,16 +77,16 @@ void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& d
 	DrawCircle(camera, drawSurface, 4, m_endMidPoint, 8.f, 0xff0080);
 }
 
-float2 Engine::CurvedSegment::GetPositionOnSegment( const float t )
+float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 {
-	float tLength = t * m_length;
+	const float tLength = t * m_length;
 	//This can probably be more optimized
 	for (int i = 0; i < m_segments; ++i)
 	{
 		if (tLength <= m_segmentLengths[i])
 		{
 			// We are in between segment i-1 and i
-			float part = (tLength - m_segmentLengths[i - 1]) / (m_segmentLengths[i] - m_segmentLengths[i - 1]);
+			const float part = (tLength - m_segmentLengths[i - 1]) / (m_segmentLengths[i] - m_segmentLengths[i - 1]);
 
 			float a = m_segmentLengths[i - 1] / m_length;
 
