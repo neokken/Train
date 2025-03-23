@@ -24,12 +24,20 @@ namespace Engine
 
 		void RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const;
 
+		/**
+		 * Get position along normalized curved track 
+		 * @param t how far along the path from 0 to 1
+		 * @return 
+		 */
+		float2 GetPositionOnSegment( float t );
+
 	private:
 		float2 m_lineStart{0.f};
 		float2 m_lineEnd{0.f};
 		float2 m_startMidPoint{0.f};
 		float2 m_endMidPoint{0.f};
-		float m_stepSize{1.f / 10.f};
+		int m_segments{10};
+		std::vector<float> m_segmentLengths;
 		float m_length{0.f};
 
 		uint m_color{0xffffffff};

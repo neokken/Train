@@ -7,7 +7,7 @@
 Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir,
                                       const float2& lEndDir, const float hardness, const uint color,
                                       const uint drawSteps )
-	: m_stepSize(1.f / static_cast<float>(drawSteps))
+	: m_segments(drawSteps)
 	  , m_color(color)
 {
 	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness);
@@ -29,9 +29,10 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 	m_endMidPoint = lEnd + eMidPointOffset * hardness;
 
 	float2 lastPoint = m_lineStart;
-	float length = 0;
-	float t = m_stepSize;
-	while (t <= 1.0001f)
+	float segmentLength = 0;
+	m_segmentLengths.clear();
+	float t = 0;
+	for (int i = 0; i < m_segments; ++i)
 	{
 		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
 		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
@@ -40,18 +41,19 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
 
 		const float2 cubic = lerp(square_SM, square_ME, t);
-		length += length(lastPoint, cubic);
+		segmentLength += length(lastPoint - cubic);
+		m_segmentLengths.push_back(segmentLength);
 		lastPoint = cubic;
-		t += m_stepSize;
+		t += 1.f / static_cast<float>(m_segments);
 	}
-	m_length = length;
+	m_length = segmentLength;
 }
 
 void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 {
 	float2 lastPoint = m_lineStart;
-	float t = m_stepSize;
-	while (t <= 1.0001f)
+	float t = 0;
+	for (int i = 0; i < m_segments; ++i)
 	{
 		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
 		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
@@ -63,7 +65,7 @@ void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 
 		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, cubic, m_color);
 		lastPoint = cubic;
-		t += m_stepSize;
+		t += 1.f / static_cast<float>(m_segments);
 	}
 }
 
@@ -73,6 +75,43 @@ void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& d
 	DrawCircle(camera, drawSurface, 10, m_lineEnd, 10.f, 0xff8080);
 	DrawCircle(camera, drawSurface, 4, m_startMidPoint, 8.f, 0x8000ff);
 	DrawCircle(camera, drawSurface, 4, m_endMidPoint, 8.f, 0xff0080);
+}
+
+float2 Engine::CurvedSegment::GetPositionOnSegment( const float t )
+{
+	float tLength = t * m_length;
+	//This can probably be more optimized
+	for (int i = 0; i < m_segments; ++i)
+	{
+		if (tLength <= m_segmentLengths[i])
+		{
+			// We are in between segment i-1 and i
+			float part = (tLength - m_segmentLengths[i - 1]) / (m_segmentLengths[i] - m_segmentLengths[i - 1]);
+
+			float a = m_segmentLengths[i - 1] / m_length;
+
+			float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
+			float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
+			float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
+			float2 square_SM = lerp(linear_SsM, linear_sMeM, a);
+			float2 square_ME = lerp(linear_sMeM, linear_eME, a);
+			const float2 segmentA = lerp(square_SM, square_ME, a);
+
+			a = m_segmentLengths[i] / m_length;
+
+			linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
+			linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
+			linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
+			square_SM = lerp(linear_SsM, linear_sMeM, a);
+			square_ME = lerp(linear_sMeM, linear_eME, a);
+			const float2 segmentB = lerp(square_SM, square_ME, a);
+
+			return lerp(segmentA, segmentB, part);
+
+		}
+	}
+	Logger::Error("t was not found on CurvedSegment");
+	return float2(0, 0);
 }
 
 void Engine::CurvedSegment::DrawCircle( const Camera& camera, Surface& targetSurface, const int segmentCount,
