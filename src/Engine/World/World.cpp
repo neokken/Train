@@ -45,11 +45,15 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	 *	going south there is a split where you can choose
 	 */
 
-	const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
-	                                                          float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
+	const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
+	                                                          float2(100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
 
-	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Empty, seg1,
-	                                                          float2(0.f, 200.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
+	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(-100.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
+	                                                          float2(0.f, 200.f), TrackDirection::Diagonal_Positive, TrackSegmentID::Invalid);
+
+	const TrackSegmentID seg3 = m_trackManager.BuildTrackPart(float2(-200.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
+	                                                          float2(-100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
+	//const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Empty, seg1,float2(0.f, 200.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
 	//const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
 	//const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
 	//

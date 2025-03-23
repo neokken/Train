@@ -108,7 +108,10 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		const TrackNode& a = m_trackManager->GetTrackNode(segment.nodeA);
 		const TrackNode& b = m_trackManager->GetTrackNode(segment.nodeB);
 
-		RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 0, color);
+		RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
+
+		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 10.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 10.f, 0xffffff);
 
 		//Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, b.nodePosition, color);
 	}
@@ -326,11 +329,11 @@ void TrackDebugger::RenderSegment( const Engine::Camera& camera, Surface& target
 	float2 startPoint = pointA;
 	float2 endPoint = {0};
 
-	const float segmentLength = 1.f / static_cast<float>(segmentCount);
+	const float segmentLength = 1.f / static_cast<float>(segmentCount + 1);
 
-	for (int i = 0; i < segmentCount; i++)
+	for (int i = 1; i <= segmentCount; i++)
 	{
-		endPoint = CurveCalculation(pointA, dirA, pointB, dirB, .5f, segmentLength * i);
+		endPoint = CurveCalculation(pointA, dirA, pointB, dirB, .5f, segmentLength * static_cast<float>(i));
 		Engine::LineSegment::RenderWorldPos(camera, targetSurface, startPoint, endPoint, color);
 		startPoint = endPoint;
 	}
@@ -369,7 +372,7 @@ float2 TrackDebugger::CurveCalculation( const float2& pointA, const float2& dirA
 {
 	const float2 sMidPointOffset = (pointB - pointA) * dirA;
 
-	const float2 eMidPointOffset = (pointA - pointB) * dirB;
+	const float2 eMidPointOffset = (pointB - pointA) * dirB;
 
 	const float2 startMidPoint = pointA + sMidPointOffset * hardness;
 	const float2 endMidPoint = pointB + eMidPointOffset * hardness;
