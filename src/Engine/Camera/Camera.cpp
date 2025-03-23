@@ -24,12 +24,12 @@ void Engine::Camera::Update( const float deltaTime )
 	if (m_inputManager->IsKeyDown(GLFW_KEY_A)) dir.x -= 1.f;
 	if (m_inputManager->IsKeyDown(GLFW_KEY_D)) dir.x += 1.f;
 
-	if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+	if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT) && !IsMouseOverUI())
 	{
 		m_mouseLocked = true;
 		m_lockedWorldMousePos = GetWorldPosition(m_inputManager->GetMousePos());
 	}
-	if (m_inputManager->IsMouseDown(GLFW_MOUSE_BUTTON_LEFT))
+	if (m_inputManager->IsMouseDown(GLFW_MOUSE_BUTTON_LEFT) && !IsMouseOverUI())
 	{
 		const float2 diff = m_lockedWorldMousePos - GetWorldPosition(m_inputManager->GetMousePos());
 		SetPosition(GetPosition() + diff);
@@ -41,7 +41,7 @@ void Engine::Camera::Update( const float deltaTime )
 
 	// Zooming
 	zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
-	if (zoomDir != 1.f)
+	if (zoomDir != 1.f && !IsMouseOverUI())
 	{
 		//Calculate positions before and after zoom to use as offset to zoom into the mouse location
 		const int2 mousePos = m_inputManager->GetMousePos();
