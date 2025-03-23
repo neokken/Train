@@ -45,28 +45,33 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	 *	going south there is a split where you can choose
 	 */
 
-	const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
-	const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
+	const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
+	                                                          float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
 
-	const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
-	const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
-
-	const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
-	const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
-	const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
-
-	m_trackManager.ConnectSegments(segmentAB, segmentAC);
-	m_trackManager.ConnectSegments(segmentAC, segmentAD);
-
-	//Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
-
-	TrackWalker tWalker;
-	tWalker.Init(&m_trackManager);
-	tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
-
-	TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
-
-	AddObject(tmVis);
+	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Empty, seg1,
+	                                                          float2(0.f, 200.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
+	//const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
+	//const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
+	//
+	//const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
+	//const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
+	//
+	//const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
+	//const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
+	//const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
+	//
+	//m_trackManager.ConnectSegments(segmentAB, segmentAC);
+	//m_trackManager.ConnectSegments(segmentAC, segmentAD);
+	//
+	////Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
+	//
+	//TrackWalker tWalker;
+	//tWalker.Init(&m_trackManager);
+	//tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
+	//
+	//TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
+	//
+	//AddObject(tmVis);
 }
 
 void Engine::World::Update( float deltaTime )

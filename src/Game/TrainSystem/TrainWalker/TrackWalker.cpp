@@ -30,12 +30,12 @@ bool TrackWalker::Move( const float distance )
 
 			const TrackSegment& nextSegement = m_trackManager->GetTrackSegment(nextSegementID);
 
-			if (currentSegment.m_nodeA == nextSegement.m_nodeB)
+			if (currentSegment.nodeA == nextSegement.nodeB)
 			{
 				remainingDistance += m_distance;
 
 				m_currentSegmentID = nextSegementID;
-				m_distance = m_trackManager->GetTrackSegment(m_currentSegmentID).m_distance;
+				m_distance = m_trackManager->GetTrackSegment(m_currentSegmentID).distance;
 			}
 			else
 			{
@@ -51,21 +51,21 @@ bool TrackWalker::Move( const float distance )
 			continue; // go next
 		}
 
-		if (goalPosition > currentSegment.m_distance)
+		if (goalPosition > currentSegment.distance)
 		{
 			const TrackSegmentID nextSegementID = m_trackManager->GetNextSegmentPositive(m_currentSegmentID);
 
 			if (nextSegementID == TrackSegmentID::Invalid)
 			{
-				m_distance = currentSegment.m_distance;
+				m_distance = currentSegment.distance;
 				return false;
 			}
 
 			const TrackSegment& nextSegement = m_trackManager->GetTrackSegment(nextSegementID);
 
-			if (currentSegment.m_nodeB == nextSegement.m_nodeA)
+			if (currentSegment.nodeB == nextSegement.nodeA)
 			{
-				remainingDistance -= currentSegment.m_distance - m_distance;
+				remainingDistance -= currentSegment.distance - m_distance;
 
 				m_currentSegmentID = nextSegementID;
 				m_distance = 0.f;
@@ -73,10 +73,10 @@ bool TrackWalker::Move( const float distance )
 			else
 			{
 				// track is made in the flipped direction
-				remainingDistance -= currentSegment.m_distance - m_distance;
+				remainingDistance -= currentSegment.distance - m_distance;
 				m_currentSegmentID = nextSegementID;
 
-				m_distance = m_trackManager->GetTrackSegment(m_currentSegmentID).m_distance;
+				m_distance = m_trackManager->GetTrackSegment(m_currentSegmentID).distance;
 				m_flipMoveDir = !m_flipMoveDir;
 				remainingDistance *= -1.f;
 			}
@@ -102,16 +102,16 @@ float2 TrackWalker::GetPosition() const
 
 	const TrackSegment& currentSegment = m_trackManager->GetTrackSegment(m_currentSegmentID);
 
-	const TrackNode& nodeA = m_trackManager->GetTrackNode(currentSegment.m_nodeA);
-	const TrackNode& nodeB = m_trackManager->GetTrackNode(currentSegment.m_nodeB);
+	const TrackNode& nodeA = m_trackManager->GetTrackNode(currentSegment.nodeA);
+	const TrackNode& nodeB = m_trackManager->GetTrackNode(currentSegment.nodeB);
 
-	return lerp(nodeA.m_nodePosition, nodeB.m_nodePosition, m_distance / currentSegment.m_distance);
+	return lerp(nodeA.nodePosition, nodeB.nodePosition, m_distance / currentSegment.distance);
 }
 
 bool TrackWalker::IsValid() const
 {
 	bool valid = m_trackManager->DoesSegmentExists(m_currentSegmentID)
-		&& m_distance <= m_trackManager->GetTrackSegment(m_currentSegmentID).m_distance
+		&& m_distance <= m_trackManager->GetTrackSegment(m_currentSegmentID).distance
 		&& m_distance >= 0.f;
 
 	return valid;

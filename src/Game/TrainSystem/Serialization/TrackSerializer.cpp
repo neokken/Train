@@ -33,22 +33,22 @@ void from_json( const nlohmann::json& j, TrackSegmentID& id )
 void to_json( nlohmann::json& j, const TrackNode& node )
 {
 	j = json{
-		{"connectionLever", node.m_connectionLever},
-		{"validConnections", node.m_validConnections},
-		{"nodePosition", {node.m_nodePosition.x, node.m_nodePosition.y}},
-		{"id", node.m_id}
+		{"connectionLever", node.connectionLever},
+		{"validConnections", node.validConnections},
+		{"nodePosition", {node.nodePosition.x, node.nodePosition.y}},
+		{"id", node.id}
 	};
 }
 
 void from_json( const nlohmann::json& j, TrackNode& node )
 {
-	node.m_connectionLever = j.at("connectionLever").get<std::unordered_map<TrackSegmentID, int>>();
-	node.m_validConnections = j.at("validConnections").get<std::unordered_map<TrackSegmentID, std::vector<TrackSegmentID>>>();
+	node.connectionLever = j.at("connectionLever").get<std::unordered_map<TrackSegmentID, int>>();
+	node.validConnections = j.at("validConnections").get<std::unordered_map<TrackSegmentID, std::vector<TrackSegmentID>>>();
 
 	std::vector<float> pos = j.at("nodePosition").get<std::vector<float>>();
-	node.m_nodePosition = {pos[0], pos[1]};
+	node.nodePosition = {pos[0], pos[1]};
 
-	node.m_id = j.at("id").get<TrackNodeID>();
+	node.id = j.at("id").get<TrackNodeID>();
 }
 
 // ** Track Segment Serialization **
@@ -56,17 +56,17 @@ void from_json( const nlohmann::json& j, TrackNode& node )
 void to_json( nlohmann::json& j, const TrackSegment& segment )
 {
 	j = json{
-		{"id", segment.m_id},
-		{"nodeA", segment.m_nodeA},
-		{"nodeB", segment.m_nodeB},
-		{"distance", segment.m_distance}
+		{"id", segment.id},
+		{"nodeA", segment.nodeA},
+		{"nodeB", segment.nodeB},
+		{"distance", segment.distance}
 	};
 }
 
 void from_json( const nlohmann::json& j, TrackSegment& segment )
 {
-	segment.m_id = j.at("id").get<TrackSegmentID>();
-	segment.m_nodeA = j.at("nodeA").get<TrackNodeID>();
-	segment.m_nodeB = j.at("nodeB").get<TrackNodeID>();
-	segment.m_distance = j.at("distance").get<float>();
+	segment.id = j.at("id").get<TrackSegmentID>();
+	segment.nodeA = j.at("nodeA").get<TrackNodeID>();
+	segment.nodeB = j.at("nodeB").get<TrackNodeID>();
+	segment.distance = j.at("distance").get<float>();
 }

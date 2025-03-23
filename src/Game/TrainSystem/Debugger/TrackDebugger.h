@@ -50,8 +50,12 @@ private:
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
 	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
 
+	static void RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, int segmentCount, uint color );
+
 	// TODO: helper math file instead of here
 	static float SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B );
+
+	static float2 CurveCalculation( const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, float hardness, float t );
 
 private:
 	TrackManager* m_trackManager{nullptr};

@@ -9,39 +9,41 @@ TrackNodeID TrackManager::CreateNode( const float2& position )
 	const TrackNodeID newID = m_nodeIDGenerator.GenerateID();
 
 	TrackNode newNode;
-	newNode.m_id = newID;
-	newNode.m_nodePosition = position;
+	newNode.id = newID;
+	newNode.nodePosition = position;
 
 	m_nodes[newID] = newNode;
 	return newID;
 }
 
-TrackSegmentID TrackManager::CreateSegment( const TrackNodeID nodeA_ID, const TrackNodeID nodeB_ID )
+TrackSegmentID TrackManager::CreateSegment( TrackNodeID nodeA_ID, const float2& nodeA_direction, TrackNodeID nodeB_ID, const float2& nodeB_direction )
 {
 	const TrackSegmentID newID = m_segmentIDGenerator.GenerateID();
 
 	TrackSegment newSegment;
-	newSegment.m_id = newID;
-	newSegment.m_nodeA = nodeA_ID;
-	newSegment.m_nodeB = nodeB_ID;
+	newSegment.id = newID;
+	newSegment.nodeA = nodeA_ID;
+	newSegment.nodeB = nodeB_ID;
+	newSegment.nodeA_Direction = nodeA_direction;
+	newSegment.nodeB_Direction = nodeB_direction;
 
 	TrackNode& nodeA = GetMutableTrackNode(nodeA_ID);
 	TrackNode& nodeB = GetMutableTrackNode(nodeB_ID);
 
-	if (!nodeA.m_connectionLever.contains(newID))
+	if (!nodeA.connectionLever.contains(newID))
 	{
-		nodeA.m_connectionLever[newID] = -1;
-		nodeA.m_validConnections[newID];
+		nodeA.connectionLever[newID] = -1;
+		nodeA.validConnections[newID];
 	}
 
-	if (!nodeB.m_connectionLever.contains(newID))
+	if (!nodeB.connectionLever.contains(newID))
 	{
-		nodeB.m_connectionLever[newID] = -1;
-		nodeB.m_validConnections[newID];
+		nodeB.connectionLever[newID] = -1;
+		nodeB.validConnections[newID];
 	}
 
 	// TODO: later this is will be replaced with a curved distance calculations
-	newSegment.m_distance = length(nodeA.m_nodePosition - nodeB.m_nodePosition);
+	newSegment.distance = length(nodeA.nodePosition - nodeB.nodePosition);
 
 	m_segments[newID] = newSegment;
 	return newID;
@@ -52,10 +54,10 @@ void TrackManager::ConnectSegments( const TrackSegmentID segmentA_ID, const Trac
 	const TrackSegment& segmentA = GetTrackSegment(segmentA_ID);
 	const TrackSegment& segmentB = GetTrackSegment(segmentB_ID);
 
-	const TrackNodeID segmentA_nodeA = segmentA.m_nodeA;
-	const TrackNodeID segmentA_nodeB = segmentA.m_nodeB;
-	const TrackNodeID segmentB_nodeA = segmentB.m_nodeA;
-	const TrackNodeID segmentB_nodeB = segmentB.m_nodeB;
+	const TrackNodeID segmentA_nodeA = segmentA.nodeA;
+	const TrackNodeID segmentA_nodeB = segmentA.nodeB;
+	const TrackNodeID segmentB_nodeA = segmentB.nodeA;
+	const TrackNodeID segmentB_nodeB = segmentB.nodeB;
 
 	TrackNodeID connectedNodeID = TrackNodeID::Invalid;
 
@@ -70,7 +72,8 @@ void TrackManager::ConnectSegments( const TrackSegmentID segmentA_ID, const Trac
 
 	if (connectedNodeID == TrackNodeID::Invalid)
 	{
-		Engine::Logger::Warn("TrackSegments don't share a common node.");
+		Engine::Logger::Warn("TrackSegments {} and {}, don't share a common node.", static_cast<int>(segmentA_ID), static_cast<int>(segmentB_ID));
+		return;
 	}
 
 	TrackNode& connectedNode = GetMutableTrackNode(connectedNodeID);
@@ -80,6 +83,193 @@ void TrackManager::ConnectSegments( const TrackSegmentID segmentA_ID, const Trac
 	{
 		connectedNode.AddConnection(segmentB_ID, segmentA_ID);
 	}
+}
+
+TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const TrackDirection nodeA_direction, const TrackSegmentID nodeA_connection, const float2& nodeB_Position, const TrackDirection nodeB_direction, const TrackSegmentID nodeB_connection )
+{
+	if (!IsValidTrackPart(nodeA_Position, nodeA_direction, nodeA_connection, nodeB_Position, nodeB_direction, nodeB_connection))
+	{
+		Engine::Logger::Warn("Could not place track part, since its not a valid connection.");
+		return TrackSegmentID::Invalid;
+	}
+
+	TrackNodeID nodeA_ID = GetNodeByPosition(nodeA_Position);
+	TrackNodeID nodeB_ID = GetNodeByPosition(nodeB_Position);
+
+	float2 nodeA_DirectionFloat{0.f};
+	float2 nodeB_DirectionFloat{0.f};
+
+	// create nodes if they don't exist yet
+
+	if (nodeA_ID == TrackNodeID::Invalid)
+	{
+		nodeA_ID = CreateNode(nodeA_Position);
+	}
+
+	if (nodeB_ID == TrackNodeID::Invalid)
+	{
+		nodeB_ID = CreateNode(nodeB_Position);
+	}
+
+	// get/calculate direction
+
+	if (nodeA_direction != TrackDirection::Empty)
+	{
+		// given a direction
+		if (nodeA_direction == TrackDirection::Horizontal)
+		{
+			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
+		}
+		else if (nodeA_direction == TrackDirection::Vertical)
+		{
+			nodeA_DirectionFloat.y = nodeA_Position.y < nodeB_Position.y ? 1.f : -1.f;
+		}
+		else if (nodeA_direction == TrackDirection::Diagonal_Negative)
+		{
+			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
+			nodeA_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
+		}
+		else
+		{
+			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
+			nodeA_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
+		}
+	}
+	else
+	{
+		// get it from connected segment
+		// assumes it is correct since is valid should've checked this
+
+		const TrackSegment& nodeA_ConnectingSegment = GetTrackSegment(nodeA_connection);
+
+		if (nodeA_ConnectingSegment.nodeA == nodeA_ID)
+		{
+			nodeA_DirectionFloat = -nodeA_ConnectingSegment.nodeA_Direction;
+		}
+		else
+		{
+			nodeA_DirectionFloat = -nodeA_ConnectingSegment.nodeB_Direction;
+		}
+	}
+
+	if (nodeB_direction != TrackDirection::Empty)
+	{
+		// given a direction
+		if (nodeB_direction == TrackDirection::Horizontal)
+		{
+			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
+		}
+		else if (nodeB_direction == TrackDirection::Vertical)
+		{
+			nodeB_DirectionFloat.y = nodeA_Position.y < nodeB_Position.y ? -1.f : 1.f;
+		}
+		else if (nodeB_direction == TrackDirection::Diagonal_Negative)
+		{
+			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
+			nodeB_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
+		}
+		else
+		{
+			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
+			nodeB_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
+		}
+	}
+	else
+	{
+		// get it from connected segment
+		// assumes it is correct since is valid should've checked this
+
+		const TrackSegment& nodeB_ConnectingSegment = GetTrackSegment(nodeB_connection);
+
+		if (nodeB_ConnectingSegment.nodeA == nodeA_ID)
+		{
+			nodeA_DirectionFloat = -nodeB_ConnectingSegment.nodeA_Direction;
+		}
+		else
+		{
+			nodeA_DirectionFloat = -nodeB_ConnectingSegment.nodeB_Direction;
+		}
+	}
+
+	const TrackSegmentID newSegment = CreateSegment(nodeA_ID, nodeA_DirectionFloat, nodeB_ID, nodeB_DirectionFloat);
+
+	if (nodeA_connection != TrackSegmentID::Invalid)
+	{
+		ConnectSegments(newSegment, nodeA_connection);
+	}
+
+	if (nodeB_connection != TrackSegmentID::Invalid)
+	{
+		ConnectSegments(newSegment, nodeB_connection);
+	}
+
+	return newSegment;
+}
+
+bool TrackManager::IsValidTrackPart( const float2& nodeA_Position, TrackDirection nodeA_direction, TrackSegmentID nodeA_connection, const float2& nodeB_Position, TrackDirection nodeB_direction, TrackSegmentID nodeB_connection )
+{
+	if (nodeA_direction == TrackDirection::Empty && nodeA_connection == TrackSegmentID::Invalid)
+	{
+		return false;
+	}
+
+	if (nodeB_direction == TrackDirection::Empty && nodeB_connection == TrackSegmentID::Invalid)
+	{
+		return false;
+	}
+
+	TrackNodeID nodeA_ID = GetNodeByPosition(nodeA_Position);
+	TrackNodeID nodeB_ID = GetNodeByPosition(nodeB_Position);
+
+	if (nodeA_ID == TrackNodeID::Invalid && (nodeA_connection != TrackSegmentID::Invalid || nodeA_direction == TrackDirection::Empty))
+	{
+		// it there is no node at that position how can you connected it to a previous segment
+		return false;
+	}
+
+	if (nodeB_ID == TrackNodeID::Invalid && (nodeB_connection != TrackSegmentID::Invalid || nodeB_direction == TrackDirection::Empty))
+	{
+		// it there is no node at that position how can you connected it to a previous segment
+		return false;
+	}
+
+	if (nodeA_ID != TrackNodeID::Invalid && nodeA_connection != TrackSegmentID::Invalid)
+	{
+		const TrackNode& nodeA = GetTrackNode(nodeA_ID);
+
+		if (!nodeA.connectionLever.contains(nodeA_connection))
+		{
+			return false;
+		}
+	}
+
+	if (nodeB_ID != TrackNodeID::Invalid && nodeB_connection != TrackSegmentID::Invalid)
+	{
+		const TrackNode& nodeB = GetTrackNode(nodeB_ID);
+
+		if (!nodeB.connectionLever.contains(nodeB_connection))
+		{
+			return false;
+		}
+	}
+
+	// TODO: long not finished
+	// check for sharp corners and stuff liek that
+
+	return true;
+}
+
+TrackNodeID TrackManager::GetNodeByPosition( const float2& position, float maxDifferance ) const
+{
+	const float maxDiffSQ = maxDifferance * maxDifferance;
+
+	for (const auto& node : std::views::values(m_nodes))
+	{
+		if (sqrLength(node.nodePosition - position) < maxDiffSQ)
+			return node.id;
+	}
+
+	return TrackNodeID::Invalid;
 }
 
 bool TrackManager::DoesNodeExists( const TrackNodeID id ) const
@@ -118,23 +308,23 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 TrackSegmentID TrackManager::GetNextSegmentPositive( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
-	const TrackNode node = GetTrackNode(segment.m_nodeB);
+	const TrackNode node = GetTrackNode(segment.nodeB);
 
-	const int connectionDir = node.m_connectionLever.at(id);
+	const int connectionDir = node.connectionLever.at(id);
 	if (connectionDir == -1) return TrackSegmentID::Invalid;
 
-	return node.m_validConnections.at(id).at(connectionDir);
+	return node.validConnections.at(id).at(connectionDir);
 }
 
 TrackSegmentID TrackManager::GetNextSegmentNegative( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
-	const TrackNode node = GetTrackNode(segment.m_nodeA);
+	const TrackNode node = GetTrackNode(segment.nodeA);
 
-	const int connectionDir = node.m_connectionLever.at(id);
+	const int connectionDir = node.connectionLever.at(id);
 	if (connectionDir == -1) return TrackSegmentID::Invalid;
 
-	return node.m_validConnections.at(id).at(connectionDir);
+	return node.validConnections.at(id).at(connectionDir);
 }
 
 nlohmann::json TrackManager::SerializeData() const
