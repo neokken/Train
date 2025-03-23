@@ -2,6 +2,8 @@
 
 namespace Engine
 {
+	bool IsMouseOverUI();
+
 	struct ScopedTimer
 	{
 		Timer t;

@@ -11,20 +11,22 @@ namespace Engine
 	{
 	public:
 		GameObject() = default;
-		GameObject( Transform transform );
+		explicit GameObject( const Transform& transform );
 		virtual ~GameObject() = default;
 
-		void Init( World* world );
+		virtual void Init( World* world );
 		virtual void Update( float deltaTime ) = 0;
 		virtual void Render( const Camera& camera, Surface& target ) = 0;
 
 		void Destroy();
-		bool MarkedForDestroy() const;
+		[[nodiscard]] bool MarkedForDestroy() const;
+
+		virtual void ImGuiDebugViewer();
 
 	protected:
-		Transform m_transform;
-		bool m_destroy = false;
+		Transform m_transform{};
 
-		Engine::World* m_world;
+		Engine::World* m_world{nullptr};
+		bool m_destroy{false};
 	};
 }

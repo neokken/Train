@@ -4,7 +4,7 @@ namespace Engine
 {
 	struct Transform
 	{
-		float2 position;
-		float2 scale;
+		float2 position{0.f};
+		float2 scale{1.f};
 	};
 }

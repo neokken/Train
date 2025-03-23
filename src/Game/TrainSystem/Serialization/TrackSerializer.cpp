@@ -58,7 +58,8 @@ void to_json( nlohmann::json& j, const TrackSegment& segment )
 	j = json{
 		{"id", segment.m_id},
 		{"nodeA", segment.m_nodeA},
-		{"nodeB", segment.m_nodeB}
+		{"nodeB", segment.m_nodeB},
+		{"distance", segment.m_distance}
 	};
 }
 
@@ -67,4 +68,5 @@ void from_json( const nlohmann::json& j, TrackSegment& segment )
 	segment.m_id = j.at("id").get<TrackSegmentID>();
 	segment.m_nodeA = j.at("nodeA").get<TrackNodeID>();
 	segment.m_nodeB = j.at("nodeB").get<TrackNodeID>();
+	segment.m_distance = j.at("distance").get<float>();
 }
