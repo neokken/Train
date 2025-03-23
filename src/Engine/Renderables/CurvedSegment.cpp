@@ -53,7 +53,7 @@ void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 {
 	float2 lastPoint = m_lineStart;
 	float t = 0;
-	for (int i = 0; i < m_segments; ++i)
+	for (int i = 0; i <= m_segments; ++i)
 	{
 		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
 		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
@@ -112,7 +112,7 @@ float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 
 		}
 	}
-	Logger::Error("t was not found on CurvedSegment");
+	Logger::Error("t of {} was not found on CurvedSegment", t);
 	return float2(0, 0);
 }
 
