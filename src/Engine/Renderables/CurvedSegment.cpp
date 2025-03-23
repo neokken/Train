@@ -79,8 +79,10 @@ void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& d
 
 float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 {
-	const float tLength = t * m_length;
+	float tLength = t * m_length;
+	if (tLength == 0) tLength = 0.001f;
 	//This can probably be more optimized
+	
 	for (int i = 0; i < m_segments; ++i)
 	{
 		if (tLength <= m_segmentLengths[i])

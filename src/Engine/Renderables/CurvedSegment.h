@@ -29,7 +29,7 @@ namespace Engine
 		 * @param t how far along the path from 0 to 1
 		 * @return 
 		 */
-		float2 GetPositionOnSegment( float t );
+		float2 GetPositionOnSegment( float t ) const;
 
 	private:
 		float2 m_lineStart{0.f};
