@@ -27,6 +27,24 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 
 	const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
 	m_endMidPoint = lEnd + eMidPointOffset * hardness;
+
+	float2 lastPoint = m_lineStart;
+	float length = 0;
+	float t = m_stepSize;
+	while (t <= 1.0001f)
+	{
+		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
+		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
+		float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, t);
+		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
+		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
+
+		const float2 cubic = lerp(square_SM, square_ME, t);
+		length += length(lastPoint, cubic);
+		lastPoint = cubic;
+		t += m_stepSize;
+	}
+	m_length = length;
 }
 
 void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )

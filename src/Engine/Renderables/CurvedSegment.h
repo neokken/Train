@@ -30,6 +30,8 @@ namespace Engine
 		float2 m_startMidPoint{0.f};
 		float2 m_endMidPoint{0.f};
 		float m_stepSize{1.f / 10.f};
+		float m_length{0.f};
+
 		uint m_color{0xffffffff};
 		static void DrawCircle( const Camera& camera, Surface& targetSurface, int segmentCount, const float2& center,
 		                        float circleSize, uint color );
