@@ -30,13 +30,7 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 	float t = 0;
 	for (int i = 0; i < m_segments; ++i)
 	{
-		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
-		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
-		float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, t);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
-
-		const float2 cubic = lerp(square_SM, square_ME, t);
+		const float2 cubic = CubicBezier(m_lineStart, m_startMidPoint, m_endMidPoint, m_lineEnd, t);
 		segmentLength += length(lastPoint - cubic);
 		m_segmentLengths.push_back(segmentLength);
 		lastPoint = cubic;
@@ -51,13 +45,7 @@ void Engine::CurvedSegment::Render( const Camera& camera, Surface& drawSurface )
 	float t = 0;
 	for (int i = 0; i <= m_segments; ++i)
 	{
-		float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, t);
-		float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, t);
-		float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, t);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
-
-		const float2 cubic = lerp(square_SM, square_ME, t);
+		const float2 cubic = CubicBezier(m_lineStart, m_startMidPoint, m_endMidPoint, m_lineEnd, t);
 
 		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, cubic, m_color);
 		lastPoint = cubic;
@@ -74,13 +62,7 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 	float t = 0;
 	for (uint i = 0; i <= segments; ++i)
 	{
-		float2 linear_SsM = lerp(lStart, startMidPoint, t);
-		float2 linear_sMeM = lerp(startMidPoint, endMidPoint, t);
-		float2 linear_eME = lerp(endMidPoint, lEnd, t);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
-
-		const float2 cubic = lerp(square_SM, square_ME, t);
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
 
 		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, cubic, color);
 		lastPoint = cubic;
@@ -99,13 +81,8 @@ float Engine::CurvedSegment::GetSegmentLength( const float2& lStart, const float
 	float t = 0;
 	for (uint i = 0; i < segments; ++i)
 	{
-		float2 linear_SsM = lerp(lStart, startMidPoint, t);
-		float2 linear_sMeM = lerp(startMidPoint, endMidPoint, t);
-		float2 linear_eME = lerp(endMidPoint, lEnd, t);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
 
-		const float2 cubic = lerp(square_SM, square_ME, t);
 		segmentLength += length(lastPoint - cubic);
 		lastPoint = cubic;
 		t += 1.f / static_cast<float>(segments);
@@ -124,14 +101,7 @@ float Engine::CurvedSegment::RenderWorldPosAndGetLength( const Camera& camera, S
 	float t = 0;
 	for (uint i = 0; i <= segments; ++i)
 	{
-		float2 linear_SsM = lerp(lStart, startMidPoint, t);
-		float2 linear_sMeM = lerp(startMidPoint, endMidPoint, t);
-		float2 linear_eME = lerp(endMidPoint, lEnd, t);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, t);
-
-		const float2 cubic = lerp(square_SM, square_ME, t);
-		segmentLength += length(lastPoint - cubic);
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
 
 		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, cubic, color);
 
@@ -153,13 +123,7 @@ float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, const f
 	float time = 0;
 	for (uint i = 0; i < segments; ++i)
 	{
-		float2 linear_SsM = lerp(lStart, startMidPoint, time);
-		float2 linear_sMeM = lerp(startMidPoint, endMidPoint, time);
-		float2 linear_eME = lerp(endMidPoint, lEnd, time);
-		float2 square_SM = lerp(linear_SsM, linear_sMeM, time);
-		float2 square_ME = lerp(linear_sMeM, linear_eME, time);
-
-		const float2 cubic = lerp(square_SM, square_ME, time);
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, time);
 		segmentLength += length(lastPoint - cubic);
 		segmentLengths.push_back(segmentLength);
 		lastPoint = cubic;
@@ -178,22 +142,10 @@ float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, const f
 			const float part = (tLength - segmentLengths[i - 1]) / (segmentLengths[i] - segmentLengths[i - 1]);
 
 			float a = segmentLengths[i - 1] / segmentLength;
-
-			float2 linear_SsM = lerp(lStart, startMidPoint, a);
-			float2 linear_sMeM = lerp(startMidPoint, endMidPoint, a);
-			float2 linear_eME = lerp(endMidPoint, lEnd, a);
-			float2 square_SM = lerp(linear_SsM, linear_sMeM, a);
-			float2 square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentA = lerp(square_SM, square_ME, a);
+			const float2 segmentA = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, a);
 
 			a = segmentLengths[i] / segmentLength;
-
-			linear_SsM = lerp(lStart, startMidPoint, a);
-			linear_sMeM = lerp(startMidPoint, endMidPoint, a);
-			linear_eME = lerp(endMidPoint, lEnd, a);
-			square_SM = lerp(linear_SsM, linear_sMeM, a);
-			square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentB = lerp(square_SM, square_ME, a);
+			const float2 segmentB = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, a);
 
 			return lerp(segmentA, segmentB, part);
 		}
@@ -225,22 +177,10 @@ float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 			const float part = (tLength - m_segmentLengths[i - 1]) / (m_segmentLengths[i] - m_segmentLengths[i - 1]);
 
 			float a = m_segmentLengths[i - 1] / m_length;
-
-			float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
-			float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
-			float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
-			float2 square_SM = lerp(linear_SsM, linear_sMeM, a);
-			float2 square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentA = lerp(square_SM, square_ME, a);
+			const float2 segmentA = CubicBezier(m_lineStart, m_startMidPoint, m_endMidPoint, m_lineEnd, a);
 
 			a = m_segmentLengths[i] / m_length;
-
-			linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
-			linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
-			linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
-			square_SM = lerp(linear_SsM, linear_sMeM, a);
-			square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentB = lerp(square_SM, square_ME, a);
+			const float2 segmentB = CubicBezier(m_lineStart, m_startMidPoint, m_endMidPoint, m_lineEnd, a);
 
 			return lerp(segmentA, segmentB, part);
 		}
