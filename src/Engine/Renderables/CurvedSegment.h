@@ -67,7 +67,6 @@ namespace Engine
 		float2 m_lineEnd{0.f};
 		float2 m_startMidPoint{0.f};
 		float2 m_endMidPoint{0.f};
-		float2 intersectionDEBUG{0.f};
 		int m_segments{10};
 		std::vector<float> m_segmentLengths;
 		float m_length{0.f};
