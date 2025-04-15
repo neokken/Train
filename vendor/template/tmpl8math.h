@@ -1027,3 +1027,23 @@ inline bool badfloat3( const float3 v )
 {
 	return badfloat( v.x + v.y + v.z );
 }
+
+/**
+ * Calculate a point on a cubic bezier curve
+ * @param x1 Start
+ * @param x2 First midpoint, controls curve
+ * @param x3 Second midpoint, controls curve
+ * @param x4 End
+ * @param t distance along curve [0-1]
+ * @return point on curve
+ */
+inline float2 CubicBezier( const float2& x1, const float2& x2, const float2& x3, const float2& x4, const float t )
+{
+	float2 linear_x1x2 = lerp(x1, x2, t);
+	float2 linear_x2x3 = lerp(x2, x3, t);
+	float2 linear_x3x4 = lerp(x3, x4, t);
+	float2 square_x12x23 = lerp(linear_x1x2, linear_x2x3, t);
+	float2 square_x23x34 = lerp(linear_x2x3, linear_x3x4, t);
+
+	return lerp(square_x12x23, square_x23x34, t);
+}
