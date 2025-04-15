@@ -115,25 +115,7 @@ TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const
 
 	if (nodeA_direction != TrackDirection::Empty)
 	{
-		// given a direction
-		if (nodeA_direction == TrackDirection::Horizontal)
-		{
-			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
-		}
-		else if (nodeA_direction == TrackDirection::Vertical)
-		{
-			nodeA_DirectionFloat.y = nodeA_Position.y < nodeB_Position.y ? 1.f : -1.f;
-		}
-		else if (nodeA_direction == TrackDirection::Diagonal_Negative)
-		{
-			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
-			nodeA_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
-		}
-		else
-		{
-			nodeA_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
-			nodeA_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
-		}
+		nodeA_DirectionFloat = toFloat2(nodeA_direction);
 	}
 	else
 	{
@@ -154,25 +136,7 @@ TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const
 
 	if (nodeB_direction != TrackDirection::Empty)
 	{
-		// given a direction
-		if (nodeB_direction == TrackDirection::Horizontal)
-		{
-			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
-		}
-		else if (nodeB_direction == TrackDirection::Vertical)
-		{
-			nodeB_DirectionFloat.y = nodeA_Position.y < nodeB_Position.y ? -1.f : 1.f;
-		}
-		else if (nodeB_direction == TrackDirection::Diagonal_Negative)
-		{
-			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
-			nodeB_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? 1.f : -1.f;
-		}
-		else
-		{
-			nodeB_DirectionFloat.x = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
-			nodeB_DirectionFloat.y = nodeA_Position.x < nodeB_Position.x ? -1.f : 1.f;
-		}
+		nodeB_DirectionFloat = -toFloat2(nodeB_direction);
 	}
 	else
 	{
@@ -183,11 +147,11 @@ TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const
 
 		if (nodeB_ConnectingSegment.nodeA == nodeA_ID)
 		{
-			nodeA_DirectionFloat = -nodeB_ConnectingSegment.nodeA_Direction;
+			nodeB_DirectionFloat = -nodeB_ConnectingSegment.nodeA_Direction;
 		}
 		else
 		{
-			nodeA_DirectionFloat = -nodeB_ConnectingSegment.nodeB_Direction;
+			nodeB_DirectionFloat = -nodeB_ConnectingSegment.nodeB_Direction;
 		}
 	}
 

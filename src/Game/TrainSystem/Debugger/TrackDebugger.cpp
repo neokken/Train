@@ -5,6 +5,7 @@
 #include "UI/UIManager.h"
 #include "Camera/Camera.h"
 #include "Renderables/Circle.h"
+#include "Renderables/CurvedSegment.h"
 #include "Renderables/LineSegment.h"
 
 void TrackDebugger::Init( Engine::InputManager* inputManager, TrackManager* trackManager )
@@ -50,7 +51,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
 		const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
 
-		if (SQRDistancePointToSegment(worldPosMouse, nodeA.nodePosition, nodeB.nodePosition) < SEGMENT_SELECTION_DIST_SQ)
+		if (SQRDistancePointToSegment(worldPosMouse, segment) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.id;
 			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
@@ -110,10 +111,8 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 
 		RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
 
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 10.f, 0xffffff);
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 10.f, 0xffffff);
-
-		//Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, b.nodePosition, color);
+		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
 	}
 }
 
@@ -294,6 +293,16 @@ void TrackDebugger::UI() const
 	Engine::UIManager::EndDebugWindow();
 }
 
+float TrackDebugger::SQRDistancePointToSegment( float2 position, const TrackSegment& segment )
+{
+	const float2 nodeA_pos = m_trackManager->GetTrackNode(segment.nodeA).nodePosition;
+	const float2 nodeB_pos = m_trackManager->GetTrackNode(segment.nodeB).nodePosition;
+
+	Engine::CurvedSegment curve(nodeA_pos, nodeB_pos, segment.nodeA_Direction, segment.nodeB_Direction, .5f, 0xffffff);
+
+	return sqrLength(curve.GetClosestPoint(position) - position);
+}
+
 std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const
 {
 	std::vector<TrackSegmentID> result;
@@ -326,62 +335,12 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 
 void TrackDebugger::RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, const int segmentCount, const uint color )
 {
-	float2 startPoint = pointA;
-	float2 endPoint = {0};
+	const float2 pointA_left = pointA + float2(-dirA.y, dirA.x) * .75f;
+	const float2 pointA_right = pointA + float2(dirA.y, dirA.x) * .75f;
 
-	const float segmentLength = 1.f / static_cast<float>(segmentCount + 1);
+	const float2 pointB_left = pointB + float2(dirB.y, -dirB.x) * .75f;
+	const float2 pointB_right = pointB + float2(-dirB.y, dirB.x) * .75f;
 
-	for (int i = 1; i <= segmentCount; i++)
-	{
-		endPoint = CurveCalculation(pointA, dirA, pointB, dirB, .5f, segmentLength * static_cast<float>(i));
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, startPoint, endPoint, color);
-		startPoint = endPoint;
-	}
-
-	endPoint = pointB;
-
-	Engine::LineSegment::RenderWorldPos(camera, targetSurface, startPoint, endPoint, color);
-}
-
-float TrackDebugger::SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B )
-{
-	// thanks chatgpt for this code...
-
-	const float2 AB = B - A;
-	const float2 AP = point - A;
-
-	const float AB_lengthSq = sqrLength(AB);
-	if (AB_lengthSq == 0.0f)
-	{
-		// A and B are the same point
-		return sqrLength(AP);
-	}
-
-	// Project point onto the line (parametric t)
-	float t = dot(AP, AB) / AB_lengthSq;
-	t = std::clamp(t, 0.0f, 1.0f); // Clamping t to stay within segment
-
-	// Find the closest point on the segment
-	const float2 closestPoint = {A.x + t * AB.x, A.y + t * AB.y};
-
-	// Compute distance from point to the closest point
-	return sqrLength(point - closestPoint);
-}
-
-float2 TrackDebugger::CurveCalculation( const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, const float hardness, const float t )
-{
-	const float2 sMidPointOffset = (pointB - pointA) * dirA;
-
-	const float2 eMidPointOffset = (pointB - pointA) * dirB;
-
-	const float2 startMidPoint = pointA + sMidPointOffset * hardness;
-	const float2 endMidPoint = pointB + eMidPointOffset * hardness;
-
-	const float2 linear_SsM = lerp(pointA, startMidPoint, t);
-	const float2 linear_sMeM = lerp(startMidPoint, endMidPoint, t);
-	const float2 linear_eME = lerp(endMidPoint, pointB, t);
-	const float2 square_SM = lerp(linear_SsM, linear_sMeM, t);
-	const float2 square_ME = lerp(linear_sMeM, linear_eME, t);
-
-	return lerp(square_SM, square_ME, t);
+	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_left, dirA, pointB_left, dirB, .5f, color);
+	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_right, dirA, pointB_right, dirB, .5f, color);
 }

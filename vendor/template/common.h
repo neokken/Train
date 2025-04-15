@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <numbers>
+
 // default screen resolution
 constexpr int SCRWIDTH = 1280;
 constexpr int SCRHEIGHT = 720;
@@ -20,6 +22,8 @@ constexpr float ASPECT_RATIO = static_cast<float>(SCRWIDTH) / static_cast<float>
 #define TWOPI		6.28318530717958647692528f
 #define SQRT_PI_INV	0.56418958355f
 #define LARGE_FLOAT	1e34f
+
+constexpr float golden_ratio = std::numbers::phi_v<float>;
 
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
