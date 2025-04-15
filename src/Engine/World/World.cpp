@@ -9,6 +9,7 @@
 #include "Game/Buildings/Building.h"
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
+#include "Renderables/CurvedSegment.h"
 #include "UI/UIManager.h"
 
 Engine::World::~World()
@@ -23,10 +24,10 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 {
 	m_camera.Init(inputManager);
 	m_camera.SetResolution(int2(SCRWIDTH, SCRHEIGHT));
-	m_camera.SetZoomLevel(1.f);
+	m_camera.SetZoomLevel(50.f);
 
-	m_grid.AddGrid(0x354f52, 25 /*, .7f*/);
-	m_grid.AddGrid(0x52796f, 100 /*, .33f*/);
+	m_grid.AddGrid(0x354f52, 1 /*, .7f*/);
+	m_grid.AddGrid(0x52796f, 10 /*, .33f*/);
 
 	m_renderTarget = renderTarget;
 
@@ -45,14 +46,13 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	 *	going south there is a split where you can choose
 	 */
 
-	const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
-	                                                          float2(100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
+	//const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid,float2(100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
 
-	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(-100.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
-	                                                          float2(0.f, 200.f), TrackDirection::Diagonal_Positive, TrackSegmentID::Invalid);
+	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(-10.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
+	                                                          float2(0.f, 20.f), TrackDirection::DiagonalDownRight, TrackSegmentID::Invalid);
 
-	const TrackSegmentID seg3 = m_trackManager.BuildTrackPart(float2(-200.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
-	                                                          float2(-100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
+	//const TrackSegmentID seg3 = m_trackManager.BuildTrackPart(float2(-200.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,float2(-100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
+
 	//const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Empty, seg1,float2(0.f, 200.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
 	//const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
 	//const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));

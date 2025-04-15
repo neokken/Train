@@ -70,7 +70,6 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 		lastPoint = cubic;
 		t += 1.f / static_cast<float>(segments);
 	}
-
 }
 
 float Engine::CurvedSegment::GetSegmentLength( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments, CurveSetupMode setupMode )
@@ -190,6 +189,38 @@ float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 	return float2(0, 0);
 }
 
+float2 Engine::CurvedSegment::GetClosestPoint( const float2& position, int samples, float tolerance ) const
+{
+	float left = 0.f;
+	float right = 1.f;
+
+	for (int i = 0; i < samples; i++)
+	{
+		const float diff = right - left;
+		if (diff < tolerance)
+		{
+			break;
+		}
+
+		const float rLeft = right - diff / golden_ratio;
+		const float rRight = left + diff / golden_ratio;
+
+		const float sqrLengthLeft = sqrLength(this->GetPositionOnSegment(rLeft) - position);
+		const float sqrLengthRight = sqrLength(this->GetPositionOnSegment(rRight) - position);
+
+		if (sqrLengthLeft < sqrLengthRight)
+		{
+			right = rRight;
+		}
+		else
+		{
+			left = rLeft;
+		}
+	}
+
+	return this->GetPositionOnSegment((left + right) / 2);
+}
+
 void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, const float hardness, float2& outStartMidPoint, float2& outEndMidPoint, const CurveSetupMode setupMode )
 {
 	assert(length(lStartDir) > 0);
@@ -199,19 +230,19 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 	{
 	case CurveSetupMode::SimpleBezier:
 		{
-			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			const float2 sMidPointOffset = length(lEnd - lStart) * normalize(lStartDir);
 			outStartMidPoint = lStart + sMidPointOffset * hardness;
 
-			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
 			outEndMidPoint = lEnd + eMidPointOffset * hardness;
 			break;
 		}
 	case CurveSetupMode::LongestBend:
 		{
-			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			const float2 sMidPointOffset = length(lEnd - lStart) * normalize(lStartDir);
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
-			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);
@@ -224,10 +255,10 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 		}
 	case CurveSetupMode::ClampedLongest:
 		{
-			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			const float2 sMidPointOffset = length(lEnd - lStart) * normalize(lStartDir);
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
-			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);

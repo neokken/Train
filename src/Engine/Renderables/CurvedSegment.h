@@ -59,7 +59,9 @@ namespace Engine
 		 * @param t how far along the path from 0 to 1
 		 * @return 
 		 */
-		float2 GetPositionOnSegment( float t ) const;
+		[[nodiscard]] float2 GetPositionOnSegment( float t ) const;
+
+		[[nodiscard]] float2 GetClosestPoint( const float2& position, int samples = 10, float tolerance = 1e-4f ) const;
 
 	private:
 		static void CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, float2& outStartMidPoint, float2& outEndMidPoint, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
