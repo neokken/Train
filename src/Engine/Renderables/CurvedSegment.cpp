@@ -151,7 +151,6 @@ float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, const f
 
 			return lerp(segmentA, segmentB, part);
 		}
-
 	}
 	Logger::Error("t of {} was not found on CurvedSegment", t);
 	return float2(0, 0);
@@ -163,7 +162,6 @@ void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& d
 	DrawCircle(camera, drawSurface, 10, m_lineEnd, 10.f, 0xff8080);
 	DrawCircle(camera, drawSurface, 4, m_startMidPoint, 8.f, 0x8000ff);
 	DrawCircle(camera, drawSurface, 4, m_endMidPoint, 8.f, 0xff0080);
-	DrawCircle(camera, drawSurface, 20, intersectionDEBUG, 4.f, 0xff0000);
 }
 
 float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
@@ -241,45 +239,6 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			break;
 		}
 	}
-}
-
-float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
-{
-	float tLength = t * m_length;
-	if (tLength == 0) tLength = 0.001f;
-	//This can probably be more optimized
-	
-	for (int i = 0; i < m_segments; ++i)
-	{
-		if (tLength <= m_segmentLengths[i])
-		{
-			// We are in between segment i-1 and i
-			const float part = (tLength - m_segmentLengths[i - 1]) / (m_segmentLengths[i] - m_segmentLengths[i - 1]);
-
-			float a = m_segmentLengths[i - 1] / m_length;
-
-			float2 linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
-			float2 linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
-			float2 linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
-			float2 square_SM = lerp(linear_SsM, linear_sMeM, a);
-			float2 square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentA = lerp(square_SM, square_ME, a);
-
-			a = m_segmentLengths[i] / m_length;
-
-			linear_SsM = lerp(m_lineStart, m_startMidPoint, a);
-			linear_sMeM = lerp(m_startMidPoint, m_endMidPoint, a);
-			linear_eME = lerp(m_endMidPoint, m_lineEnd, a);
-			square_SM = lerp(linear_SsM, linear_sMeM, a);
-			square_ME = lerp(linear_sMeM, linear_eME, a);
-			const float2 segmentB = lerp(square_SM, square_ME, a);
-
-			return lerp(segmentA, segmentB, part);
-
-		}
-	}
-	Logger::Error("t of {} was not found on CurvedSegment", t);
-	return float2(0, 0);
 }
 
 void Engine::CurvedSegment::DrawCircle( const Camera& camera, Surface& targetSurface, const int segmentCount,
