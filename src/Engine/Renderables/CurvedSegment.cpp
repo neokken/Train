@@ -6,15 +6,15 @@
 
 Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir,
                                       const float2& lEndDir, const float hardness, const uint color,
-                                      const uint drawSteps )
+                                      const uint drawSteps, CurveSetupMode setupMode )
 	: m_segments(drawSteps)
 	  , m_color(color)
 {
-	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness);
+	SetupPoints(lStart, lEnd, lStartDir, lEndDir, hardness, setupMode);
 }
 
 void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEnd, const float2& lStartDir,
-                                         const float2& lEndDir, const float hardness )
+                                         const float2& lEndDir, const float hardness, CurveSetupMode setupMode )
 {
 	m_lineStart = lStart;
 	m_lineEnd = lEnd;
@@ -22,11 +22,50 @@ void Engine::CurvedSegment::SetupPoints( const float2& lStart, const float2& lEn
 	assert(length(lStartDir) > 0);
 	assert(length(lEndDir) > 0);
 
-	const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
-	m_startMidPoint = lStart + sMidPointOffset * hardness;
+	switch (setupMode)
+	{
+	case CurveSetupMode::SimpleBezier:
+		{
+			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			m_startMidPoint = lStart + sMidPointOffset * hardness;
 
-	const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
-	m_endMidPoint = lEnd + eMidPointOffset * hardness;
+			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			m_endMidPoint = lEnd + eMidPointOffset * hardness;
+			break;
+		}
+	case CurveSetupMode::LongestBend:
+		{
+			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			float sOffsetDistance = length(sMidPointOffset * hardness);
+
+			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			float eOffsetDistance = length(eMidPointOffset * hardness);
+
+			float halfLength = max(sOffsetDistance, eOffsetDistance);
+
+			if (length(sMidPointOffset) > 0) m_startMidPoint = lStart + normalize(sMidPointOffset) * halfLength;
+			else m_startMidPoint = lStart;
+			if (length(eMidPointOffset) > 0) m_endMidPoint = lEnd + normalize(eMidPointOffset) * halfLength;
+			else m_endMidPoint = lEnd;
+			break;
+		}
+	case CurveSetupMode::ClampedLongest:
+		{
+			const float2 sMidPointOffset = (lEnd - lStart) * normalize(lStartDir);
+			float sOffsetDistance = length(sMidPointOffset * hardness);
+
+			const float2 eMidPointOffset = (lStart - lEnd) * normalize(lEndDir);
+			float eOffsetDistance = length(eMidPointOffset * hardness);
+
+			float halfLength = max(sOffsetDistance, eOffsetDistance);
+
+			if (length(sMidPointOffset) > 0) m_startMidPoint = lStart + normalize(sMidPointOffset) * min(halfLength, length(sMidPointOffset));
+			else m_startMidPoint = lStart;
+			if (length(eMidPointOffset) > 0) m_endMidPoint = lEnd + normalize(eMidPointOffset) * min(halfLength, length(eMidPointOffset));
+			else m_endMidPoint = lEnd;
+			break;
+	}
+	}
 
 	float2 lastPoint = m_lineStart;
 	float segmentLength = 0;
@@ -75,6 +114,7 @@ void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& d
 	DrawCircle(camera, drawSurface, 10, m_lineEnd, 10.f, 0xff8080);
 	DrawCircle(camera, drawSurface, 4, m_startMidPoint, 8.f, 0x8000ff);
 	DrawCircle(camera, drawSurface, 4, m_endMidPoint, 8.f, 0xff0080);
+	DrawCircle(camera, drawSurface, 20, intersectionDEBUG, 4.f, 0xff0000);
 }
 
 float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
@@ -82,7 +122,7 @@ float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 	float tLength = t * m_length;
 	if (tLength == 0) tLength = 0.001f;
 	//This can probably be more optimized
-	
+
 	for (int i = 0; i < m_segments; ++i)
 	{
 		if (tLength <= m_segmentLengths[i])
@@ -109,7 +149,6 @@ float2 Engine::CurvedSegment::GetPositionOnSegment( const float t ) const
 			const float2 segmentB = lerp(square_SM, square_ME, a);
 
 			return lerp(segmentA, segmentB, part);
-
 		}
 	}
 	Logger::Error("t of {} was not found on CurvedSegment", t);

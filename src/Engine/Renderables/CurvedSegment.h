@@ -3,13 +3,22 @@
 
 namespace Engine
 {
+	enum class CurveSetupMode
+	{
+		SimpleBezier, // Simple curve that puts the midpoints along a tangental line based on hardness
+		LongestBend, // SimpleBezier but uses the longest length which creates less sharp bends
+		ClampedLongest,
+	};
+
+
+
 	class CurvedSegment :
 		public Engine::Renderable
 	{
 	public:
 		CurvedSegment() = default;
 		CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
-		               float hardness, const uint color, const uint drawSteps = 10u );
+		               float hardness, const uint color, const uint drawSteps = 10u, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 		/**
 		 * Set up the mid points for the curve
 		 * @param lStart line start
@@ -17,9 +26,10 @@ namespace Engine
 		 * @param lStartDir direction of start point
 		 * @param lEndDir  direction of end point
 		 * @param hardness hardness of the curve, 0 means a straight line 1 is a semi hard curve at the middle, values above 1 can cause bulging
+		 * @param setupMode
 		 */
 		void SetupPoints( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
-		                  float hardness );
+		                  float hardness, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 		void Render( const Camera& camera, Surface& drawSurface ) override;
 
 		void RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const;
@@ -36,6 +46,7 @@ namespace Engine
 		float2 m_lineEnd{0.f};
 		float2 m_startMidPoint{0.f};
 		float2 m_endMidPoint{0.f};
+		float2 intersectionDEBUG{0.f};
 		int m_segments{10};
 		std::vector<float> m_segmentLengths;
 		float m_length{0.f};
