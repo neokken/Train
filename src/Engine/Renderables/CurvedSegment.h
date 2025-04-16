@@ -38,6 +38,18 @@ namespace Engine
 		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 
 		/**
+		* Render a track made of arrows statically
+		* @return the length of the drawn track
+		*/
+		static float RenderArrowsWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
+		* Render a track made of curves statically
+		* @return the length of the drawn track
+		*/
+		static float RenderTrackWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
 		 * Get the total real length of a curved segment
 		 * @return the length in units
 		 */
