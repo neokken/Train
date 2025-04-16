@@ -71,7 +71,124 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 		lastPoint = cubic;
 		t += 1.f / static_cast<float>(segments);
 	}
+}
 
+float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments, CurveSetupMode setupMode )
+{
+	float2 startMidPoint, endMidPoint;
+	CalculateMidPoints(lStart, lStartDir, lEnd, lEndDir, hardness, startMidPoint, endMidPoint, setupMode);
+
+	float2 lastPoint = lStart;
+	float2 lastDir = lStartDir;
+	float t = 1.f / static_cast<float>(segments);
+	float segmentLength = 0;
+	for (uint i = 0; i < segments; ++i)
+	{
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
+
+		float2 offset = cubic - lastPoint;
+		float l = length(offset);
+		segmentLength += l;
+		float2 dir = offset / l;
+
+		float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
+
+		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastP, cubic, color);
+		lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
+		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastP, cubic, color);
+		lastPoint = cubic;
+		lastDir = dir;
+		t += 1.f / static_cast<float>(segments);
+	}
+	return segmentLength;
+}
+
+float Engine::CurvedSegment::RenderTrackWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth, float spokeWidth, float spokeDistance, float wobblyness, uint segments, CurveSetupMode setupMode )
+{
+	RenderTrackSpokesWorldPos(camera, drawSurface, lStart, lStartDir, lEnd, lEndDir, hardness, spokeColor, spokeSize, spokeWidth, spokeDistance, segments, wobblyness, setupMode);
+	RenderTrackLinesWorldPos(camera, drawSurface, lStart, lStartDir, lEnd, lEndDir, hardness, trackColor, trackSize, segments, setupMode);
+	return RenderTrackLinesWorldPos(camera, drawSurface, lStart, lStartDir, lEnd, lEndDir, hardness, trackColor, trackSize - trackWidth, segments, setupMode);
+}
+
+float Engine::CurvedSegment::RenderTrackLinesWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments, CurveSetupMode setupMode )
+{
+	float2 startMidPoint, endMidPoint;
+	CalculateMidPoints(lStart, lStartDir, lEnd, lEndDir, hardness, startMidPoint, endMidPoint, setupMode);
+
+	float2 lastPoint = lStart;
+	float2 lastDir = lStartDir;
+	float t = 1.f / static_cast<float>(segments);
+	float segmentLength = 0;
+	for (uint i = 0; i < segments; ++i)
+	{
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
+
+		float2 offset = cubic - lastPoint;
+		float l = length(offset);
+		segmentLength += l;
+		float2 dir = offset / l;
+
+		float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
+		float2 P = cubic + float2(dir.y, -dir.x) * width;
+		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastP, P, color);
+		lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
+		P = cubic + float2(-dir.y, dir.x) * width;
+		Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastP, P, color);
+		lastPoint = cubic;
+		lastDir = dir;
+		t += 1.f / static_cast<float>(segments);
+	}
+	return segmentLength;
+}
+
+void Engine::CurvedSegment::RenderTrackSpokesWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float spokeLength, float spokeWidth, float spokesDistance, uint segments, float wobblyness, CurveSetupMode setupMode )
+{
+	float2 startMidPoint, endMidPoint;
+	CalculateMidPoints(lStart, lStartDir, lEnd, lEndDir, hardness, startMidPoint, endMidPoint, setupMode);
+
+	float2 lastPoint = lStart;
+	float t = 1.f / static_cast<float>(segments);
+	float spokes = 0.f;
+	for (uint i = 0; i < segments; ++i)
+	{
+		const float2 cubic = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t);
+
+		float2 offset = cubic - lastPoint;
+		float l = length(offset);
+		float2 dir = offset / l;
+
+		spokes += l / spokesDistance;
+		int spokesInSegment = static_cast<int>(round(spokes));
+		for (int spokeI = 0; spokeI < spokesInSegment; ++spokeI)
+		{
+			spokes -= 1;
+			float2 point = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, t - ((1 / static_cast<float>(segments)) / static_cast<float>(spokesInSegment)) * static_cast<float>(spokeI));
+			if (spokeWidth <= 0)
+			{
+				float2 P = point + float2(dir.y, -dir.x) * spokeLength;
+				float2 P2 = point + float2(-dir.y, dir.x) * spokeLength;
+				if (wobblyness > 0)
+				{
+					uint seed = InitSeed(i);
+					P += dir * (RandomFloat(seed) - 0.5f) * 2.f * wobblyness;
+					P2 += dir * (RandomFloat(seed) - 0.5f) * 2.f * wobblyness;
+				}
+				Engine::LineSegment::RenderWorldPos(camera, drawSurface, P, P2, color);
+			}
+			else
+			{
+				float2 d = dir;
+				if (wobblyness > 0)
+				{
+					uint seed = InitSeed(i);
+					d = normalize(dir + float2((RandomFloat(seed) - 0.5f) * 2.f * wobblyness, (RandomFloat(seed) - 0.5f) * 2.f * wobblyness));
+				}
+				drawSurface.LineRectangle(camera.GetCameraPosition(point), d, float2(spokeLength * 2, spokeWidth * 2) * camera.GetZoomLevel(), color);
+			}
+		}
+		lastPoint = cubic;
+		t += 1.f / static_cast<float>(segments);
+	}
 }
 
 float Engine::CurvedSegment::GetSegmentLength( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments, CurveSetupMode setupMode )
@@ -219,16 +336,16 @@ bool Engine::CurvedSegment::CheckCurveValidity( const float2& lStart, const floa
 		float diff = acos(dot(dir, lastDir));
 		diff = diff / l;
 		if (diff > strictness)
+		{
+			if (camera != nullptr && screen != nullptr)
 			{
-				if (camera != nullptr && screen != nullptr)
-				{
-					Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 10.f, 0xff0000);
-					Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 10.f, 0xff0000);
-					Engine::LineSegment::RenderWorldPos(*camera, *screen, lastPoint + float2(1, 1), cubic + float2(1, 1), 0xff0000);
-
-				}
-				return false;
+				Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 10.f, 0xff0000);
+				Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 10.f, 0xff0000);
+				Engine::LineSegment::RenderWorldPos(*camera, *screen, lastPoint + float2(1, 1), cubic + float2(1, 1), 0xff0000);
 			}
+			return false;
+		}
+
 		lastDir = dir;
 		lastPoint = cubic;
 		time += 1.f / static_cast<float>(segments);
@@ -249,7 +366,6 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			outStartMidPoint = lStart + sMidPointOffset * hardness;
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
-
 			outEndMidPoint = lEnd + eMidPointOffset * hardness;
 			break;
 		}
@@ -259,7 +375,6 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
-
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);
@@ -276,7 +391,6 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
-
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);

@@ -38,6 +38,32 @@ namespace Engine
 		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 
 		/**
+		* Render a track made of arrows statically
+		* @return the length of the drawn track
+		*/
+		static float RenderArrowsWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
+		* Render a full track
+		* @return the length of the drawn track
+		*/
+		static float RenderTrackWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth = 2.f, float spokeWidth = 2.f, float spokeDistance = 20, float wobblyness = 0.2f, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
+		* Render 2 lines following a curve statically 
+		* @return the length of the drawn track
+		*/
+		static float RenderTrackLinesWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float width, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
+		* Render track spokes, should be rendered together with a track
+		* @param spokeLength length of spoke horizontally so this should be around the same length as trackwidth
+		* @param spokesDistance amount of spokes rendered should probably be based on length returned from rendertrack
+		* @param segments
+		*/
+		static void RenderTrackSpokesWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float spokeLength, float spokeWidth, float spokesDistance, uint segments, float wobblyness = 5.f, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
 		 * Get the total real length of a curved segment
 		 * @return the length in units
 		 */

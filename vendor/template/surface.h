@@ -67,6 +67,8 @@ public:
 	void CopyTo( Surface* dst, int x, int y );
 	void Box( int x1, int y1, int x2, int y2, uint color );
 	void Bar( int x1, int y1, int x2, int y2, uint color );
+	void LineRectangle( float2 pos, float2 dir, float2 size, uint color );
+	void Rectangle( float2 pos, float2 dir, float2 size, uint color );
 	// attributes
 	uint* pixels = 0;
 	int width = 0, height = 0;
