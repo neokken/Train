@@ -92,6 +92,8 @@
     <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrainWalker\TrackWalker.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
+    <ClCompile Include="src\Engine\Renderables\Arrow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -170,6 +172,8 @@
     <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrainWalker\TrackWalker.h" />
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />
+    <ClInclude Include="src\Engine\Renderables\Arrow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">

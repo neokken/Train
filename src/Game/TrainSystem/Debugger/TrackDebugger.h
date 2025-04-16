@@ -44,14 +44,16 @@ public:
 
 	void UI() const;
 
+	void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, TrackSegmentID trackID, int segmentCount, uint color ) const;
+
+	static void RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, int segmentCount, uint color );
+
 private:
 	// helper functions
-	float SQRDistancePointToSegment( float2 position, const TrackSegment& segment );
+	float SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const;
 
 	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
 	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
-
-	static void RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, int segmentCount, uint color );
 
 private:
 	TrackManager* m_trackManager{nullptr};

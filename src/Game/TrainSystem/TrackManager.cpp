@@ -145,7 +145,7 @@ TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const
 
 		const TrackSegment& nodeB_ConnectingSegment = GetTrackSegment(nodeB_connection);
 
-		if (nodeB_ConnectingSegment.nodeA == nodeA_ID)
+		if (nodeB_ConnectingSegment.nodeA == nodeB_ID)
 		{
 			nodeB_DirectionFloat = -nodeB_ConnectingSegment.nodeA_Direction;
 		}

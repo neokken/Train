@@ -3,6 +3,7 @@
 // TODO: Either pointerize or include these in any dependency with World.h
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
+#include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
 
@@ -36,6 +37,7 @@ namespace Engine
 		Camera m_camera{int2(0, 0)};
 
 		TrackManager m_trackManager;
+		TrackBuilder m_trackBuilder;
 		TrackDebugger m_trackDebugger;
 
 		Surface* m_renderTarget = nullptr;

@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <!-- END Custom section -->
   <ItemGroup>
+    <ClCompile Include="src\Engine\Renderables\Arrow.cpp" />
     <ClCompile Include="src\Engine\Helpers\Helpers.cpp" />
     <ClCompile Include="src\Engine\Helpers\IDGenerator.cpp" />
     <ClCompile Include="src\Engine\Camera\Camera.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrainWalker\TrackWalker.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -184,6 +186,7 @@
     <ClCompile Include="vendor\template\tmpl8math.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Engine\Renderables\Arrow.h" />
     <ClInclude Include="src\Engine\Helpers\IDGenerator.h" />
     <ClInclude Include="src\Engine\Camera\Camera.h" />
     <ClInclude Include="src\Application.h" />
@@ -206,6 +209,7 @@
     <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrainWalker\TrackWalker.h" />
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

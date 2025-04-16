@@ -12,32 +12,60 @@ enum class TrackSegmentID : uint32_t // NOLINT(performance-enum-size) since they
 
 enum class TrackDirection : uint8_t
 {
-	Empty,
-	Vertical,
-	SteepUpRight,
-	DiagonalUpRight,
-	ShallowUpRight,
-	Horizontal,
-	ShallowDownRight,
-	DiagonalDownRight,
-	SteepDownRight
+	E,
+	ESE,
+	SE,
+	SSE,
+	S,
+	SSW,
+	SW,
+	WSW,
+	W,
+	WNW,
+	NW,
+	NNW,
+	N,
+	NNE,
+	NE,
+	ENE,
+	Count,
+	Empty
 };
 
+constexpr float DegToRad( const float degrees )
+{
+	return degrees * (PI / 180.0f);
+}
+
 const float2 directionVectors[] = {
-	{0.f, 0.f},
-	{0.0f, 1.0f}, // Vertical 
-	{std::cos(-67.5f * PI / 180.0f), std::sin(-67.5f * PI / 180.0f)}, // SteepUpRight
-	{std::cos(-45.0f * PI / 180.0f), std::sin(-45.0f * PI / 180.0f)}, // DiagonalUpRight 
-	{std::cos(-22.5f * PI / 180.0f), std::sin(-22.5f * PI / 180.0f)}, // ShallowUpRight 
-	{1.0f, 0.0f}, // Horizontal (90)
-	{std::cos(22.5f * PI / 180.0f), std::sin(22.5f * PI / 180.0f)}, // ShallowDownRight 
-	{std::cos(45.f * PI / 180.0f), std::sin(45.f * PI / 180.0f)}, // DiagonalDownRight 
-	{std::cos(67.5f * PI / 180.0f), std::sin(67.5f * PI / 180.0f)} // SteepDownRight 
+	float2(cos(DegToRad(0.f)), sin(DegToRad(0.f))), // E
+	float2(cos(DegToRad(22.5f)), sin(DegToRad(22.5f))), // ESE
+	float2(cos(DegToRad(45.f)), sin(DegToRad(45.f))), // SE
+	float2(cos(DegToRad(67.5f)), sin(DegToRad(67.5f))), // SSE
+	float2(cos(DegToRad(90.f)), sin(DegToRad(90.f))), // S
+	float2(cos(DegToRad(112.5f)), sin(DegToRad(112.5f))), // SSW
+	float2(cos(DegToRad(135.f)), sin(DegToRad(135.f))), // SW
+	float2(cos(DegToRad(157.5f)), sin(DegToRad(157.5f))), // WSW
+	float2(cos(DegToRad(180.f)), sin(DegToRad(180.f))), // W
+	float2(cos(DegToRad(202.5f)), sin(DegToRad(202.5f))), // WNW
+	float2(cos(DegToRad(225.f)), sin(DegToRad(225.f))), // NW
+	float2(cos(DegToRad(247.5f)), sin(DegToRad(247.5f))), // NNW
+	float2(cos(DegToRad(270.f)), sin(DegToRad(270.f))), // N
+	float2(cos(DegToRad(292.5f)), sin(DegToRad(292.5f))), // NNE
+	float2(cos(DegToRad(315.f)), sin(DegToRad(315.f))), // NE
+	float2(cos(DegToRad(337.5f)), sin(DegToRad(337.5f))), // ENE
 };
 
 inline float2 toFloat2( TrackDirection dir )
 {
 	return directionVectors[static_cast<int>(dir)];
+}
+
+inline TrackDirection toTrackDir( const float2& dir )
+{
+	const float angle = fmodf(std::atan2(dir.y, dir.x) * (180.0f / PI) + 360.f, 360.f);
+
+	return static_cast<TrackDirection>(static_cast<int>(round(angle / 22.5f)));
 }
 
 struct TrackNode

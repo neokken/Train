@@ -48,9 +48,6 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 
 	for (const auto& segment : std::views::values(m_trackManager->m_segments))
 	{
-		const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
-		const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
-
 		if (SQRDistancePointToSegment(worldPosMouse, segment) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.id;
@@ -293,7 +290,17 @@ void TrackDebugger::UI() const
 	Engine::UIManager::EndDebugWindow();
 }
 
-float TrackDebugger::SQRDistancePointToSegment( float2 position, const TrackSegment& segment )
+void TrackDebugger::RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegmentID trackID, const int segmentCount, const uint color ) const
+{
+	const TrackSegment& segment = m_trackManager->GetTrackSegment(trackID);
+
+	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
+	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
+
+	RenderSegment(camera, targetSurface, nodeA.nodePosition, segment.nodeA_Direction, nodeB.nodePosition, segment.nodeB_Direction, segmentCount, color);
+}
+
+float TrackDebugger::SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const
 {
 	const float2 nodeA_pos = m_trackManager->GetTrackNode(segment.nodeA).nodePosition;
 	const float2 nodeB_pos = m_trackManager->GetTrackNode(segment.nodeB).nodePosition;
@@ -303,7 +310,7 @@ float TrackDebugger::SQRDistancePointToSegment( float2 position, const TrackSegm
 	return sqrLength(curve.GetClosestPoint(position) - position);
 }
 
-std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const
+std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const TrackSegmentID segmentID ) const
 {
 	std::vector<TrackSegmentID> result;
 
@@ -335,12 +342,15 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 
 void TrackDebugger::RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, const int segmentCount, const uint color )
 {
-	const float2 pointA_left = pointA + float2(-dirA.y, dirA.x) * .75f;
-	const float2 pointA_right = pointA + float2(dirA.y, dirA.x) * .75f;
+	float2 leftOffsetA = normalize(float2(-dirA.y, dirA.x));
+	float2 leftOffsetB = normalize(float2(-dirB.y, dirB.x));
 
-	const float2 pointB_left = pointB + float2(dirB.y, -dirB.x) * .75f;
-	const float2 pointB_right = pointB + float2(-dirB.y, dirB.x) * .75f;
+	float2 pointA_left = pointA + leftOffsetA * 0.75f;
+	float2 pointB_left = pointB + leftOffsetB * 0.75f;
 
-	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_left, dirA, pointB_left, dirB, .5f, color);
-	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_right, dirA, pointB_right, dirB, .5f, color);
+	float2 pointA_right = pointA - leftOffsetA * 0.75f;
+	float2 pointB_right = pointB - leftOffsetB * 0.75f;
+
+	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_left, dirA, pointB_right, dirB, .5f, color, segmentCount);
+	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_right, dirA, pointB_left, dirB, .5f, color, segmentCount);
 }

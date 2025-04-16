@@ -28,21 +28,16 @@ void Application::Tick( const float deltaTime )
 
 	// Update logic
 	m_world.Update(deltaTime);
-	m_inputManager.Update(deltaTime);
 
 	//DEBUG BEHAVIOUR
-	if (m_inputManager.IsKeyDown(GLFW_KEY_B))
+	if (m_inputManager.IsKeyJustDown(GLFW_KEY_F1))
 	{
 		Engine::UIManagerSettings settings = Engine::UIManager::GetSettings();
-		settings.debugMode = false;
+		settings.debugMode = !settings.debugMode;
 		Engine::UIManager::SetSettings(settings);
 	}
-	else if (m_inputManager.IsKeyDown(GLFW_KEY_V))
-	{
-		Engine::UIManagerSettings settings = Engine::UIManager::GetSettings();
-		settings.debugMode = true;
-		Engine::UIManager::SetSettings(settings);
-	}
+
+	m_inputManager.Update(deltaTime);
 }
 
 void Tmpl8::Application::UI()

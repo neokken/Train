@@ -31,6 +31,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	m_renderTarget = renderTarget;
 
+	m_trackBuilder.Init(inputManager, &m_trackManager, &m_trackDebugger);
 	m_trackDebugger.Init(inputManager, &m_trackManager);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
@@ -47,35 +48,6 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	 */
 
 	//const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Vertical, TrackSegmentID::Invalid,float2(100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
-
-	const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(-10.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,
-	                                                          float2(0.f, 20.f), TrackDirection::DiagonalDownRight, TrackSegmentID::Invalid);
-
-	//const TrackSegmentID seg3 = m_trackManager.BuildTrackPart(float2(-200.f, 0.f), TrackDirection::Vertical, TrackSegmentID::Invalid,float2(-100.f, 200.f), TrackDirection::Horizontal, TrackSegmentID::Invalid);
-
-	//const TrackSegmentID seg2 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::Empty, seg1,float2(0.f, 200.f), TrackDirection::Vertical, TrackSegmentID::Invalid);
-	//const TrackNodeID nodeA = m_trackManager.CreateNode(float2(-100.f, 0.f));
-	//const TrackNodeID nodeB = m_trackManager.CreateNode(float2(0.f, 100.f));
-	//
-	//const TrackNodeID nodeC = m_trackManager.CreateNode(float2(-100.f, -100.f));
-	//const TrackNodeID nodeD = m_trackManager.CreateNode(float2(-100.f, 100.f));
-	//
-	//const TrackSegmentID segmentAB = m_trackManager.CreateSegment(nodeA, nodeB);
-	//const TrackSegmentID segmentAC = m_trackManager.CreateSegment(nodeA, nodeC);
-	//const TrackSegmentID segmentAD = m_trackManager.CreateSegment(nodeA, nodeD);
-	//
-	//m_trackManager.ConnectSegments(segmentAB, segmentAC);
-	//m_trackManager.ConnectSegments(segmentAC, segmentAD);
-	//
-	////Logger::Trace("TrackData Serialization: {}", m_trackManager.SerializeData().dump());
-	//
-	//TrackWalker tWalker;
-	//tWalker.Init(&m_trackManager);
-	//tWalker.SetCurrentTrackSegment(segmentAD, 0.f);
-	//
-	//TrackWalkerVisualizer* tmVis = new TrackWalkerVisualizer(tWalker);
-	//
-	//AddObject(tmVis);
 }
 
 void Engine::World::Update( float deltaTime )
@@ -88,17 +60,20 @@ void Engine::World::Update( float deltaTime )
 	{
 		obj->Update(deltaTime);
 	}
+
 	m_trackDebugger.Update(m_camera);
+	m_trackBuilder.Update(m_camera, deltaTime);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
 
-	for (auto& obj : m_objects)
+	for (const auto& obj : m_objects)
 	{
 		obj->Render(m_camera, *m_renderTarget);
 	}
 
 	m_trackDebugger.Render(m_camera, *m_renderTarget);
+	m_trackBuilder.Render(m_camera, *m_renderTarget);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
