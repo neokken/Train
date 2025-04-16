@@ -61,7 +61,14 @@ namespace Engine
 		 */
 		float2 GetPositionOnSegment( float t ) const;
 
-		static bool CheckCurveValidity( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments, CurveSetupMode setupMode, float strictness, const Camera* camera, Surface* screen );
+		/**
+		 * Check if a curve is valid, i.e if it doesn't bend too much for its size
+		 * @param strictness How strict should the checking be, higher values are more lenient
+		 * @param camera | optionally draw the part where the test failed
+		 * @param screen -|
+		 * @return true if valid
+		 */
+		static bool CheckCurveValidity( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments, CurveSetupMode setupMode, float strictness, const Camera* camera = nullptr, Surface* screen = nullptr );
 
 	private:
 		static void CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, float2& outStartMidPoint, float2& outEndMidPoint, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
