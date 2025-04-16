@@ -345,6 +345,7 @@ bool Engine::CurvedSegment::CheckCurveValidity( const float2& lStart, const floa
 			}
 			return false;
 		}
+
 		lastDir = dir;
 		lastPoint = cubic;
 		time += 1.f / static_cast<float>(segments);
