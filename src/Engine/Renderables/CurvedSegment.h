@@ -61,6 +61,8 @@ namespace Engine
 		 */
 		float2 GetPositionOnSegment( float t ) const;
 
+		static bool CheckCurveValidity( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments, CurveSetupMode setupMode, float strictness, const Camera* camera, Surface* screen );
+
 	private:
 		static void CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, float2& outStartMidPoint, float2& outEndMidPoint, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 		float2 m_lineStart{0.f};
