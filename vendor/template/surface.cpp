@@ -95,6 +95,98 @@ void Surface::Bar( int x1, int y1, int x2, int y2, uint c )
 	}
 }
 
+void Tmpl8::Surface::LineRectangle( float2 pos, float2 dir, float2 size, uint color )
+{
+	float2 right = {-dir.y, dir.x};
+	float halfW = size.x * 0.5f;
+	float halfH = size.y * 0.5f;
+	float2 corners[4];
+	corners[0] = pos + dir * halfH - right * halfW; // Top-left
+	corners[1] = pos + dir * halfH + right * halfW; // Top-right
+	corners[2] = pos - dir * halfH + right * halfW; // Bottom-right
+	corners[3] = pos - dir * halfH - right * halfW; // Bottom-left
+	Line(corners[0].x, corners[0].y, corners[1].x, corners[1].y, color);
+	Line(corners[1].x, corners[1].y, corners[2].x, corners[2].y, color);
+	Line(corners[2].x, corners[2].y, corners[3].x, corners[3].y, color);
+	Line(corners[3].x, corners[3].y, corners[0].x, corners[0].y, color);
+}
+
+void Tmpl8::Surface::Rectangle( float2 pos, float2 dir, float2 size, uint color )
+{
+	//This is pretty slow
+
+	// Normalize direction
+	float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
+	if (length == 0.0f) return; // Avoid division by zero
+	dir.x /= length;
+	dir.y /= length;
+
+	// Get perpendicular vector (right vector)
+	float2 right = {-dir.y, dir.x};
+
+	// Half extents
+	float halfW = size.x * 0.5f;
+	float halfH = size.y * 0.5f;
+
+	// Compute rectangle corners
+	float2 corners[4];
+	corners[0] = pos + dir * halfH - right * halfW; // Top-left
+	corners[1] = pos + dir * halfH + right * halfW; // Top-right
+	corners[2] = pos - dir * halfH + right * halfW; // Bottom-right
+	corners[3] = pos - dir * halfH - right * halfW; // Bottom-left
+
+	// Compute bounding box
+	float minX = std::min({corners[0].x, corners[1].x, corners[2].x, corners[3].x});
+	float maxX = std::max({corners[0].x, corners[1].x, corners[2].x, corners[3].x});
+	float minY = std::min({corners[0].y, corners[1].y, corners[2].y, corners[3].y});
+	float maxY = std::max({corners[0].y, corners[1].y, corners[2].y, corners[3].y});
+
+	// Clamp bounds to screen
+	int x0 = std::max(0, static_cast<int>(std::floor(minX)));
+	int x1 = std::min(width - 1, static_cast<int>(std::ceil(maxX)));
+	int y0 = std::max(0, static_cast<int>(std::floor(minY)));
+	int y1 = std::min(height - 1, static_cast<int>(std::ceil(maxY)));
+
+	// Edge vectors for cross product test
+	auto edge = []( const float2& a, const float2& b ) -> float2
+	{
+		return {b.x - a.x, b.y - a.y};
+	};
+	auto cross = []( const float2& a, const float2& b ) -> float
+	{
+		return a.x * b.y - a.y * b.x;
+	};
+
+	// For each pixel in bounding box, test if inside the quad
+	for (int y = y0; y <= y1; y++)
+	{
+		for (int x = x0; x <= x1; x++)
+		{
+			float2 p = {static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f};
+
+			// Inside quad test using cross products
+			bool inside = true;
+			for (int i = 0; i < 4; i++)
+			{
+				float2 a = corners[i];
+				float2 b = corners[(i + 1) % 4];
+				float2 ap = {p.x - a.x, p.y - a.y};
+				float2 ab = edge(a, b);
+				if (cross(ab, ap) < 0)
+				{
+					inside = false;
+					break;
+				}
+			}
+
+			if (inside)
+			{
+				uint* pixel = pixels + x + y * width;
+				*pixel = color;
+			}
+		}
+	}
+}
 // Surface::Print: Print some text with the hard-coded mini-font.
 void Surface::Print( const char* s, int x1, int y1, uint c )
 {
