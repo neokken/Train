@@ -249,6 +249,7 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			outStartMidPoint = lStart + sMidPointOffset * hardness;
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
+
 			outEndMidPoint = lEnd + eMidPointOffset * hardness;
 			break;
 		}
@@ -258,6 +259,7 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
+
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);
@@ -274,6 +276,7 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			float sOffsetDistance = length(sMidPointOffset * hardness);
 
 			const float2 eMidPointOffset = length(lStart - lEnd) * normalize(lEndDir);
+
 			float eOffsetDistance = length(eMidPointOffset * hardness);
 
 			float halfLength = max(sOffsetDistance, eOffsetDistance);
