@@ -15,6 +15,7 @@ public:
 	[[nodiscard]] const float& GetDistance() const { return m_distance; }
 
 	[[nodiscard]] float2 GetPosition() const;
+	[[nodiscard]] float2 GetDirection() const;
 
 	[[nodiscard]] bool IsValid() const;
 

@@ -56,7 +56,8 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 		if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			// validate node??
-			const bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2, .5f, 50, Engine::CurveSetupMode::LongestBend, m_buildStrictness);
+			Engine::CurveData curveData{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
+			const bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(curveData, m_buildStrictness); //, &camera, &renderTarget)
 
 			if (!valid_curve) return;
 
@@ -97,7 +98,8 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
 	{
-		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2, .5f, 50, Engine::CurveSetupMode::LongestBend, m_buildStrictness)) //, &camera, &renderTarget))
+		Engine::CurveData curveData{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
+		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(curveData, m_buildStrictness)) //, &camera, &renderTarget))
 		{
 			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, DEFAULT_COLOR);
 		}
