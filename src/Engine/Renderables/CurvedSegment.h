@@ -10,6 +10,17 @@ namespace Engine
 		ClampedLongest,
 	};
 
+	struct CurveData
+	{
+		float2 lStart;
+		float2 lStartDir;
+		float2 lEnd;
+		float2 lEndDir;
+		float hardness = 0.5f;
+		CurveSetupMode setupMode = CurveSetupMode::LongestBend;
+		uint baseSegments = 5;
+	};
+
 	class CurvedSegment :
 		public Engine::Renderable
 	{
@@ -80,6 +91,14 @@ namespace Engine
 		 * position along normalized curved track
 		 */
 		static float2 GetPositionOnCurvedSegment( const float t, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
+		/**
+		 * @param t how far along the path from 0 to 1
+		 * @return
+		 * normalized vector direction
+		 */
+		static float2 GetDirectionOnCurvedSegment( const float t, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint segments = 10, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
+
 		/**
 		 * Get position along normalized curved track 
 		 * @param t how far along the path from 0 to 1
