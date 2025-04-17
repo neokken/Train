@@ -70,7 +70,7 @@ namespace Engine
 		* Render track spokes, should be rendered together with a track
 		* @param spokeLength length of spoke horizontally so this should be around the same length as trackwidth
 		* @param spokesDistance amount of spokes rendered should probably be based on length returned from rendertrack
-		* @param segments
+		* @param segments base amount of segments to use setting this too low can cause wrong length calculation
 		*/
 		static void RenderTrackSpokesWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, float hardness, uint color, float spokeLength, float spokeWidth, float spokesDistance, uint segments, float wobblyness = 5.f, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 
