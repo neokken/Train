@@ -27,7 +27,7 @@ Train::Train( std::vector<Wagon*> wagons )
 			float diff = walkerDistance - m_wagonSpacing;
 			m_wagons[i]->Move(diff);
 		}
-		m_wagons[i]->SetInvincible(false);
+		//m_wagons[i]->SetInvincible(false);
 	}
 }
 
