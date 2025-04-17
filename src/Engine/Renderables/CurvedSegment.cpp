@@ -339,8 +339,8 @@ bool Engine::CurvedSegment::CheckCurveValidity( const float2& lStart, const floa
 		{
 			if (camera != nullptr && screen != nullptr)
 			{
-				Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 10.f, 0xff0000);
-				Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 10.f, 0xff0000);
+				Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 1.f, 0xff0000);
+				Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 1.f, 0xff0000);
 				Engine::LineSegment::RenderWorldPos(*camera, *screen, lastPoint + float2(1, 1), cubic + float2(1, 1), 0xff0000);
 			}
 			return false;

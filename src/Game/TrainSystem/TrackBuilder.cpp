@@ -18,7 +18,7 @@ void TrackBuilder::Init( Engine::InputManager* inputManager, TrackManager* track
 	m_trackDebugger = trackDebugger;
 }
 
-void TrackBuilder::Update( const Engine::Camera& camera, float deltaTime )
+void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float deltaTime )
 {
 	if (m_currentProgress == BuildProgress::NoBuild)
 	{
@@ -43,7 +43,7 @@ void TrackBuilder::Update( const Engine::Camera& camera, float deltaTime )
 		{
 			// validate node??
 
-			m_NodeA = m_tempNode;
+			m_nodeA = m_tempNode;
 
 			m_currentProgress = BuildProgress::FirstNodeFinished;
 		}
@@ -56,27 +56,30 @@ void TrackBuilder::Update( const Engine::Camera& camera, float deltaTime )
 		if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			// validate node??
+			const bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2, .5f, 50, Engine::CurveSetupMode::LongestBend, m_buildStrictness);
 
-			if (m_NodeA.trackSegmentId != TrackSegmentID::Invalid)
+			if (!valid_curve) return;
+
+			if (m_nodeA.trackSegmentId != TrackSegmentID::Invalid)
 			{
 				if (m_tempNode.trackSegmentId != TrackSegmentID::Invalid)
 				{
-					m_trackManager->BuildTrackPart(m_NodeA.trackNodePosition, TrackDirection::Empty, m_NodeA.trackSegmentId, m_tempNode.trackNodePosition, TrackDirection::Empty, m_tempNode.trackSegmentId);
+					m_trackManager->BuildTrackPart(m_nodeA.trackNodePosition, TrackDirection::Empty, m_nodeA.trackSegmentId, m_tempNode.trackNodePosition, TrackDirection::Empty, m_tempNode.trackSegmentId);
 				}
 				else
 				{
-					m_trackManager->BuildTrackPart(m_NodeA.trackNodePosition, TrackDirection::Empty, m_NodeA.trackSegmentId, m_tempNode.trackNodePosition, m_tempNode.direction, TrackSegmentID::Invalid);
+					m_trackManager->BuildTrackPart(m_nodeA.trackNodePosition, TrackDirection::Empty, m_nodeA.trackSegmentId, m_tempNode.trackNodePosition, m_tempNode.direction, TrackSegmentID::Invalid);
 				}
 			}
 			else
 			{
 				if (m_tempNode.trackSegmentId != TrackSegmentID::Invalid)
 				{
-					m_trackManager->BuildTrackPart(m_NodeA.trackNodePosition, m_NodeA.direction, TrackSegmentID::Invalid, m_tempNode.trackNodePosition, TrackDirection::Empty, m_tempNode.trackSegmentId);
+					m_trackManager->BuildTrackPart(m_nodeA.trackNodePosition, m_nodeA.direction, TrackSegmentID::Invalid, m_tempNode.trackNodePosition, TrackDirection::Empty, m_tempNode.trackSegmentId);
 				}
 				else
 				{
-					m_trackManager->BuildTrackPart(m_NodeA.trackNodePosition, m_NodeA.direction, TrackSegmentID::Invalid, m_tempNode.trackNodePosition, m_tempNode.direction, TrackSegmentID::Invalid);
+					m_trackManager->BuildTrackPart(m_nodeA.trackNodePosition, m_nodeA.direction, TrackSegmentID::Invalid, m_tempNode.trackNodePosition, m_tempNode.direction, TrackSegmentID::Invalid);
 				}
 			}
 
@@ -94,9 +97,16 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
 	{
-		RenderSegment(camera, renderTarget, m_NodeA, m_tempNode, DEFAULT_COLOR);
+		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2, .5f, 50, Engine::CurveSetupMode::LongestBend, m_buildStrictness)) //, &camera, &renderTarget))
+		{
+			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, DEFAULT_COLOR);
+		}
+		else
+		{
+			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, INVALID_COLOR);
+		}
 
-		RenderNode(camera, renderTarget, m_NodeA, DEFAULT_COLOR, CONNECT_COLOR);
+		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, CONNECT_COLOR);
 		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR);
 	}
 }
@@ -119,7 +129,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 		const TrackNode& hoverNode = m_trackManager->GetTrackNode(hoverNodeID);
 		m_tempNode.trackNodePosition = hoverNode.nodePosition;
 
-		if (isSecondNode && m_NodeA.trackNodeID == hoverNodeID && m_NodeA.trackNodeID != TrackNodeID::Invalid)
+		if (isSecondNode && m_nodeA.trackNodeID == hoverNodeID && m_nodeA.trackNodeID != TrackNodeID::Invalid)
 		{
 			m_tempNode.trackNodeID = TrackNodeID::Invalid;
 			return;

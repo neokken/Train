@@ -43,7 +43,9 @@ private:
 
 	TrackBuildData m_tempNode;
 
-	TrackBuildData m_NodeA;
+	TrackBuildData m_nodeA;
+
+	float m_buildStrictness = .5f;
 
 	enum class BuildProgress : std::uint8_t
 	{
