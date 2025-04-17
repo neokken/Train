@@ -24,7 +24,7 @@ void Application::Init()
 void Application::Tick( const float deltaTime )
 {
 	m_frameTimer.reset();
-	screen->Clear(0x2f3e46);
+	screen->Clear(GetColor(Color::BackGround));
 
 	// Update logic
 	m_world.Update(deltaTime);

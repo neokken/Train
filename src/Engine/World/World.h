@@ -5,6 +5,7 @@
 #include "Camera/Camera.h"
 #include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackManager.h"
+#include "Game/TrainSystem/TrackRenderer.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
 
 namespace Engine
@@ -38,6 +39,8 @@ namespace Engine
 
 		TrackManager m_trackManager;
 		TrackBuilder m_trackBuilder;
+		TrackRenderer m_trackRenderer;
+
 		TrackDebugger m_trackDebugger;
 
 		Surface* m_renderTarget = nullptr;

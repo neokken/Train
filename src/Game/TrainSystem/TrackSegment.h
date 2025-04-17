@@ -82,6 +82,9 @@ struct TrackNode
 
 struct TrackSegment
 {
+	float2 nodeA_Position{0.f};
+	float2 nodeB_Position{0.f};
+
 	float2 nodeA_Direction{0.f}; // points towards B
 	float2 nodeB_Direction{0.f}; // points toward A
 

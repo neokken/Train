@@ -24,6 +24,9 @@ TrackSegmentID TrackManager::CreateSegment( TrackNodeID nodeA_ID, const float2& 
 	newSegment.id = newID;
 	newSegment.nodeA = nodeA_ID;
 	newSegment.nodeB = nodeB_ID;
+
+	newSegment.nodeA_Position = GetTrackNode(newSegment.nodeA).nodePosition;
+	newSegment.nodeB_Position = GetTrackNode(newSegment.nodeB).nodePosition;;
 	newSegment.nodeA_Direction = normalize(nodeA_direction);
 	newSegment.nodeB_Direction = normalize(nodeB_direction);
 

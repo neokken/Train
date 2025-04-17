@@ -2,6 +2,7 @@
 #include "TrackBuilder.h"
 
 #include "TrackManager.h"
+#include "TrackRenderer.h"
 #include "Camera/Camera.h"
 #include "Debugger/TrackDebugger.h"
 #include "Input/InputManager.h"
@@ -10,12 +11,11 @@
 #include "Renderables/CurvedSegment.h"
 #include "Renderables/LineSegment.h"
 
-void TrackBuilder::Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackDebugger* trackDebugger )
-
+void TrackBuilder::Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackRenderer* trackRenderer )
 {
 	m_inputManager = inputManager;
 	m_trackManager = trackManager;
-	m_trackDebugger = trackDebugger;
+	m_trackRenderer = trackRenderer;
 }
 
 void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float deltaTime )
@@ -91,25 +91,37 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 
 void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget ) const
 {
+	if (m_currentProgress != BuildProgress::NoBuild)
+	{
+		const std::unordered_map<TrackNodeID, TrackNode>& nodes = m_trackManager->GetNodeMap();
+
+		for (const auto& node : std::views::values(nodes))
+		{
+			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 10);
+			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 4);
+		}
+	}
+
 	if (m_currentProgress == BuildProgress::Start)
 	{
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR);
+		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR, false);
 	}
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
 	{
-		Engine::CurveData curveData{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
-		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(curveData, m_buildStrictness)) //, &camera, &renderTarget))
+		const Engine::CurveData data{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
+
+		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(data, m_buildStrictness)) //, &camera, &renderTarget))
 		{
-			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, DEFAULT_COLOR);
+			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackRail);
 		}
 		else
 		{
-			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, INVALID_COLOR);
+			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackSelectedInvalid);
 		}
 
-		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, CONNECT_COLOR);
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR);
+		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, CONNECT_COLOR, true);
+		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR, false);
 	}
 }
 
@@ -117,7 +129,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 {
 	const float2 worldMousePosition = camera.GetWorldPosition(m_inputManager->GetMousePos());
 
-	const TrackNodeID hoverNodeID = m_trackManager->GetNodeByPosition(worldMousePosition, 2.f);
+	const TrackNodeID hoverNodeID = m_trackManager->GetNodeByPosition(worldMousePosition, 1.5f);
 
 	if (hoverNodeID != TrackNodeID::Invalid)
 	{
@@ -223,31 +235,40 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 	}
 }
 
-void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment ) const
+void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment, const bool onlyShowArrow ) const
 {
 	const float2 dir = data.directionFloat2;
 
 	Engine::Arrow::RenderWorldPos(camera, renderTarget, data.trackNodePosition, data.directionFloat2, .5f, colorNode);
 
-	const float2 left = data.trackNodePosition + float2(-dir.y, dir.x) * -0.75f;
-	const float2 right = data.trackNodePosition + float2(-dir.y, dir.x) * 0.75f;
+	if (!onlyShowArrow)
+	{
+		const float2 left = data.trackNodePosition + float2(-dir.y, dir.x) * -0.75f;
+		const float2 right = data.trackNodePosition + float2(-dir.y, dir.x) * 0.75f;
 
-	Engine::LineSegment::RenderWorldPos(camera, renderTarget, left + dir * .5f, left + dir * -.5f, colorNode);
-	Engine::LineSegment::RenderWorldPos(camera, renderTarget, right + dir * .5f, right + dir * -.5f, colorNode);
+		const float2 leftS = data.trackNodePosition + float2(-dir.y, dir.x) * -0.70f;
+		const float2 rightS = data.trackNodePosition + float2(-dir.y, dir.x) * 0.70f;
+
+		Engine::LineSegment::RenderWorldPos(camera, renderTarget, left + dir * .5f, left + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, renderTarget, right + dir * .5f, right + dir * -.5f, colorNode);
+
+		Engine::LineSegment::RenderWorldPos(camera, renderTarget, leftS + dir * .5f, leftS + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, renderTarget, rightS + dir * .5f, rightS + dir * -.5f, colorNode);
+	}
 
 	if (data.trackSegmentId != TrackSegmentID::Invalid)
 	{
-		m_trackDebugger->RenderTrackSegment(camera, renderTarget, data.trackSegmentId, 10, colorConnectedSegment);
+		TrackRenderer::RenderTrackSegment(camera, renderTarget, m_trackManager->GetTrackSegment(data.trackSegmentId), TrackRenderType::RailsOnly, Color::TrackSelected);
 	}
 }
 
-void TrackBuilder::RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, uint trackColor )
+void TrackBuilder::RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, const Color trackColor )
 {
-	const float2 p0 = nodeA.trackNodePosition;
-	const float2 p1 = nodeB.trackNodePosition;
+	const TrackSegment seg(nodeA.trackNodePosition, nodeB.trackNodePosition, nodeA.directionFloat2, -nodeB.directionFloat2);
 
-	const float2 dir0 = nodeA.directionFloat2;
-	const float2 dir1 = -nodeB.directionFloat2;
+	if (abs(nodeA.trackNodePosition.x - nodeB.trackNodePosition.x) < .01f && abs(nodeA.trackNodePosition.y - nodeB.trackNodePosition.y) < .01f &&
+		abs(nodeA.directionFloat2.x - nodeB.directionFloat2.x) < .01f && abs(nodeA.directionFloat2.y - nodeB.directionFloat2.y) < .01f)
+		return;
 
-	TrackDebugger::RenderSegment(camera, renderTarget, p0, dir0, p1, dir1, 10, trackColor);
+	TrackRenderer::RenderTrackSegment(camera, renderTarget, seg, TrackRenderType::RailsOnly, trackColor);
 }
