@@ -146,6 +146,7 @@
     <ClCompile Include="src\Game\TrainSystem\TrainWalker\TrackWalker.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrackRenderer.cpp" />
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -210,6 +211,7 @@
     <ClInclude Include="src\Game\TrainSystem\TrainWalker\TrackWalker.h" />
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrackRenderer.h" />
     <ClInclude Include="vendor\template\common.h" />
     <ClInclude Include="vendor\template\opencl.h" />
     <ClInclude Include="vendor\template\opengl.h" />

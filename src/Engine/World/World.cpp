@@ -14,7 +14,7 @@
 
 Engine::World::~World()
 {
-	for (auto& obj : m_objects)
+	for (auto obj : m_objects)
 	{
 		delete obj;
 	}
@@ -26,12 +26,13 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	m_camera.SetResolution(int2(SCRWIDTH, SCRHEIGHT));
 	m_camera.SetZoomLevel(50.f);
 
-	m_grid.AddGrid(0x354f52, 1 /*, .7f*/);
-	m_grid.AddGrid(0x52796f, 10 /*, .33f*/);
+	m_grid.AddGrid(GetColor(Color::BackGroundGrid1), 1 /*, .7f*/);
+	m_grid.AddGrid(GetColor(Color::BackGroundGrid2), 10 /*, .33f*/);
 
 	m_renderTarget = renderTarget;
 
-	m_trackBuilder.Init(inputManager, &m_trackManager, &m_trackDebugger);
+	m_trackBuilder.Init(inputManager, &m_trackManager, &m_trackRenderer);
+	m_trackRenderer.Init(&m_trackManager);
 	m_trackDebugger.Init(inputManager, &m_trackManager);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
@@ -59,7 +60,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 void Engine::World::Update( float deltaTime )
 {
-	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), []( GameObject* obj ) { return obj->MarkedForDestroy(); }), m_objects.end());
+	std::erase_if(m_objects, []( GameObject* obj ) { return obj->MarkedForDestroy(); });
 
 	// Update pass
 	m_camera.Update(deltaTime);
@@ -78,8 +79,8 @@ void Engine::World::Update( float deltaTime )
 	{
 		obj->Render(m_camera, *m_renderTarget);
 	}
-
-	m_trackDebugger.Render(m_camera, *m_renderTarget);
+	m_trackRenderer.Render(m_camera, *m_renderTarget);
+	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 
 

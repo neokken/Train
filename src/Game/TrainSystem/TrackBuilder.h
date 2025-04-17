@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/TrainSystem/TrackSegment.h"
 
+class TrackRenderer;
 class TrackDebugger;
 class TrackManager;
 
@@ -19,7 +20,7 @@ class TrackBuilder
 public:
 	TrackBuilder() = default;
 
-	void Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackDebugger* trackDebugger );
+	void Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackRenderer* trackRenderer );
 
 	void Update( const Engine::Camera& camera, float deltaTime );
 
@@ -28,7 +29,7 @@ public:
 private:
 	Engine::InputManager* m_inputManager{nullptr};
 	TrackManager* m_trackManager{nullptr};
-	TrackDebugger* m_trackDebugger{nullptr};
+	TrackRenderer* m_trackRenderer{nullptr};
 
 	struct TrackBuildData
 	{
@@ -45,7 +46,7 @@ private:
 
 	TrackBuildData m_nodeA;
 
-	float m_buildStrictness = .5f;
+	float m_buildStrictness = 1.f;
 
 	enum class BuildProgress : std::uint8_t
 	{
@@ -59,7 +60,7 @@ private:
 private:
 	void UpdateTempNode( const Engine::Camera& camera, bool isSecondNode );
 
-	void RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment ) const;
+	void RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment, bool onlyShowArrow ) const;
 
-	static void RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, uint trackColor );
+	static void RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, Color trackColor );
 };

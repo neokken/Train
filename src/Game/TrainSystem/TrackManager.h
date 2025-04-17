@@ -28,6 +28,9 @@ public:
 	[[nodiscard]] nlohmann::json SerializeData() const;
 	void LoadData( const nlohmann::json& data );
 
+	[[nodiscard]] const std::unordered_map<TrackSegmentID, TrackSegment>& GetSegmentMap() const { return m_segments; }
+	[[nodiscard]] const std::unordered_map<TrackNodeID, TrackNode>& GetNodeMap() const { return m_nodes; }
+
 private:
 	//nobody outside this class should touch nodes/segments
 	// if there is a case handle it differently...
