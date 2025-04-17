@@ -8,6 +8,7 @@
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
 #include "Game/Trains/Wagon.h"
 #include "Game/Buildings/Building.h"
+#include "Game/Trains/Train.h"
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "Renderables/CurvedSegment.h"
@@ -40,12 +41,21 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	AddObject(building);
 
-	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 20), TrackDirection::S, TrackSegmentID::Invalid);
+	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
 
 	TrackWalker tWalk;
 	tWalk.Init(&m_trackManager);
-	tWalk.SetCurrentTrackSegment(seg1, 0);
-	AddObject(new Wagon(tWalk));
+	tWalk.SetCurrentTrackSegment(seg1, 37);
+	Wagon* wag1 = new Wagon(tWalk);
+	Wagon* wag2 = new Wagon(tWalk);
+	Wagon* wag3 = new Wagon(tWalk);
+	Wagon* wag4 = new Wagon(tWalk);
+	AddObject(wag1);
+	AddObject(wag2);
+	AddObject(wag3);
+	AddObject(wag4);
+	Train* train = new Train({wag1, wag2, wag3, wag4});
+	AddObject(train);
 
 	// Rails
 	/*

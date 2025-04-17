@@ -43,10 +43,46 @@ void Wagon::Update( const float deltaTime )
 		float tensionForce = abs(frontPosChange - backPosChange);
 		if (tensionForce > m_maxTensionForce) Derail();
 	}
-	else
+	else if (m_moveSpeed < 0)
 	{
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(m_moveSpeed * deltaTime);
+		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+
+		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+
+		float2 oldFrontPos = m_frontWalker.GetPosition();
+		m_frontWalker.Move(m_wagonLength - walkerDistance);
+		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+
+		float tensionForce = abs(frontPosChange - backPosChange);
+		if (tensionForce > m_maxTensionForce) Derail();
+	}
+
+	m_transform.position = m_frontWalker.GetPosition();
+}
+
+void Wagon::Move( const float distance )
+{
+	if (distance > 0)
+	{
+		float2 oldFrontPos = m_frontWalker.GetPosition();
+		m_frontWalker.Move(distance);
+		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+
+		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+
+		float2 oldBackPos = m_backWalker.GetPosition();
+		m_backWalker.Move(walkerDistance - m_wagonLength);
+		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+
+		float tensionForce = abs(frontPosChange - backPosChange);
+		if (tensionForce > m_maxTensionForce) Derail();
+	}
+	else
+	{
+		float2 oldBackPos = m_backWalker.GetPosition();
+		m_backWalker.Move(distance);
 		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
@@ -89,13 +125,14 @@ void Wagon::Render( const Engine::Camera& camera, Surface& target )
 
 void Wagon::Derail()
 {
-	printf("Train Derailed!!!");
+	if (m_invincible) return;
+	printf("Train Derailed!!!\n");
 	float2 dir = m_frontWalker.GetPosition() - m_backWalker.GetPosition();
 	float2 pos = m_backWalker.GetPosition() + dir / 2;
 
-	m_world->GetParticleSystem().SpawnParticles(pos, 0, int2(5000, 8000), float2(1.f, 30.f), float2(0.1f, .5f), float2(0.1f, 1.f), 0xffbb20, 0xaa3000);
+	//m_world->GetParticleSystem().SpawnParticles(pos, 0, int2(5000, 8000), float2(1.f, 30.f), float2(0.1f, .5f), float2(0.1f, 1.f), 0xffbb20, 0xaa3000);
 
-	Destroy();
+	//Destroy();
 }
 
 void Wagon::ImGuiDebugViewer()
