@@ -30,7 +30,7 @@ private:
 	TrackWalker m_backWalker;
 	float m_wagonLength = 8.f; // Length in between the 2 bogeys
 	float m_moveSpeed{0.f};
-	float m_maxTensionForce{0.8f}; // Max force allowed to be exerted on the bogeys before derailing
+	float m_maxTensionForce{1.f}; // Max force allowed to be exerted on the bogeys before derailing
 
 	bool m_invincible{false}; // Stops derailing
 

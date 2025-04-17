@@ -130,9 +130,9 @@ void Wagon::Derail()
 	float2 dir = m_frontWalker.GetPosition() - m_backWalker.GetPosition();
 	float2 pos = m_backWalker.GetPosition() + dir / 2;
 
-	//m_world->GetParticleSystem().SpawnParticles(pos, 0, int2(5000, 8000), float2(1.f, 30.f), float2(0.1f, .5f), float2(0.1f, 1.f), 0xffbb20, 0xaa3000);
+	m_world->GetParticleSystem().SpawnParticles(pos, 0, int2(5000, 8000), float2(1.f, 30.f), float2(0.1f, .5f), float2(0.1f, 1.f), 0xffbb20, 0xaa3000);
 
-	//Destroy();
+	Destroy();
 }
 
 void Wagon::ImGuiDebugViewer()
