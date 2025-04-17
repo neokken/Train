@@ -20,9 +20,8 @@ Engine::World::~World()
 	}
 }
 
-void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
+void Engine::World::Init( Surface* renderTarget )
 {
-	m_camera.Init(inputManager);
 	m_camera.SetResolution(int2(SCRWIDTH, SCRHEIGHT));
 	m_camera.SetZoomLevel(50.f);
 
@@ -31,9 +30,9 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	m_renderTarget = renderTarget;
 
-	m_trackBuilder.Init(inputManager, &m_trackManager, &m_trackRenderer);
+	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
-	m_trackDebugger.Init(inputManager, &m_trackManager);
+	m_trackDebugger.Init(&m_trackManager);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 

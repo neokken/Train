@@ -8,15 +8,16 @@
 #include "Renderables/CurvedSegment.h"
 #include "Renderables/LineSegment.h"
 
-void TrackDebugger::Init( Engine::InputManager* inputManager, TrackManager* trackManager )
+void TrackDebugger::Init( TrackManager* trackManager )
 {
-	m_inputManager = inputManager;
 	m_trackManager = trackManager;
 }
 
 void TrackDebugger::Update( const Engine::Camera& camera )
 {
-	const float2 worldPosMouse = camera.GetWorldPosition(m_inputManager->GetMousePos());
+	const Engine::InputManager& input = Input::get();
+
+	const float2 worldPosMouse = camera.GetWorldPosition(input.GetMousePos());
 
 	for (const auto& node : std::views::values(m_trackManager->m_nodes))
 	{
@@ -25,7 +26,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		if (sqrLength(diff) < NODE_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackNode = node.id;
-			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+			if (input.IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
 			{
 				if (m_selectedTrackNode != node.id)
 				{
@@ -51,7 +52,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 		if (SQRDistancePointToSegment(worldPosMouse, segment) < SEGMENT_SELECTION_DIST_SQ)
 		{
 			m_hoveredTrackSegment = segment.id;
-			if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+			if (input.IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
 			{
 				if (m_selectedTrackSegment != segment.id)
 				{
@@ -75,6 +76,8 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 
 void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface ) const
 {
+	const Engine::InputManager& input = Input::get();
+
 	if (!m_trackManager)
 	{
 		Engine::Logger::Warn("Invalid TrackNode ID");
@@ -98,7 +101,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		if (segment.id == m_hoveredTrackSegment && segment.id == m_selectedTrackSegment)
 			color = SEGMENT_COLOR_SELECT_HOVER;
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) && (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid) && ranges::find(m_linkedTrackSegments, segment.id) != m_linkedTrackSegments.end())
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) && (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid) && ranges::find(m_linkedTrackSegments, segment.id) != m_linkedTrackSegments.end())
 		{
 			color = SEGMENT_COLOR_LINKED;
 		}
@@ -106,7 +109,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		const TrackNode& a = m_trackManager->GetTrackNode(segment.nodeA);
 		const TrackNode& b = m_trackManager->GetTrackNode(segment.nodeB);
 
-		RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
+		//RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
 
 		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
 		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
@@ -297,7 +300,7 @@ void TrackDebugger::RenderTrackSegment( const Engine::Camera& camera, Surface& t
 	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
 	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
 
-	RenderSegment(camera, targetSurface, nodeA.nodePosition, segment.nodeA_Direction, nodeB.nodePosition, segment.nodeB_Direction, segmentCount, color);
+	//RenderSegment(camera, targetSurface, nodeA.nodePosition, segment.nodeA_Direction, nodeB.nodePosition, segment.nodeB_Direction, segmentCount, color);
 }
 
 float TrackDebugger::SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const
@@ -338,16 +341,4 @@ std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const T
 		result.insert(result.end(), segmentList.begin(), segmentList.end());
 	}
 	return result;
-}
-
-void TrackDebugger::RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, const int segmentCount, const uint color )
-{
-	float2 leftOffsetA = normalize(float2(-dirA.y, dirA.x));
-	float2 leftOffsetB = normalize(float2(-dirB.y, dirB.x));
-
-	float2 pointA_left = pointA + leftOffsetA * 0.75f;
-	float2 pointB_left = pointB + leftOffsetB * 0.75f;
-
-	float2 pointA_right = pointA - leftOffsetA * 0.75f;
-	float2 pointB_right = pointB - leftOffsetB * 0.75f;
 }

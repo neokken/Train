@@ -20,14 +20,13 @@ class TrackBuilder
 public:
 	TrackBuilder() = default;
 
-	void Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackRenderer* trackRenderer );
+	void Init( TrackManager* trackManager, TrackRenderer* trackRenderer );
 
 	void Update( const Engine::Camera& camera, float deltaTime );
 
 	void Render( const Engine::Camera& camera, Surface& renderTarget ) const;
 
 private:
-	Engine::InputManager* m_inputManager{nullptr};
 	TrackManager* m_trackManager{nullptr};
 	TrackRenderer* m_trackRenderer{nullptr};
 

@@ -9,30 +9,26 @@ Engine::Camera::Camera( const int2& size )
 {
 }
 
-void Engine::Camera::Init( Engine::InputManager* input )
-{
-	m_inputManager = input;
-}
-
 void Engine::Camera::Update( const float deltaTime )
 {
 	float2 dir = {0.f};
-	float zoomDir = 1;
 
-	if (m_inputManager->IsKeyDown(GLFW_KEY_W)) dir.y -= 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_S)) dir.y += 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_A)) dir.x -= 1.f;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_D)) dir.x += 1.f;
+	const InputManager& input = Input::get();
 
-	if ((m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT) || m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_RIGHT)) && !IsMouseOverUI())
+	if (input.IsKeyDown(GLFW_KEY_W)) dir.y -= 1.f;
+	if (input.IsKeyDown(GLFW_KEY_S)) dir.y += 1.f;
+	if (input.IsKeyDown(GLFW_KEY_A)) dir.x -= 1.f;
+	if (input.IsKeyDown(GLFW_KEY_D)) dir.x += 1.f;
+
+	if ((input.IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT) || input.IsMouseJustDown(GLFW_MOUSE_BUTTON_RIGHT)) && !IsMouseOverUI())
 	{
 		m_mouseLocked = true;
-		m_lockedWorldMousePos = GetWorldPosition(m_inputManager->GetMousePos());
+		m_lockedWorldMousePos = GetWorldPosition(input.GetMousePos());
 	}
 
-	if ((m_inputManager->IsMouseDown(GLFW_MOUSE_BUTTON_LEFT) || m_inputManager->IsMouseDown(GLFW_MOUSE_BUTTON_RIGHT)) && !IsMouseOverUI())
+	if ((input.IsMouseDown(GLFW_MOUSE_BUTTON_LEFT) || input.IsMouseDown(GLFW_MOUSE_BUTTON_RIGHT)) && !IsMouseOverUI())
 	{
-		const float2 diff = m_lockedWorldMousePos - GetWorldPosition(m_inputManager->GetMousePos());
+		const float2 diff = m_lockedWorldMousePos - GetWorldPosition(input.GetMousePos());
 		SetPosition(GetPosition() + diff);
 	}
 	else
@@ -41,13 +37,14 @@ void Engine::Camera::Update( const float deltaTime )
 	}
 
 	// Zooming
-	if (m_inputManager->IsKeyUp(GLFW_KEY_LEFT_SHIFT) && m_inputManager->IsKeyUp(GLFW_KEY_LEFT_CONTROL))
+	if (input.IsKeyUp(GLFW_KEY_LEFT_SHIFT) && input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 	{
-		zoomDir += m_inputManager->GetScrollDelta() * deltaTime * m_scrollSensitivity;
+		float zoomDir = 1.f;
+		zoomDir += input.GetScrollDelta() * deltaTime * m_scrollSensitivity;
 		if (zoomDir != 1.f && !IsMouseOverUI())
 		{
 			//Calculate positions before and after zoom to use as offset to zoom into the mouse location
-			const int2 mousePos = m_inputManager->GetMousePos();
+			const int2 mousePos = input.GetMousePos();
 			const float2 mouseScreenPos = float2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 			const float2 mousePosBefore = GetWorldPosition(mouseScreenPos);
 			SetZoomLevel(GetZoomLevel() * zoomDir);
@@ -64,7 +61,7 @@ void Engine::Camera::Update( const float deltaTime )
 	}
 
 	float evaluatedMoveSpeed = m_moveSpeed;
-	if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
+	if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT)) evaluatedMoveSpeed *= 2.0f;
 	SetPosition(GetPosition() + dir * evaluatedMoveSpeed * deltaTime);
 }
 

@@ -4,32 +4,32 @@
 #include "TrackManager.h"
 #include "TrackRenderer.h"
 #include "Camera/Camera.h"
-#include "Debugger/TrackDebugger.h"
 #include "Input/InputManager.h"
 #include "Renderables/Arrow.h"
 #include "Renderables/Circle.h"
 #include "Renderables/CurvedSegment.h"
 #include "Renderables/LineSegment.h"
 
-void TrackBuilder::Init( Engine::InputManager* inputManager, TrackManager* trackManager, TrackRenderer* trackRenderer )
+void TrackBuilder::Init( TrackManager* trackManager, TrackRenderer* trackRenderer )
 {
-	m_inputManager = inputManager;
 	m_trackManager = trackManager;
 	m_trackRenderer = trackRenderer;
 }
 
 void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float deltaTime )
 {
+	const Engine::InputManager& input = Input::get();
+
 	if (m_currentProgress == BuildProgress::NoBuild)
 	{
-		if (m_inputManager->IsKeyJustDown(GLFW_KEY_B))
+		if (input.IsKeyJustDown(GLFW_KEY_B))
 		{
 			m_currentProgress = BuildProgress::Start;
 		}
 		return;
 	}
 
-	if (m_inputManager->IsKeyJustDown(GLFW_KEY_B))
+	if (input.IsKeyJustDown(GLFW_KEY_B))
 	{
 		m_currentProgress = BuildProgress::NoBuild;
 		return;
@@ -39,7 +39,7 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 	{
 		UpdateTempNode(camera, false);
 
-		if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+		if (input.IsMouseClicked(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			// validate node??
 
@@ -53,7 +53,7 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 	{
 		UpdateTempNode(camera, true);
 
-		if (m_inputManager->IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+		if (input.IsMouseClicked(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			// validate node??
 			Engine::CurveData curveData{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
@@ -127,7 +127,9 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSecondNode )
 {
-	const float2 worldMousePosition = camera.GetWorldPosition(m_inputManager->GetMousePos());
+	const Engine::InputManager& input = Input::get();
+
+	const float2 worldMousePosition = camera.GetWorldPosition(input.GetMousePos());
 
 	const TrackNodeID hoverNodeID = m_trackManager->GetNodeByPosition(worldMousePosition, 1.5f);
 
@@ -149,25 +151,25 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			return;
 		}
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 		{
-			if (m_inputManager->GetScrollDelta() > 0.f)
+			if (input.GetScrollDelta() > 0.f)
 			{
 				m_tempNode.trackSegmentSelector = (m_tempNode.trackSegmentSelector + 1) % static_cast<int>(hoverNode.validConnections.size());
 			}
-			else if (m_inputManager->GetScrollDelta() < 0.f)
+			else if (input.GetScrollDelta() < 0.f)
 			{
 				m_tempNode.trackSegmentSelector = (m_tempNode.trackSegmentSelector + static_cast<int>(hoverNode.validConnections.size()) - 1) % static_cast<int>(hoverNode.validConnections.size());
 			}
 		}
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_CONTROL))
 		{
-			if (m_inputManager->GetScrollDelta() > 0.f)
+			if (input.GetScrollDelta() > 0.f)
 			{
 				m_tempNode.direction = static_cast<TrackDirection>((static_cast<int>(m_tempNode.direction) + 1) % static_cast<int>(TrackDirection::Count));
 			}
-			else if (m_inputManager->GetScrollDelta() < 0.f)
+			else if (input.GetScrollDelta() < 0.f)
 			{
 				m_tempNode.direction = static_cast<TrackDirection>((static_cast<int>(m_tempNode.direction) - 1 + static_cast<int>(TrackDirection::Count)) % static_cast<int>(TrackDirection::Count));
 			}
@@ -176,7 +178,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			m_tempNode.directionFloat2 = toFloat2(m_tempNode.direction);
 		}
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) || m_inputManager->IsKeyUp(GLFW_KEY_LEFT_CONTROL))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) || input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 		{
 			std::vector<TrackSegmentID> keys;
 			for (const auto& key : views::keys(hoverNode.validConnections))
@@ -210,7 +212,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 		m_tempNode.trackSegmentId = TrackSegmentID::Invalid;
 		m_tempNode.trackNodeID = TrackNodeID::Invalid;
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_ALT))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_ALT))
 		{
 			m_tempNode.trackNodePosition = worldMousePosition;
 		}
@@ -219,13 +221,13 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			m_tempNode.trackNodePosition = float2(round(worldMousePosition.x / 1.f), round(worldMousePosition.y / 1.f));
 		}
 
-		if (m_inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 		{
-			if (m_inputManager->GetScrollDelta() > 0.f)
+			if (input.GetScrollDelta() > 0.f)
 			{
 				m_tempNode.direction = static_cast<TrackDirection>((static_cast<int>(m_tempNode.direction) + 1) % static_cast<int>(TrackDirection::Count));
 			}
-			else if (m_inputManager->GetScrollDelta() < 0.f)
+			else if (input.GetScrollDelta() < 0.f)
 			{
 				m_tempNode.direction = static_cast<TrackDirection>((static_cast<int>(m_tempNode.direction) - 1 + static_cast<int>(TrackDirection::Count)) % static_cast<int>(TrackDirection::Count));
 			}
