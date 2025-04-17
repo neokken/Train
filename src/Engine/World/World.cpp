@@ -6,7 +6,7 @@
 #include "GameObject/GameObject.h"
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
-#include "Wagon.h"
+#include "Game/Trains/Wagon.h"
 #include "Game/Buildings/Building.h"
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
@@ -70,6 +70,7 @@ void Engine::World::Update( float deltaTime )
 
 	m_trackDebugger.Update(m_camera);
 	m_trackBuilder.Update(m_camera, deltaTime);
+	m_particles.Update(deltaTime);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
@@ -79,6 +80,7 @@ void Engine::World::Update( float deltaTime )
 	{
 		obj->Render(m_camera, *m_renderTarget);
 	}
+	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 }

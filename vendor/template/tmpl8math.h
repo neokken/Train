@@ -2114,3 +2114,48 @@ inline float2 CubicBezier( const float2& x1, const float2& x2, const float2& x3,
 
 	return lerp(square_x12x23, square_x23x34, t);
 }
+
+
+// extract the red component
+inline uint8_t getRed(uint32_t color)
+{
+	return (color >> 16) & 0xFF;
+}
+
+// extract the green component
+inline uint8_t getGreen(uint32_t color)
+{
+	return (color >> 8) & 0xFF;
+}
+
+// extract the blue component
+inline uint8_t getBlue(uint32_t color)
+{
+	return color & 0xFF;
+}
+
+// blend two colors
+inline uint32_t BlendColors(uint32_t color1, uint32_t color2, float alpha)
+{
+	// Ensure alpha is between 0 and 1
+	alpha = (alpha < 0.0f) ? 0.0f : (alpha > 1.0f ? 1.0f : alpha);
+
+	// Extract the individual color components
+	uint8_t red1 = getRed(color1);
+	uint8_t green1 = getGreen(color1);
+	uint8_t blue1 = getBlue(color1);
+
+	uint8_t red2 = getRed(color2);
+	uint8_t green2 = getGreen(color2);
+	uint8_t blue2 = getBlue(color2);
+
+	float invA = 1.f - alpha;
+
+	// Blend each component separately
+	uint8_t red = static_cast<uint8_t>((red1 * invA) + (red2 * alpha));
+	uint8_t green = static_cast<uint8_t>((green1 * invA) + (green2 * alpha));
+	uint8_t blue = static_cast<uint8_t>((blue1 * invA) + (blue2 * alpha));
+
+	// Combine the components back into a single color in 0xRRGGBB format
+	return (red << 16) | (green << 8) | blue;
+}

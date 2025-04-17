@@ -1,5 +1,5 @@
 #include "precomp.h"
-#include "Wagon.h"
+#include "Game/Trains/Wagon.h"
 
 #include "Camera/Camera.h"
 #include "Renderables/Arrow.h"
@@ -90,6 +90,11 @@ void Wagon::Render( const Engine::Camera& camera, Surface& target )
 void Wagon::Derail()
 {
 	printf("Train Derailed!!!");
+	float2 dir = m_frontWalker.GetPosition() - m_backWalker.GetPosition();
+	float2 pos = m_backWalker.GetPosition() + dir / 2;
+
+	m_world->GetParticleSystem().SpawnParticles(pos, 0, int2(5000, 8000), float2(1.f, 30.f), float2(0.1f, .5f), float2(0.1f, 1.f), 0xffbb20, 0xaa3000);
+
 	Destroy();
 }
 
