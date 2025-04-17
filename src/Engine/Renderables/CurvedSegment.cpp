@@ -72,8 +72,8 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, Surface& drawS
 		if (subSegments != 0)
 			for (uint j = subSegments; j > 0; --j)
 			{
-				float subT = t - ((1.f / static_cast<float>(segments)) / static_cast<float>(subSegments)) * static_cast<float>(j);
-				const float2 subPoint = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, subT);
+				float subT = t - ((1.f / static_cast<float>(curve.baseSegments)) / static_cast<float>(subSegments)) * static_cast<float>(j);
+				const float2 subPoint = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, subT);
 
 				Engine::LineSegment::RenderWorldPos(camera, drawSurface, lastPoint, subPoint, color);
 				lastPoint = subPoint;
@@ -143,8 +143,8 @@ float Engine::CurvedSegment::RenderTrackLinesWorldPos( const Camera& camera, Sur
 		if (subSegments != 0)
 			for (uint j = subSegments - 1; j > 0; --j)
 			{
-				float subT = t - ((1.f / static_cast<float>(segments)) / static_cast<float>(subSegments)) * static_cast<float>(j);
-				const float2 subPoint = CubicBezier(lStart, startMidPoint, endMidPoint, lEnd, subT);
+				float subT = t - ((1.f / static_cast<float>(curve.baseSegments)) / static_cast<float>(subSegments)) * static_cast<float>(j);
+				const float2 subPoint = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, subT);
 				float2 subOffset = lastPoint - subPoint;
 				dir = subOffset / max(length(subOffset), 0.0001f);
 
@@ -178,10 +178,9 @@ void Engine::CurvedSegment::RenderTrackSpokesWorldPos( const Camera& camera, Sur
 
 	uint seed = 17u;
 
-	float2 lastPoint = lStart;
+	float2 lastPoint = curve.lStart;
 	float t = 0;
 	float spokes = 0.f;
-	uint seed = 17u;
 	for (uint i = 0; i <= curve.baseSegments; ++i)
 	{
 		const float2 cubic = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, t);

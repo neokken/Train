@@ -39,15 +39,6 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	AddObject(building);
 
-	//DEBUG TODO: Remove
-
-	const TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0.f, 100.f), TrackDirection::N, TrackSegmentID::Invalid, float2(100.f, 200.f), TrackDirection::S, TrackSegmentID::Invalid);
-	TrackWalker tWalk = TrackWalker();
-	tWalk.Init(&m_trackManager);
-	tWalk.SetCurrentTrackSegment(seg1, 0.f);
-	TrackWalkerVisualizer* walker = new TrackWalkerVisualizer(tWalk);
-	AddObject(walker);
-
 	// Rails
 	/*
 	 *	This forms branch line, where a secondary track splits of the main on.
@@ -82,9 +73,6 @@ void Engine::World::Update( float deltaTime )
 	m_trackRenderer.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
-
-
-
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

@@ -26,23 +26,24 @@ void TrackRenderer::SetTrackRenderer( const TrackRenderType type )
 
 void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegment& segment, const TrackRenderType type, const Color trackColor, const Color SpokeColor )
 {
+	const Engine::CurveData data{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
+
 	switch (type)
 	{
 	case TrackRenderType::Default:
 
-		Engine::CurvedSegment::RenderTrackWorldPos(camera, targetSurface, segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction, .5f, GetColor(trackColor), GetColor(SpokeColor), .75f, .875f, .1f, .2f, 1.f, .2f, 10);
-
+		Engine::CurvedSegment::RenderTrackWorldPos(camera, targetSurface, data, GetColor(trackColor), GetColor(SpokeColor), .75f, .875f, .1f, .2f, 1.f, .2f);
 		break;
 	case TrackRenderType::RailsOnly:
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction, .5f, GetColor(trackColor), .75f, 10);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .75f);
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction, .5f, GetColor(trackColor), .65f, 10);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .65f);
 
 		break;
 	case TrackRenderType::Debug:
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction, .5f, GetColor(trackColor), .75f, 10);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .75f);
 		break;
 	}
 }

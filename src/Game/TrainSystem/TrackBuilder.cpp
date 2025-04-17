@@ -109,7 +109,9 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
 	{
-		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2, .5f, 50, Engine::CurveSetupMode::LongestBend, m_buildStrictness, &camera, &renderTarget)) //, &camera, &renderTarget))
+		const Engine::CurveData data{m_nodeA.trackNodePosition, m_nodeA.directionFloat2, m_tempNode.trackNodePosition, -m_tempNode.directionFloat2};
+
+		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(data, m_buildStrictness)) //, &camera, &renderTarget))
 		{
 			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackRail);
 		}
@@ -127,7 +129,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 {
 	const float2 worldMousePosition = camera.GetWorldPosition(m_inputManager->GetMousePos());
 
-	const TrackNodeID hoverNodeID = m_trackManager->GetNodeByPosition(worldMousePosition, 2.f);
+	const TrackNodeID hoverNodeID = m_trackManager->GetNodeByPosition(worldMousePosition, 1.5f);
 
 	if (hoverNodeID != TrackNodeID::Invalid)
 	{
