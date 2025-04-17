@@ -1,6 +1,8 @@
 #include "precomp.h"
 #include "TrackWalkerVisualizer.h"
 
+#include "Camera/Camera.h"
+#include "Renderables/Arrow.h"
 #include "Renderables/LineSegment.h"
 
 TrackWalkerVisualizer::TrackWalkerVisualizer( const TrackWalker& trainWalker )
@@ -12,22 +14,15 @@ TrackWalkerVisualizer::TrackWalkerVisualizer( const TrackWalker& trainWalker )
 void TrackWalkerVisualizer::Update( const float deltaTime )
 {
 	m_walker.Move(m_moveSpeed * deltaTime);
+
 	m_transform.position = m_walker.GetPosition();
 }
 
 void TrackWalkerVisualizer::Render( const Engine::Camera& camera, Surface& target )
 {
-	const float2 halfScale = m_transform.scale * 0.5f * 10.f;
-
-	const float2 topLeft = m_transform.position - halfScale;
-	const float2 topRight = m_transform.position + float2(halfScale.x, -halfScale.y);
-	const float2 bottomLeft = m_transform.position + float2(-halfScale.x, halfScale.y);
-	const float2 bottomRight = m_transform.position + halfScale;
-
-	Engine::LineSegment::RenderWorldPos(camera, target, topLeft, topRight, m_color);
-	Engine::LineSegment::RenderWorldPos(camera, target, topRight, bottomRight, m_color);
-	Engine::LineSegment::RenderWorldPos(camera, target, bottomRight, bottomLeft, m_color);
-	Engine::LineSegment::RenderWorldPos(camera, target, bottomLeft, topLeft, m_color);
+	const float2 scale = m_transform.scale * 2.5f * float2(0.5f, 1.f);
+	target.Rectangle(camera.GetCameraPosition(m_transform.position), m_walker.GetDirection(), camera.GetZoomLevel() * scale, m_color);
+	Engine::Arrow::RenderWorldPos(camera, target, m_transform.position, m_walker.GetDirection(), 2.f, 0xff0000);
 }
 
 void TrackWalkerVisualizer::ImGuiDebugViewer()

@@ -39,6 +39,13 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	AddObject(building);
 
+	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 20), TrackDirection::S, TrackSegmentID::Invalid);
+
+	TrackWalker tWalk;
+	tWalk.Init(&m_trackManager);
+	tWalk.SetCurrentTrackSegment(seg1, 0);
+	AddObject(new TrackWalkerVisualizer(tWalk));
+
 	// Rails
 	/*
 	 *	This forms branch line, where a secondary track splits of the main on.
@@ -66,11 +73,11 @@ void Engine::World::Update( float deltaTime )
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
 
+	m_trackRenderer.Render(m_camera, *m_renderTarget);
 	for (const auto& obj : m_objects)
 	{
 		obj->Render(m_camera, *m_renderTarget);
 	}
-	m_trackRenderer.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 }
