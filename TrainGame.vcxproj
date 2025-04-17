@@ -185,6 +185,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">precomp.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="vendor\template\tmpl8math.cpp" />
+    <ClCompile Include="Wagon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Renderables\Arrow.h" />
@@ -218,6 +219,7 @@
     <ClInclude Include="vendor\template\precomp.h" />
     <ClInclude Include="vendor\template\surface.h" />
     <ClInclude Include="vendor\template\tmpl8math.h" />
+    <ClInclude Include="Wagon.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

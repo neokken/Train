@@ -6,6 +6,7 @@
 #include "GameObject/GameObject.h"
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
+#include "Wagon.h"
 #include "Game/Buildings/Building.h"
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
@@ -44,7 +45,7 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	TrackWalker tWalk;
 	tWalk.Init(&m_trackManager);
 	tWalk.SetCurrentTrackSegment(seg1, 0);
-	AddObject(new TrackWalkerVisualizer(tWalk));
+	AddObject(new Wagon(tWalk));
 
 	// Rails
 	/*
