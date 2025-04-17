@@ -10,9 +10,9 @@ namespace Engine
 
 // CONFIGURABLE
 
-constexpr float NODE_DISPLAY_SIZE = 10.f;
-constexpr float NODE_SELECTION_DIST = 15.f;
-constexpr float SEGMENT_SELECTION_DIST = 10.f;
+constexpr float NODE_DISPLAY_SIZE = 1.f;
+constexpr float NODE_SELECTION_DIST = 1.5f;
+constexpr float SEGMENT_SELECTION_DIST = 1.f;
 
 constexpr float NODE_SELECTION_DIST_SQ = NODE_SELECTION_DIST * NODE_SELECTION_DIST;
 constexpr float SEGMENT_SELECTION_DIST_SQ = SEGMENT_SELECTION_DIST * SEGMENT_SELECTION_DIST;
@@ -44,14 +44,16 @@ public:
 
 	void UI() const;
 
+	void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, TrackSegmentID trackID, int segmentCount, uint color ) const;
+
+	static void RenderSegment( const Engine::Camera& camera, Surface& targetSurface, const float2& pointA, const float2& dirA, const float2& pointB, const float2& dirB, int segmentCount, uint color );
+
 private:
 	// helper functions
+	float SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const;
 
-	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
-	std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
-
-	// TODO: helper math file instead of here
-	static float SQRDistancePointToSegment( const float2& point, const float2& A, const float2& B );
+	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
+	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
 
 private:
 	TrackManager* m_trackManager{nullptr};

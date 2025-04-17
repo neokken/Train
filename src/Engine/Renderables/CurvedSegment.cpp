@@ -339,8 +339,8 @@ bool Engine::CurvedSegment::CheckCurveValidity( const float2& lStart, const floa
 		{
 			if (camera != nullptr && screen != nullptr)
 			{
-				Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 10.f, 0xff0000);
-				Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 10.f, 0xff0000);
+				Engine::Circle::RenderWorldPos(*camera, *screen, cubic, 1.f, 0xff0000);
+				Engine::Circle::RenderWorldPos(*camera, *screen, lastPoint, 1.f, 0xff0000);
 				Engine::LineSegment::RenderWorldPos(*camera, *screen, lastPoint + float2(1, 1), cubic + float2(1, 1), 0xff0000);
 			}
 			return false;
@@ -351,6 +351,38 @@ bool Engine::CurvedSegment::CheckCurveValidity( const float2& lStart, const floa
 		time += 1.f / static_cast<float>(segments);
 	}
 	return true;
+}
+
+float2 Engine::CurvedSegment::GetClosestPoint( const float2& position, int samples, float tolerance ) const
+{
+	float left = 0.f;
+	float right = 1.f;
+
+	for (int i = 0; i < samples; i++)
+	{
+		const float diff = right - left;
+		if (diff < tolerance)
+		{
+			break;
+		}
+
+		const float rLeft = right - diff / golden_ratio;
+		const float rRight = left + diff / golden_ratio;
+
+		const float sqrLengthLeft = sqrLength(this->GetPositionOnSegment(rLeft) - position);
+		const float sqrLengthRight = sqrLength(this->GetPositionOnSegment(rRight) - position);
+
+		if (sqrLengthLeft < sqrLengthRight)
+		{
+			right = rRight;
+		}
+		else
+		{
+			left = rLeft;
+		}
+	}
+
+	return this->GetPositionOnSegment((left + right) / 2);
 }
 
 void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, const float hardness, float2& outStartMidPoint, float2& outEndMidPoint, const CurveSetupMode setupMode )
