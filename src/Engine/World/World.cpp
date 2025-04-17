@@ -41,8 +41,8 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 
 	AddObject(building);
 
+	//Set up a track with a train on it for debugging
 	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
-
 	TrackWalker tWalk;
 	tWalk.Init(&m_trackManager);
 	tWalk.SetCurrentTrackSegment(seg1, 37);
@@ -56,15 +56,6 @@ void Engine::World::Init( Surface* renderTarget, InputManager* inputManager )
 	AddObject(wag4);
 	Train* train = new Train({wag1, wag2, wag3, wag4});
 	AddObject(train);
-
-	// Rails
-	/*
-	 *	This forms branch line, where a secondary track splits of the main on.
-	 *	This shows that the direction you can go depends on where you come from.
-	 *	going north from the mainline, you can only keep going north.
-	 *	going north up from the branch line, you can only keep going north merging on the main line.
-	 *	going south there is a split where you can choose
-	 */
 }
 
 void Engine::World::Update( float deltaTime )
