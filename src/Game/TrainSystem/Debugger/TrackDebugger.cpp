@@ -305,9 +305,9 @@ float TrackDebugger::SQRDistancePointToSegment( const float2& position, const Tr
 	const float2 nodeA_pos = m_trackManager->GetTrackNode(segment.nodeA).nodePosition;
 	const float2 nodeB_pos = m_trackManager->GetTrackNode(segment.nodeB).nodePosition;
 
-	Engine::CurvedSegment curve(nodeA_pos, nodeB_pos, segment.nodeA_Direction, segment.nodeB_Direction, .5f, 0xffffff);
+	Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
 
-	return sqrLength(curve.GetClosestPoint(position) - position);
+	return sqrLength(Engine::CurvedSegment::GetClosestPoint(curveData, position) - position);
 }
 
 std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const TrackSegmentID segmentID ) const
@@ -350,7 +350,4 @@ void TrackDebugger::RenderSegment( const Engine::Camera& camera, Surface& target
 
 	float2 pointA_right = pointA - leftOffsetA * 0.75f;
 	float2 pointB_right = pointB - leftOffsetB * 0.75f;
-
-	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_left, dirA, pointB_right, dirB, .5f, color, segmentCount);
-	Engine::CurvedSegment::RenderWorldPosAndGetLength(camera, targetSurface, pointA_right, dirA, pointB_left, dirB, .5f, color, segmentCount);
 }
