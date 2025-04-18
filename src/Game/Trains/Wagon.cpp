@@ -28,54 +28,37 @@ Wagon::Wagon( const TrackWalker& trainWalker )
 
 void Wagon::Update( const float deltaTime )
 {
-	if (!m_locked)
+	if (m_moveSpeed > 0)
 	{
-		//Physics calculations
-		m_velocity += m_acceleration * deltaTime; // Technically frame dependent but good enough
+		float2 oldFrontPos = m_frontWalker.GetPosition();
+		m_frontWalker.Move(m_moveSpeed * deltaTime);
+		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
-		float drag = m_dragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
-		drag = m_velocity > 0 ? drag : -drag;
-		float newVelocity = m_velocity - drag * deltaTime; // Technically frame dependent but good enough
-		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
-		{
-			m_velocity = 0.0f;
-		}
-		else
-		{
-			m_velocity = newVelocity;
-		}
-		//Movement
-		if (m_velocity > 0)
-		{
-			float2 oldFrontPos = m_frontWalker.GetPosition();
-			m_frontWalker.Move(m_velocity * deltaTime);
-			float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
 
-			float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+		float2 oldBackPos = m_backWalker.GetPosition();
+		m_backWalker.Move(walkerDistance - m_wagonLength);
+		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
 
-			float2 oldBackPos = m_backWalker.GetPosition();
-			m_backWalker.Move(walkerDistance - m_wagonLength);
-			float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
-
-			float tensionForce = abs(frontPosChange - backPosChange);
-			if (tensionForce > m_maxTensionForce) Derail();
-		}
-		else if (m_velocity < 0)
-		{
-			float2 oldBackPos = m_backWalker.GetPosition();
-			m_backWalker.Move(m_velocity * deltaTime);
-			float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
-
-			float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
-
-			float2 oldFrontPos = m_frontWalker.GetPosition();
-			m_frontWalker.Move(m_wagonLength - walkerDistance);
-			float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
-
-			float tensionForce = abs(frontPosChange - backPosChange);
-			if (tensionForce > m_maxTensionForce) Derail();
-		}
+		float tensionForce = abs(frontPosChange - backPosChange);
+		if (tensionForce > m_maxTensionForce) Derail();
 	}
+	else if (m_moveSpeed < 0)
+	{
+		float2 oldBackPos = m_backWalker.GetPosition();
+		m_backWalker.Move(m_moveSpeed * deltaTime);
+		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+
+		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+
+		float2 oldFrontPos = m_frontWalker.GetPosition();
+		m_frontWalker.Move(m_wagonLength - walkerDistance);
+		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+
+		float tensionForce = abs(frontPosChange - backPosChange);
+		if (tensionForce > m_maxTensionForce) Derail();
+	}
+
 	m_transform.position = m_frontWalker.GetPosition();
 }
 
@@ -173,6 +156,5 @@ void Wagon::ImGuiDebugViewer()
 		m_frontWalker.ImGuiDebugViewer();
 	}
 
-	ImGui::DragFloat("Velocity", &m_velocity, .1f);
-	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
+	ImGui::DragFloat("MoveSpeed", &m_moveSpeed, .1f);
 }
