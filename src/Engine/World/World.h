@@ -3,6 +3,7 @@
 // TODO: Either pointerize or include these in any dependency with World.h
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
+#include "Data/ParticleSystem.h"
 #include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/TrackRenderer.h"
@@ -31,6 +32,8 @@ namespace Engine
 		const Camera& GetCamera() const;
 		Surface* GetRenderTarget() const;
 
+		ParticleSystem& GetParticleSystem() { return m_particles; }
+
 	private:
 		std::vector<GameObject*> m_objects;
 
@@ -42,6 +45,8 @@ namespace Engine
 		TrackRenderer m_trackRenderer;
 
 		TrackDebugger m_trackDebugger;
+
+		ParticleSystem m_particles = {10000};
 
 		Surface* m_renderTarget = nullptr;
 	};

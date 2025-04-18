@@ -302,14 +302,7 @@ float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, const C
 		{
 			// We are in between segment i-1 and i
 			const float part = (tLength - segmentLengths[i - 1]) / (segmentLengths[i] - segmentLengths[i - 1]);
-
-			float a = segmentLengths[i - 1] / segmentLength;
-			const float2 segmentA = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, a);
-
-			a = segmentLengths[i] / segmentLength;
-			const float2 segmentB = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, a);
-
-			return lerp(segmentA, segmentB, part);
+			return CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, (1.f / static_cast<float>(curve.baseSegments - 1) * (i - 1)) + (1.f / static_cast<float>(curve.baseSegments - 1) * part));
 		}
 	}
 	Logger::Error("t of {} was not found on CurvedSegment", t);
@@ -367,6 +360,46 @@ bool Engine::CurvedSegment::CheckCurveValidity( CurveData curve, float strictnes
 		time += 1.f / static_cast<float>(curve.baseSegments);
 	}
 	return true;
+}
+
+float2 Engine::CurvedSegment::GetDirectionOnCurvedSegment( const float t, const CurveData& curve )
+{
+	float2 startMidPoint, endMidPoint;
+	CalculateMidPoints(curve.lStart, curve.lStartDir, curve.lEnd, curve.lEndDir, curve.hardness, startMidPoint, endMidPoint, curve.setupMode);
+
+	//Calculate segment lengths
+	std::vector<float> segmentLengths;
+	float2 lastPoint = curve.lStart;
+	float segmentLength = 0;
+	float time = 0;
+	for (uint i = 0; i < curve.baseSegments; ++i)
+	{
+		const float2 cubic = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, time);
+		segmentLength += length(lastPoint - cubic);
+		segmentLengths.push_back(segmentLength);
+		lastPoint = cubic;
+		time += 1.f / static_cast<float>(curve.baseSegments);
+	}
+
+	//Find where we are
+	float tLength = t * segmentLength;
+	if (tLength == 0) tLength = 0.001f;
+
+	for (uint i = 0; i < curve.baseSegments; ++i)
+	{
+		if (tLength <= segmentLengths[i])
+		{
+			const float part = (tLength - segmentLengths[i - 1]) / (segmentLengths[i] - segmentLengths[i - 1]);
+			float2 inFront = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, (1.f / static_cast<float>(curve.baseSegments - 1) * (i - 1)) + (1.f / static_cast<float>(curve.baseSegments - 1) * part));
+			float2 behind = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, (1.f / static_cast<float>(curve.baseSegments - 1) * (i - 1)) + (1.f / static_cast<float>(curve.baseSegments - 1) * part) - 0.001f);
+			float2 dir = inFront - behind;
+			float len = length(dir);
+			dir /= max(len, 0.0001f);
+			return dir;
+		}
+	}
+	Logger::Error("t of {} was not found on CurvedSegment", t);
+	return float2(0, 0);
 }
 
 float2 Engine::CurvedSegment::GetClosestPoint( const CurveData& curve, const float2& position, int samples, float tolerance )

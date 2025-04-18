@@ -106,15 +106,28 @@ float2 TrackWalker::GetPosition() const
 	const TrackNode& nodeA = m_trackManager->GetTrackNode(currentSegment.nodeA);
 	const TrackNode& nodeB = m_trackManager->GetTrackNode(currentSegment.nodeB);
 
-	////TODO: TrackSegment::distance should be this
-	//float segmentDistance = Engine::CurvedSegment::GetSegmentLength(nodeA.nodePosition, currentSegment.nodeA_Direction, nodeB.nodePosition, currentSegment.nodeB_Direction, 0.5f);
-
-	//return Engine::CurvedSegment::GetPositionOnCurvedSegment(m_distance / segmentDistance, nodeA.nodePosition, currentSegment.nodeA_Direction, nodeB.nodePosition, currentSegment.nodeB_Direction, 0.5f);
+	const float segmentDistance = currentSegment.distance;
+	Engine::CurveData data = {nodeA.nodePosition, currentSegment.nodeA_Direction, nodeB.nodePosition, currentSegment.nodeB_Direction};
+	data.baseSegments = 40; // Position requires more accuracy
+	return Engine::CurvedSegment::GetPositionOnCurvedSegment(m_distance / segmentDistance, data);
 }
 
 float2 TrackWalker::GetDirection() const
 {
-	return float2();
+	if (m_currentSegmentID == TrackSegmentID::Invalid)
+	{
+		Engine::Logger::Warn("Trying to calculate a direction on a TrackSegment without being on a segment. Returned 0");
+		return 0.f;
+	}
+
+	const TrackSegment& currentSegment = m_trackManager->GetTrackSegment(m_currentSegmentID);
+
+	const TrackNode& nodeA = m_trackManager->GetTrackNode(currentSegment.nodeA);
+	const TrackNode& nodeB = m_trackManager->GetTrackNode(currentSegment.nodeB);
+
+	const float segmentDistance = currentSegment.distance;
+
+	return Engine::CurvedSegment::GetDirectionOnCurvedSegment(m_distance / segmentDistance, {nodeA.nodePosition, currentSegment.nodeA_Direction, nodeB.nodePosition, currentSegment.nodeB_Direction});
 }
 
 bool TrackWalker::IsValid() const

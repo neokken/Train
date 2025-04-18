@@ -1,5 +1,7 @@
 ﻿#include "precomp.h"
 #include "TrackManager.h"
+
+#include "Renderables/CurvedSegment.h"
 #include "Serialization/TrackSerializer.h"
 
 using json = nlohmann::json;
@@ -45,8 +47,7 @@ TrackSegmentID TrackManager::CreateSegment( TrackNodeID nodeA_ID, const float2& 
 		nodeB.validConnections[newID];
 	}
 
-	// TODO: later this is will be replaced with a curved distance calculations
-	newSegment.distance = length(nodeA.nodePosition - nodeB.nodePosition);
+	newSegment.distance = Engine::CurvedSegment::GetSegmentLength(Engine::CurveData{nodeA.nodePosition, nodeA_direction, nodeB.nodePosition, nodeB_direction});
 
 	m_segments[newID] = newSegment;
 	return newID;

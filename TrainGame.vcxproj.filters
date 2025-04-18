@@ -94,6 +94,14 @@
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
     <ClCompile Include="src\Engine\Renderables\Arrow.cpp" />
+    <ClCompile Include="src\Engine\Data\ParticleSystem.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrackRenderer.cpp" />
+    <ClCompile Include="src\Game\Trains\Wagon.cpp">
+      <Filter>Game\Trains</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Trains\Train.cpp">
+      <Filter>Game\Trains</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -174,6 +182,14 @@
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />
     <ClInclude Include="src\Engine\Renderables\Arrow.h" />
+    <ClInclude Include="src\Engine\Data\ParticleSystem.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrackRenderer.h" />
+    <ClInclude Include="src\Game\Trains\Wagon.h">
+      <Filter>Game\Trains</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Trains\Train.h">
+      <Filter>Game\Trains</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -225,6 +241,9 @@
     </Filter>
     <Filter Include="Engine\Helpers">
       <UniqueIdentifier>{2eb62a79-8df9-48bc-acfe-88862b2078ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Trains">
+      <UniqueIdentifier>{9c5e1122-ebce-45fd-92ab-c13bb9706a7d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

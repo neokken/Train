@@ -6,7 +6,9 @@
 #include "GameObject/GameObject.h"
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
+#include "Game/Trains/Wagon.h"
 #include "Game/Buildings/Building.h"
+#include "Game/Trains/Train.h"
 #include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "Renderables/CurvedSegment.h"
@@ -38,14 +40,21 @@ void Engine::World::Init( Surface* renderTarget )
 
 	AddObject(building);
 
-	// Rails
-	/*
-	 *	This forms branch line, where a secondary track splits of the main on.
-	 *	This shows that the direction you can go depends on where you come from.
-	 *	going north from the mainline, you can only keep going north.
-	 *	going north up from the branch line, you can only keep going north merging on the main line.
-	 *	going south there is a split where you can choose
-	 */
+	//Set up a track with a train on it for debugging
+	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
+	TrackWalker tWalk;
+	tWalk.Init(&m_trackManager);
+	tWalk.SetCurrentTrackSegment(seg1, 37);
+	Wagon* wag1 = new Wagon(tWalk);
+	Wagon* wag2 = new Wagon(tWalk);
+	Wagon* wag3 = new Wagon(tWalk);
+	Wagon* wag4 = new Wagon(tWalk);
+	AddObject(wag1);
+	AddObject(wag2);
+	AddObject(wag3);
+	AddObject(wag4);
+	Train* train = new Train({wag1, wag2, wag3, wag4});
+	AddObject(train);
 }
 
 void Engine::World::Update( float deltaTime )
@@ -60,16 +69,21 @@ void Engine::World::Update( float deltaTime )
 	}
 
 	m_trackBuilder.Update(m_camera, deltaTime);
+
+	m_particles.Update(deltaTime);
+
 	//m_trackDebugger.Update(m_camera);
+
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
 
+	m_trackRenderer.Render(m_camera, *m_renderTarget);
 	for (const auto& obj : m_objects)
 	{
 		obj->Render(m_camera, *m_renderTarget);
 	}
-	m_trackRenderer.Render(m_camera, *m_renderTarget);
+	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 }
