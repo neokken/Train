@@ -37,7 +37,7 @@ void Engine::Camera::Update( const float deltaTime )
 	}
 
 	// Zooming
-	if (input.IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+	if (input.IsKeyDown(GLFW_KEY_LEFT_CONTROL) || !m_buildModeCamera)
 	{
 		float zoomDir = 1.f;
 		zoomDir += input.GetScrollDelta() * deltaTime * m_scrollSensitivity;

@@ -9,9 +9,7 @@
 #include "Game/Trains/Wagon.h"
 #include "Game/Buildings/Building.h"
 #include "Game/Trains/Train.h"
-#include "Game/TrainSystem/Partials/TrackWalkerVisualizer.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
-#include "Renderables/CurvedSegment.h"
 #include "UI/UIManager.h"
 
 Engine::World::~World()
@@ -73,7 +71,6 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Update(deltaTime);
 
 	//m_trackDebugger.Update(m_camera);
-
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
