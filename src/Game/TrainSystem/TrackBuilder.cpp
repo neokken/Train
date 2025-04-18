@@ -16,7 +16,7 @@ void TrackBuilder::Init( TrackManager* trackManager, TrackRenderer* trackRendere
 	m_trackRenderer = trackRenderer;
 }
 
-void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float deltaTime )
+void TrackBuilder::Update( Engine::Camera& camera, [[maybe_unused]] float deltaTime )
 {
 	const Engine::InputManager& input = Input::get();
 
@@ -24,6 +24,7 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 	{
 		if (input.IsKeyJustDown(GLFW_KEY_B))
 		{
+			camera.SetBuildMode(true);
 			m_currentProgress = BuildProgress::Start;
 		}
 		return;
@@ -31,6 +32,7 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 
 	if (input.IsKeyJustDown(GLFW_KEY_B) || input.IsKeyJustDown(GLFW_KEY_ESCAPE))
 	{
+		camera.SetBuildMode(false);
 		m_currentProgress = BuildProgress::NoBuild;
 		return;
 	}

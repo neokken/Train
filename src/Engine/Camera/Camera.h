@@ -27,17 +27,19 @@ namespace Engine
 		[[nodiscard]] float2 GetCameraPosition( const float2& worldPosition ) const;
 		[[nodiscard]] float2 GetWorldPosition( const float2& localPosition ) const;
 
+		void SetBuildMode( const bool value ) { m_buildModeCamera = value; }
+
 	private:
 		float2 m_position{0.f, 0.f};
-
+		float2 m_lockedWorldMousePos{};
 		int2 m_resolution;
 		float m_wishWidthSize;
 
 		float m_scrollSensitivity = 10.0f;
-		float m_scrollMouseImpact = 2.f;
 		float m_moveSpeed = 150.0f;
 
-		float2 m_lockedWorldMousePos{};
 		bool m_mouseLocked{false};
+
+		bool m_buildModeCamera{false};
 	};
 }

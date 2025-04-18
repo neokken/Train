@@ -22,7 +22,7 @@ public:
 
 	void Init( TrackManager* trackManager, TrackRenderer* trackRenderer );
 
-	void Update( const Engine::Camera& camera, float deltaTime );
+	void Update( Engine::Camera& camera, float deltaTime );
 
 	void Render( const Engine::Camera& camera, Surface& renderTarget ) const;
 
