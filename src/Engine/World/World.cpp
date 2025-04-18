@@ -59,8 +59,8 @@ void Engine::World::Update( float deltaTime )
 		obj->Update(deltaTime);
 	}
 
-	m_trackDebugger.Update(m_camera);
 	m_trackBuilder.Update(m_camera, deltaTime);
+	//m_trackDebugger.Update(m_camera);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
@@ -77,7 +77,7 @@ void Engine::World::Update( float deltaTime )
 // ReSharper disable once CppMemberFunctionMayBeConst
 void Engine::World::UI()
 {
-	m_trackDebugger.UI();
+	//m_trackDebugger.UI();
 
 	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
 	{

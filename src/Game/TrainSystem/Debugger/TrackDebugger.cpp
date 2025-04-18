@@ -129,7 +129,7 @@ void TrackDebugger::UI() const
 				ImGui::Text("No node or segment selected");
 				ImGui::Text("Left click on them to select them.");
 			}
-			else if (m_selectedTrackNode != TrackNodeID::Invalid)
+			else if (m_trackManager->DoesNodeExists(m_selectedTrackNode))
 			{
 				// ** selected node **
 				ImGui::Text("Selected Node: %d", static_cast<int>(m_selectedTrackNode));

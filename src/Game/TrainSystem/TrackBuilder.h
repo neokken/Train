@@ -45,15 +45,15 @@ private:
 
 	TrackBuildData m_nodeA;
 
-	float m_buildStrictness = 1.f;
+	float m_buildStrictness = .5f;
+
+	TrackSegmentID m_hoveredSegment = TrackSegmentID::Invalid; // for deleting 
 
 	enum class BuildProgress : std::uint8_t
 	{
 		NoBuild,
 		Start,
 		FirstNodeFinished,
-
-		SecondNodeFinished,
 	} m_currentProgress{BuildProgress::NoBuild};
 
 private:

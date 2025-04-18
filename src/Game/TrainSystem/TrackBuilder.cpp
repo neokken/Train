@@ -29,10 +29,53 @@ void TrackBuilder::Update( const Engine::Camera& camera, [[maybe_unused]] float 
 		return;
 	}
 
-	if (input.IsKeyJustDown(GLFW_KEY_B))
+	if (input.IsKeyJustDown(GLFW_KEY_B) || input.IsKeyJustDown(GLFW_KEY_ESCAPE))
 	{
 		m_currentProgress = BuildProgress::NoBuild;
 		return;
+	}
+
+	// handle deletion
+	m_hoveredSegment = TrackSegmentID::Invalid;
+
+	const float2 worldMouse = camera.GetWorldPosition(input.GetMousePos());
+
+	for (const auto& segment : std::views::values(m_trackManager->GetSegmentMap()))
+	{
+		Engine::CurveData curveData{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
+
+		const float distance = sqrLength(Engine::CurvedSegment::GetClosestPoint(curveData, worldMouse) - worldMouse);
+
+		if (distance < 1.f)
+		{
+			m_hoveredSegment = segment.id;
+			break;
+		}
+	}
+
+	if (m_hoveredSegment != TrackSegmentID::Invalid)
+	{
+		if (input.IsKeyDown(GLFW_KEY_X) || input.IsKeyDown(GLFW_KEY_DELETE))
+		{
+			m_trackManager->DeleteTrackPart(m_hoveredSegment);
+
+			m_hoveredSegment = TrackSegmentID::Invalid;
+		}
+	}
+
+	if (input.IsMouseClicked(GLFW_MOUSE_BUTTON_RIGHT))
+	{
+		switch (m_currentProgress)
+		{
+		case BuildProgress::NoBuild:
+			break;
+		case BuildProgress::Start:
+			m_currentProgress = BuildProgress::NoBuild;
+			break;
+		case BuildProgress::FirstNodeFinished:
+			m_currentProgress = BuildProgress::Start;
+			break;
+		}
 	}
 
 	if (m_currentProgress == BuildProgress::Start)
@@ -102,6 +145,11 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 		}
 	}
 
+	if (m_hoveredSegment != TrackSegmentID::Invalid)
+	{
+		TrackRenderer::RenderTrackSegment(camera, renderTarget, m_trackManager->GetTrackSegment(m_hoveredSegment), TrackRenderType::RailsOnly, Color::TrackNodeInfo);
+	}
+
 	if (m_currentProgress == BuildProgress::Start)
 	{
 		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR, false);
@@ -151,7 +199,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			return;
 		}
 
-		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (input.IsKeyUp(GLFW_KEY_LEFT_SHIFT) && input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 		{
 			if (input.GetScrollDelta() > 0.f)
 			{
@@ -163,7 +211,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			}
 		}
 
-		if (input.IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) && input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 		{
 			if (input.GetScrollDelta() > 0.f)
 			{
@@ -178,7 +226,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			m_tempNode.directionFloat2 = toFloat2(m_tempNode.direction);
 		}
 
-		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) || input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
+		if (input.IsKeyUp(GLFW_KEY_LEFT_SHIFT) && input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 		{
 			std::vector<TrackSegmentID> keys;
 			for (const auto& key : views::keys(hoverNode.validConnections))
@@ -221,7 +269,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 			m_tempNode.trackNodePosition = float2(round(worldMousePosition.x / 1.f), round(worldMousePosition.y / 1.f));
 		}
 
-		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (input.IsKeyUp(GLFW_KEY_LEFT_CONTROL))
 		{
 			if (input.GetScrollDelta() > 0.f)
 			{
