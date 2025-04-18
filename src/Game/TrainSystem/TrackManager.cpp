@@ -173,6 +173,32 @@ TrackSegmentID TrackManager::BuildTrackPart( const float2& nodeA_Position, const
 	return newSegment;
 }
 
+void TrackManager::DeleteTrackPart( TrackSegmentID id )
+{
+	if (!DoesSegmentExists(id))
+	{
+		Engine::Logger::Warn("Trying to delete segment : {}, however segment id did not exist", static_cast<int>(id));
+		return;
+	}
+
+	TrackNode& nodeA = GetMutableTrackNode(m_segments[id].nodeA);
+	TrackNode& nodeB = GetMutableTrackNode(m_segments[id].nodeB);
+	m_segments.erase(id);
+
+	nodeA.RemoveSegment(id);
+	nodeB.RemoveSegment(id);
+
+	if (nodeA.validConnections.empty())
+	{
+		m_nodes.erase(nodeA.id);
+	}
+
+	if (nodeB.validConnections.empty())
+	{
+		m_nodes.erase(nodeB.id);
+	}
+}
+
 bool TrackManager::IsValidTrackPart( const float2& nodeA_Position, TrackDirection nodeA_direction, TrackSegmentID nodeA_connection, const float2& nodeB_Position, TrackDirection nodeB_direction, TrackSegmentID nodeB_connection )
 {
 	if (nodeA_direction == TrackDirection::Empty && nodeA_connection == TrackSegmentID::Invalid)

@@ -20,7 +20,7 @@ namespace Engine
 		~World();
 
 		// Life cycle functions
-		void Init( Surface* renderTarget, InputManager* inputManager );
+		void Init( Surface* renderTarget );
 		void Update( float deltaTime );
 		void UI();
 

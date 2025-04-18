@@ -3,8 +3,6 @@
 // IGAD/NHTV/BUAS/UU - Jacco Bikker - 2006-2024
 
 #pragma once
-#include "Camera/Camera.h"
-#include "Renderables/Grid.h"
 #include "Input/InputManager.h"
 
 #include "World/World.h"
@@ -27,16 +25,15 @@ namespace Tmpl8
 		void UI() override;
 
 		// input handling
-		void MouseUp( const int button ) override { m_inputManager.HandleMouseUp(button); }
-		void MouseDown( const int button ) override { m_inputManager.HandleMouseDown(button); }
-		void MouseMove( const int x, const int y ) override { m_inputManager.UpdateMousePosition(int2(x, y)); }
-		void MouseWheel( const float scrollDelta ) override { m_inputManager.UpdateScrollDelta(scrollDelta); }
+		void MouseUp( const int button ) override { Input::get().HandleMouseUp(button); }
+		void MouseDown( const int button ) override { Input::get().HandleMouseDown(button); }
+		void MouseMove( const int x, const int y ) override { Input::get().UpdateMousePosition(int2(x, y)); }
+		void MouseWheel( const float scrollDelta ) override { Input::get().UpdateScrollDelta(scrollDelta); }
 
-		void KeyUp( const int key ) override { m_inputManager.HandleKeyUp(key); }
-		void KeyDown( const int key ) override { m_inputManager.HandleKeyDown(key); }
+		void KeyUp( const int key ) override { Input::get().HandleKeyUp(key); }
+		void KeyDown( const int key ) override { Input::get().HandleKeyDown(key); }
 
 	private:
-		Engine::InputManager m_inputManager{};
 		Engine::World m_world;
 
 		Timer m_frameTimer;

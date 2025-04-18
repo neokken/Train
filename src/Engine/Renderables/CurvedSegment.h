@@ -8,6 +8,7 @@ namespace Engine
 		SimpleBezier, // Simple curve that puts the midpoints along a tangental line based on hardness
 		LongestBend, // SimpleBezier but uses the longest length which creates less sharp bends
 		ClampedLongest,
+		Circular,
 	};
 
 	struct CurveData
@@ -90,7 +91,7 @@ namespace Engine
 		 * @return
 		 * position along normalized curved track
 		 */
-		static float2 GetPositionOnCurvedSegment( const float t, CurveData curve );
+		static float2 GetPositionOnCurvedSegment( const float t, const CurveData& curve );
 
 		///**
 		// * @param t how far along the path from 0 to 1

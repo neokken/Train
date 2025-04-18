@@ -78,6 +78,8 @@ struct TrackNode
 	TrackNodeID id{TrackNodeID::Invalid};
 
 	void AddConnection( TrackSegmentID from, TrackSegmentID to );
+
+	void RemoveSegment( TrackSegmentID id );
 };
 
 struct TrackSegment

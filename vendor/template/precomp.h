@@ -20,8 +20,6 @@
 #include <unordered_map>
 #include <ranges>
 
-
-
 // header for AVX, and every technology before it.
 // if your CPU does not support this (unlikely), include the appropriate header instead.
 // see: https://stackoverflow.com/a/11228864/2844473
@@ -413,4 +411,9 @@ public:
 	Surface* screen = nullptr;
 };
 
+
+
+
+#include "Input/InputManager.h"
+#include "Input/InputSingleton.h"
 // EOF

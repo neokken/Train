@@ -11,8 +11,6 @@ namespace Engine
 
 		explicit Camera( const int2& size );
 
-		void Init( Engine::InputManager* input );
-
 		void SetPosition( const float2& newPos ) { m_position = newPos; }
 		void SetResolution( const int2& res ) { m_resolution = res; }
 		void SetHorizontalWishSize( const float width ) { m_wishWidthSize = width; }
@@ -38,8 +36,6 @@ namespace Engine
 		float m_scrollSensitivity = 10.0f;
 		float m_scrollMouseImpact = 2.f;
 		float m_moveSpeed = 150.0f;
-
-		Engine::InputManager* m_inputManager{nullptr};
 
 		float2 m_lockedWorldMousePos{};
 		bool m_mouseLocked{false};

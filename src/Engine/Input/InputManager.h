@@ -31,25 +31,11 @@ namespace Engine
 		[[nodiscard]] bool IsKeyJustDown( int key ) const;
 		[[nodiscard]] bool IsKeyJustUp( int key ) const;
 
-		[[nodiscard]] bool IsMouseDown( const int button ) const
-		{
-			return m_mouseButtons[button] == KeyState::Just_Down || m_mouseButtons[button] == KeyState::Down;
-		}
-
-		[[nodiscard]] bool IsMouseUp( const int button ) const
-		{
-			return m_mouseButtons[button] == KeyState::Just_Up || m_mouseButtons[button] == KeyState::Up;
-		}
-
-		[[nodiscard]] bool IsMouseJustDown( const int button ) const
-		{
-			return m_mouseButtons[button] == KeyState::Just_Down;
-		}
-
-		[[nodiscard]] bool IsMouseJustUp( const int button ) const
-		{
-			return m_mouseButtons[button] == KeyState::Just_Up;
-		}
+		[[nodiscard]] bool IsMouseDown( const int button ) const;
+		[[nodiscard]] bool IsMouseUp( const int button ) const;
+		[[nodiscard]] bool IsMouseJustDown( const int button ) const;
+		[[nodiscard]] bool IsMouseJustUp( const int button ) const;
+		[[nodiscard]] bool IsMouseClicked( const int button, float clickThreshold = .3f ) const;
 
 		[[nodiscard]] int2 GetMousePos() const { return m_mousePosition; }
 		[[nodiscard]] int2 GetMouseDelta() const { return m_mouseDelta; }
@@ -62,6 +48,7 @@ namespace Engine
 		float m_scrollDelta{0.f};
 
 		KeyState m_keys[GLFW_KEY_LAST]{KeyState::Up};
+		float m_mouseButtonDownTime[GLFW_MOUSE_BUTTON_LAST]{0.f};
 		KeyState m_mouseButtons[GLFW_MOUSE_BUTTON_LAST]{KeyState::Up};
 	};
 }

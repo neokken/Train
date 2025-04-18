@@ -33,6 +33,11 @@ void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& t
 	case TrackRenderType::Default:
 
 		Engine::CurvedSegment::RenderTrackWorldPos(camera, targetSurface, data, GetColor(trackColor), GetColor(SpokeColor), .75f, .875f, .1f, .2f, 1.f, .2f);
+	//{
+	//	Engine::CurvedSegment a(segment.nodeA_Position, segment.nodeB_Position, segment.nodeA_Direction, .segment.nodeB_Direction, .5f, 0, 10);
+	//	a.RenderBezierPoints(camera, targetSurface);
+	//}
+
 		break;
 	case TrackRenderType::RailsOnly:
 
