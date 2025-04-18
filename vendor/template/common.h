@@ -20,6 +20,9 @@ constexpr float BASE_SPOKE_LOD = 1.f; // Base (sub)segments per distance for tra
 constexpr uint MIN_SPOKE_LOD = 7u; // If spokes get bellow this LOD they stop drawing should be > 0
 constexpr uint MAX_LOD = 100u;
 
+//Physics
+constexpr float WORLD_AIR_DENSITY = 1.f; // Density of the air used for drag
+
 // constants
 #define PI			3.14159265358979323846264f
 #define INVPI		0.31830988618379067153777f

@@ -46,15 +46,15 @@ void Engine::World::Init( Surface* renderTarget )
 	tWalk.Init(&m_trackManager);
 	tWalk.SetCurrentTrackSegment(seg1, 37);
 	Wagon* wag1 = new Wagon(tWalk);
-	Wagon* wag2 = new Wagon(tWalk);
-	Wagon* wag3 = new Wagon(tWalk);
-	Wagon* wag4 = new Wagon(tWalk);
+	//Wagon* wag2 = new Wagon(tWalk);
+	//Wagon* wag3 = new Wagon(tWalk);
+	//Wagon* wag4 = new Wagon(tWalk);
 	AddObject(wag1);
-	AddObject(wag2);
-	AddObject(wag3);
-	AddObject(wag4);
-	Train* train = new Train({wag1, wag2, wag3, wag4});
-	AddObject(train);
+	//AddObject(wag2);
+	//AddObject(wag3);
+	//AddObject(wag4);
+	//Train* train = new Train({wag1, wag2, wag3, wag4});
+	//AddObject(train);
 }
 
 void Engine::World::Update( float deltaTime )
