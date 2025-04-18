@@ -273,7 +273,7 @@ float Engine::CurvedSegment::RenderWorldPosAndGetLength( const Camera& camera, S
 	return segmentLength;
 }
 
-float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, CurveData curve )
+float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, const CurveData& curve )
 {
 	float2 startMidPoint, endMidPoint;
 	CalculateMidPoints(curve.lStart, curve.lStartDir, curve.lEnd, curve.lEndDir, curve.hardness, startMidPoint, endMidPoint, curve.setupMode);
@@ -311,10 +311,10 @@ float2 Engine::CurvedSegment::GetPositionOnCurvedSegment( const float t, CurveDa
 
 void Engine::CurvedSegment::RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const
 {
-	DrawCircle(camera, drawSurface, 10, m_lineStart, 10.f, 0x80ff80);
-	DrawCircle(camera, drawSurface, 10, m_lineEnd, 10.f, 0xff8080);
-	DrawCircle(camera, drawSurface, 4, m_startMidPoint, 8.f, 0x8000ff);
-	DrawCircle(camera, drawSurface, 4, m_endMidPoint, 8.f, 0xff0080);
+	DrawCircle(camera, drawSurface, 10, m_lineStart, 1.f, 0x80ff80);
+	DrawCircle(camera, drawSurface, 10, m_lineEnd, 1.f, 0xff8080);
+	DrawCircle(camera, drawSurface, 4, m_startMidPoint, .8f, 0x8000ff);
+	DrawCircle(camera, drawSurface, 4, m_endMidPoint, .8f, 0xff0080);
 }
 
 bool Engine::CurvedSegment::CheckCurveValidity( CurveData curve, float strictness, const Camera* camera, Surface* screen )
@@ -482,6 +482,38 @@ void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const floa
 			else outEndMidPoint = lEnd;
 			break;
 		}
+	case CurveSetupMode::Circular:
+		const float2 startDirNormalized = normalize(lStartDir);
+		const float2 endDirNormalized = normalize(lEndDir);
+
+		const float angle = acos(clamp(dot(startDirNormalized, endDirNormalized), -1.f, 1.f));
+
+		const float tension = 0.2f + 0.8f * cos(angle / 2.0f);
+
+		float2 toTarget = lEnd - lStart;
+		float projectionDistance = dot(toTarget, startDirNormalized) * tension;
+
+		if (projectionDistance > 0)
+		{
+			outStartMidPoint = lStart + startDirNormalized * projectionDistance;
+		}
+		else
+		{
+			outStartMidPoint = lStart;
+		}
+
+		toTarget = lStart - lEnd;
+		projectionDistance = dot(toTarget, endDirNormalized) * tension;
+
+		if (projectionDistance > 0)
+		{
+			outEndMidPoint = lEnd + endDirNormalized * projectionDistance;
+		}
+		else
+		{
+			outEndMidPoint = lEnd;
+		}
+		break;
 	}
 }
 

@@ -6,7 +6,6 @@
 #include "Application.h"
 
 #include "UI/UIManager.h"
-#include "Renderables/LineSegment.h"
 
 // -----------------------------------------------------------
 // Initialize the application
@@ -15,7 +14,7 @@ void Application::Init()
 {
 	Engine::Logger::Init();
 	Engine::UIManager::Init();
-	m_world.Init(screen, &m_inputManager);
+	m_world.Init(screen);
 }
 
 // -----------------------------------------------------------
@@ -30,14 +29,14 @@ void Application::Tick( const float deltaTime )
 	m_world.Update(deltaTime);
 
 	//DEBUG BEHAVIOUR
-	if (m_inputManager.IsKeyJustDown(GLFW_KEY_F1))
+	if (Input::get().IsKeyJustDown(GLFW_KEY_F1))
 	{
 		Engine::UIManagerSettings settings = Engine::UIManager::GetSettings();
 		settings.debugMode = !settings.debugMode;
 		Engine::UIManager::SetSettings(settings);
 	}
 
-	m_inputManager.Update(deltaTime);
+	Input::get().Update(deltaTime);
 }
 
 void Tmpl8::Application::UI()

@@ -63,7 +63,6 @@ void ReshapeWindowCallback( GLFWwindow*, int w, int h )
 
 void KeyEventCallback( GLFWwindow*, int key, int, int action, int )
 {
-	if (key == GLFW_KEY_ESCAPE) running = false;
 	if (action == GLFW_PRESS)
 	{
 		if (app) if (key >= 0) app->KeyDown(key);
