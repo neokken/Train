@@ -26,21 +26,20 @@ Train::Train( const std::vector<Wagon*>& wagons )
 		m_wagons[i]->GetFrontWalker().SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
 		currDistance += (m_wagons[i]->GetWagonLength()) + m_wagonSpacing;
 		m_wagons[i]->Move(-currDistance, 0);
-		//TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
-		//TrackWalker& back = m_wagons[i]->GetFrontWalker();
-		//for (int j = 0; j < 5; ++j) // Settle in to its position
-		//{
-		//	float walkerDistance = length(front.GetPosition() - back.GetPosition());
-		//	float diff = walkerDistance - m_wagonSpacing;
-		//	m_wagons[i]->Move(diff, 0);
-		//}
+		TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
+		TrackWalker& back = m_wagons[i]->GetFrontWalker();
+		for (int j = 0; j < 5; ++j) // Settle in to its position
+		{
+			float walkerDistance = length(front.GetPosition() - back.GetPosition());
+			float diff = walkerDistance - m_wagonSpacing;
+			m_wagons[i]->Move(diff, 0);
+		}
 		m_wagons[i]->SetInvincible(false);
 	}
 }
 
 void Train::Update( const float deltaTime )
 {
-	return;
 	if (m_wagons.empty()) return;
 
 	//Physics calculations
@@ -103,7 +102,6 @@ void Train::Update( const float deltaTime )
 
 void Train::Render( const Engine::Camera& camera, Surface& target )
 {
-	return;
 	for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
 	{
 		TrackWalker& front = m_wagons[i - 1]->GetBackWalker();

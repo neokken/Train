@@ -161,15 +161,15 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 	if (length(m_lastWorldVelocityBack) > 0.001f || length(worldVelocityBack) > 0.001f) backVeloChange = 1.f - abs(dot(m_lastWorldVelocityBack, worldVelocityBack));
 	if (frontVeloChange * frontPosChange > 0.f)
 	{
-		float amount = frontVeloChange * frontPosChange * 3000.f;
-		float speed = frontVeloChange * frontPosChange * 800.f;
-		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.05f, 0.2f), 0.1f, 0xffffff, 0xffee00);
+		float amount = frontVeloChange * frontPosChange * 2000.f;
+		float speed = min(frontVeloChange * frontPosChange * 3000.f, 10.f);
+		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	if (backVeloChange * backPosChange > 0.f)
 	{
-		float amount = backVeloChange * backPosChange * 3000.f;
-		float speed = backVeloChange * backPosChange * 800.f;
-		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.05f, 0.2f), 0.1f, 0xffffff, 0xffee00);
+		float amount = backVeloChange * backPosChange * 2000.f;
+		float speed = min(frontVeloChange * frontPosChange * 3000.f, 10.f);
+		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 
 	velocityChange += frontVeloChange + backVeloChange;
