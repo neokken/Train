@@ -32,7 +32,7 @@ void Engine::World::Init( Surface* renderTarget )
 
 	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
-	m_trackDebugger.Init(&m_trackManager);
+	m_trackDebugger.Init(&m_trackManager, &m_trackRenderer);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
@@ -70,7 +70,7 @@ void Engine::World::Update( float deltaTime )
 
 	m_particles.Update(deltaTime);
 
-	//m_trackDebugger.Update(m_camera);
+	m_trackDebugger.Update(m_camera);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
@@ -83,12 +83,14 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
+
+	m_trackDebugger.Render(m_camera, *m_renderTarget);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void Engine::World::UI()
 {
-	//m_trackDebugger.UI();
+	m_trackDebugger.UI();
 
 	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
 	{
@@ -104,6 +106,11 @@ void Engine::World::UI()
 		}
 	}
 	Engine::UIManager::EndDebugWindow();
+}
+
+void Engine::World::ImGuiBar()
+{
+	if (ImGui::MenuItem("TrackDebugger")) m_trackDebugger.SetVisible(!m_trackDebugger.GetVisibility());
 }
 
 void Engine::World::AddObject( GameObject* obj )

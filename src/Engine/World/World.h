@@ -25,6 +25,8 @@ namespace Engine
 		void Update( float deltaTime );
 		void UI();
 
+		void ImGuiBar();
+
 		// World management functions
 		void AddObject( GameObject* obj );
 		void DestroyObject( GameObject* obj );

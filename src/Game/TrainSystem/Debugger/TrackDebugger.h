@@ -1,6 +1,8 @@
 #pragma once
 #include "Game/TrainSystem/TrackManager.h"
 
+class TrackRenderer;
+
 namespace Engine
 {
 	class InputManager;
@@ -36,31 +38,21 @@ class TrackDebugger
 public:
 	TrackDebugger() = default;
 
-	void Init( TrackManager* trackManager );
+	void Init( TrackManager* trackManager, TrackRenderer* trackRenderer );
 
 	void Update( const Engine::Camera& camera );
 
 	void Render( const Engine::Camera& camera, Surface& targetSurface ) const;
 
-	void UI() const;
+	void UI();
 
-	void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, TrackSegmentID trackID, int segmentCount, uint color ) const;
-
-private:
-	// helper functions
-	[[nodiscard]] float SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const;
-
-	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackSegmentID segmentID ) const;
-	[[nodiscard]] std::vector<TrackSegmentID> CalculateLinkedTrackSegments( TrackNodeID nodeID ) const;
+	void SetVisible( bool value );
+	[[nodiscard]] bool GetVisibility() const;
 
 private:
 	TrackManager* m_trackManager{nullptr};
 
-	TrackNodeID m_hoveredTrackNode{TrackNodeID::Invalid};
-	TrackNodeID m_selectedTrackNode{TrackNodeID::Invalid};
+	TrackRenderer* m_trackRenderer{nullptr};
 
-	TrackSegmentID m_hoveredTrackSegment{TrackSegmentID::Invalid};
-	TrackSegmentID m_selectedTrackSegment{TrackSegmentID::Invalid};
-
-	std::vector<TrackSegmentID> m_linkedTrackSegments{};
+	bool m_visible{false};
 };

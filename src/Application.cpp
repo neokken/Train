@@ -46,6 +46,8 @@ void Tmpl8::Application::UI()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
+		m_world.ImGuiBar();
+
 		const std::string timingsText = std::format("{:.2f}ms ({:.1f}fps)", m_averageMS, 1.f / m_averageMS * 1000.f);
 
 		const float spacing = ImGui::GetContentRegionMax().x - ImGui::CalcTextSize(timingsText.c_str()).x;
