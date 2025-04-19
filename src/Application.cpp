@@ -22,7 +22,7 @@ void Application::Init()
 // -----------------------------------------------------------
 void Application::Tick( const float deltaTime )
 {
-	m_frameTimer.reset();
+	const Timer t;
 	screen->Clear(GetColor(Color::BackGround));
 
 	// Update logic
@@ -37,15 +37,24 @@ void Application::Tick( const float deltaTime )
 	}
 
 	Input::get().Update(deltaTime);
+
+	constexpr float alpha = .5f;
+	m_averageMS = (1.f - alpha) * m_averageMS + alpha * t.elapsed() * 1000.f;
 }
 
 void Tmpl8::Application::UI()
 {
-	if (Engine::UIManager::BeginDebugWindow("Window"))
+	if (ImGui::BeginMainMenuBar())
 	{
-		ImGui::Text("Frametime: %fms", m_frameTimer.elapsed() * 1000);
+		const std::string timingsText = std::format("{:.2f}ms ({:.1f}fps)", m_averageMS, 1.f / m_averageMS * 1000.f);
+
+		const float spacing = ImGui::GetContentRegionMax().x - ImGui::CalcTextSize(timingsText.c_str()).x;
+		ImGui::SetCursorPosX(spacing);
+
+		ImGui::Text(timingsText.c_str());
 	}
-	Engine::UIManager::EndDebugWindow();
+
+	ImGui::EndMainMenuBar();
 
 	m_world.UI();
 }
