@@ -19,15 +19,16 @@ public:
 
 	void Render( const Engine::Camera& camera, Surface& target ) override;
 
-	[[nodiscard]] float GetMoveSpeed() const { return m_moveSpeed; }
-	void SetMoveSpeed( const float newSpeed ) { m_moveSpeed = newSpeed; }
+	[[nodiscard]] float GetVelocity() const { return m_velocity; }
+	void SetVelocity( const float newSpeed ) { m_velocity = newSpeed; }
 
 	void ImGuiDebugViewer() override;
 
 private:
 	std::vector<Wagon*> m_wagons;
 	float m_wagonSpacing{4.5f}; // length of the link in between wagons
-	float m_moveSpeed{0.f};
+	float m_acceleration{0.f};
+	float m_velocity{0.f};
 
 	uint m_wireColor{0x303040}; // Color of the wire in between wagons
 };

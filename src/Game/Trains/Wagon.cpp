@@ -28,74 +28,140 @@ Wagon::Wagon( const TrackWalker& trainWalker )
 
 void Wagon::Update( const float deltaTime )
 {
-	if (m_moveSpeed > 0)
+	if (!m_locked)
 	{
-		float2 oldFrontPos = m_frontWalker.GetPosition();
-		m_frontWalker.Move(m_moveSpeed * deltaTime);
-		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+		//Physics calculations
+		m_velocity += m_acceleration * deltaTime; // Technically frame dependent but good enough
 
-		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+		float drag = m_airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
+		drag = m_velocity > 0 ? drag : -drag;
+		float newVelocity = m_velocity - drag * deltaTime; // Technically frame dependent but good enough
+		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
+		{
+			m_velocity = 0.0f;
+		}
+		else
+		{
+			m_velocity = newVelocity;
+		}
+		//Movement
+		float tensionForce{0.f};
+		float2 worldVelocityFront;
+		float2 worldVelocityBack;
+		if (m_velocity > 0)
+		{
+			float2 oldFrontPos = m_frontWalker.GetPosition();
+			m_frontWalker.Move(m_velocity * deltaTime);
+			worldVelocityFront = (oldFrontPos - m_frontWalker.GetPosition());
+			float frontPosChange = length(worldVelocityFront);
+			worldVelocityFront = worldVelocityFront / max(frontPosChange, 0.0001f);
 
-		float2 oldBackPos = m_backWalker.GetPosition();
-		m_backWalker.Move(walkerDistance - m_wagonLength);
-		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+			float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
 
-		float tensionForce = abs(frontPosChange - backPosChange);
+			float2 oldBackPos = m_backWalker.GetPosition();
+			m_backWalker.Move(walkerDistance - m_wagonLength);
+			worldVelocityBack = (oldBackPos - m_backWalker.GetPosition());
+			float backPosChange = length(worldVelocityBack);
+			worldVelocityBack = worldVelocityBack / max(backPosChange, 0.0001f);
+
+			tensionForce = abs(frontPosChange - backPosChange);
+		}
+		else if (m_velocity < 0)
+		{
+			float2 oldBackPos = m_backWalker.GetPosition();
+			m_backWalker.Move(m_velocity * deltaTime);
+			worldVelocityBack = (oldBackPos - m_backWalker.GetPosition());
+			float backPosChange = length(worldVelocityBack);
+			worldVelocityBack = worldVelocityBack / max(backPosChange, 0.0001f);
+
+			float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
+
+			float2 oldFrontPos = m_frontWalker.GetPosition();
+			m_frontWalker.Move(m_wagonLength - walkerDistance);
+			worldVelocityFront = (oldFrontPos - m_frontWalker.GetPosition());
+			float frontPosChange = length(worldVelocityFront);
+			worldVelocityFront = worldVelocityFront / max(frontPosChange, 0.0001f);
+
+			tensionForce = abs(frontPosChange - backPosChange);
+		}
 		if (tensionForce > m_maxTensionForce) Derail();
+		float velocityChange = 1.f - abs(dot(m_lastWorldVelocityFront, worldVelocityFront));
+		velocityChange += 1.f - abs(dot(m_lastWorldVelocityBack, worldVelocityBack));
+		velocityChange *= 25.f;
+		m_lastWorldVelocityBack = worldVelocityBack;
+		m_lastWorldVelocityFront = worldVelocityFront;
+		float trackDrag = m_trackDragCoefficient * WORLD_TRACK_ROUGHNESS * (velocityChange) * (m_velocity * m_velocity) / 2;
+		trackDrag = m_velocity > 0 ? trackDrag : -trackDrag;
+		newVelocity = m_velocity - trackDrag * deltaTime; // Technically frame dependent but good enough
+		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
+		{
+			m_velocity = 0.0f;
+		}
+		else
+		{
+			m_velocity = newVelocity;
+		}
 	}
-	else if (m_moveSpeed < 0)
-	{
-		float2 oldBackPos = m_backWalker.GetPosition();
-		m_backWalker.Move(m_moveSpeed * deltaTime);
-		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
-
-		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
-
-		float2 oldFrontPos = m_frontWalker.GetPosition();
-		m_frontWalker.Move(m_wagonLength - walkerDistance);
-		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
-
-		float tensionForce = abs(frontPosChange - backPosChange);
-		if (tensionForce > m_maxTensionForce) Derail();
-	}
-
 	m_transform.position = m_frontWalker.GetPosition();
 }
 
-void Wagon::Move( const float distance )
+WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 {
+	if (deltaTime == 0.f) deltaTime = 1.f;
+
+	float2 worldVelocityBack, worldVelocityFront;
 	if (distance > 0)
 	{
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(distance);
-		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+		worldVelocityFront = (oldFrontPos - m_frontWalker.GetPosition());
+		float frontPosChange = length(worldVelocityFront);
+		if (frontPosChange <= 0.1f) worldVelocityFront = m_lastWorldVelocityFront;
+		else worldVelocityFront = worldVelocityFront / max(frontPosChange, 0.0001f);
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
 
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(walkerDistance - m_wagonLength);
-		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+		worldVelocityBack = (oldBackPos - m_backWalker.GetPosition());
+		float backPosChange = length(worldVelocityBack);
+		if (backPosChange <= 0.1f) worldVelocityBack = m_lastWorldVelocityBack;
+		else worldVelocityBack = worldVelocityBack / max(backPosChange, 0.001f);
 
 		float tensionForce = abs(frontPosChange - backPosChange);
-		if (tensionForce > m_maxTensionForce) Derail();
+		if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
 	}
 	else
 	{
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(distance);
-		float backPosChange = length(oldBackPos - m_backWalker.GetPosition());
+		worldVelocityBack = (oldBackPos - m_backWalker.GetPosition());
+		float backPosChange = length(worldVelocityBack);
+		if (backPosChange <= 0.1f) worldVelocityBack = m_lastWorldVelocityBack;
+		else worldVelocityBack = worldVelocityBack / max(backPosChange, 0.001f);
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
 
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(m_wagonLength - walkerDistance);
-		float frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+		worldVelocityFront = (oldFrontPos - m_frontWalker.GetPosition());
+		float frontPosChange = length(worldVelocityFront);
+		if (frontPosChange <= 0.1f) worldVelocityFront = m_lastWorldVelocityFront;
+		else worldVelocityFront = worldVelocityFront / max(frontPosChange, 0.001f);
 
 		float tensionForce = abs(frontPosChange - backPosChange);
-		if (tensionForce > m_maxTensionForce) Derail();
+		if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
 	}
-
+	float velocityChange = 0;
+	if (length(m_lastWorldVelocityFront) <= 0.001f || length(worldVelocityFront) <= 0.001f) velocityChange += 0;
+	else 1.f - abs(dot(m_lastWorldVelocityFront, worldVelocityFront));
+	if (length(m_lastWorldVelocityBack) <= 0.001f || length(worldVelocityBack) <= 0.001f) velocityChange += 0;
+	else velocityChange += 1.f - abs(dot(m_lastWorldVelocityBack, worldVelocityBack));
+	velocityChange *= 25.f * m_trackDragCoefficient;
+	m_lastWorldVelocityBack = worldVelocityBack;
+	m_lastWorldVelocityFront = worldVelocityFront;
 	m_transform.position = m_frontWalker.GetPosition();
+	return {velocityChange};
 }
 
 void Wagon::Render( const Engine::Camera& camera, Surface& target )
@@ -156,5 +222,6 @@ void Wagon::ImGuiDebugViewer()
 		m_frontWalker.ImGuiDebugViewer();
 	}
 
-	ImGui::DragFloat("MoveSpeed", &m_moveSpeed, .1f);
+	ImGui::DragFloat("Velocity", &m_velocity, .1f);
+	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
 }
