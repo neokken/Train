@@ -13,7 +13,7 @@ public:
 	 * Constructs a train and sets all wagons to be behind wagons[0]
 	 * @param wagons list of wagon objects, these should be part of the world too, does not take ownership
 	 */
-	explicit Train( std::vector<Wagon*> wagons );
+	explicit Train( const std::vector<Wagon*>& wagons );
 
 	void Update( float deltaTime ) override;
 
@@ -25,7 +25,7 @@ public:
 	void ImGuiDebugViewer() override;
 
 private:
-	std::vector<Wagon*> m_wagons;
+	std::vector<Wagon*> m_wagons{};
 	float m_wagonSpacing{4.5f}; // length of the link in between wagons
 	float m_acceleration{0.f};
 	float m_velocity{0.f};

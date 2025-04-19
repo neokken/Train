@@ -24,6 +24,7 @@ void Engine::ParticleSystem::SpawnParticles( float2 position, float spawnRad, in
 		// Make sure we do not spawn more than available
 		amount = m_amountOfParticles - m_currentAliveIterator;
 	}
+	if (m_currentAliveIterator + amount >= m_amountOfParticles) return;
 
 	for (int i = m_currentAliveIterator; i < m_currentAliveIterator + amount; i++) // Respawn dead particles
 	{
