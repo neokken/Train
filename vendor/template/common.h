@@ -24,6 +24,9 @@ constexpr uint MAX_LOD = 100u;
 constexpr float WORLD_AIR_DENSITY = 0.05f; // Density of the air used for drag
 constexpr float WORLD_TRACK_ROUGHNESS = 2.f; // Used for drag experienced from track bends
 
+//Visuals
+constexpr bool SHOW_DRAG_PARTICLES = true;
+
 // constants
 #define PI			3.14159265358979323846264f
 #define INVPI		0.31830988618379067153777f

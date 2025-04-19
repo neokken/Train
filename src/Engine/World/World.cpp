@@ -53,8 +53,8 @@ void Engine::World::Init( Surface* renderTarget )
 	AddObject(wag2);
 	AddObject(wag3);
 	AddObject(wag4);
-	Train* train = new Train({wag1, wag2, wag3, wag4});
-	AddObject(train);
+	//Train* train = new Train({wag1, wag2, wag3, wag4});
+	//AddObject(train);
 }
 
 void Engine::World::Update( float deltaTime )

@@ -94,8 +94,6 @@ void Train::Update( const float deltaTime )
 	{
 		m_velocity = newVelocity;
 	}
-	printf("Drag:\n Air: %f\n Track: %f\n", drag, trackDrag);
-
 }
 
 void Train::Render( const Engine::Camera& camera, Surface& target )
