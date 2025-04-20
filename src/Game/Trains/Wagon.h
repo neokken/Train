@@ -45,13 +45,12 @@ public:
 private:
 	TrackWalker m_frontWalker;
 	TrackWalker m_backWalker;
-	float2 m_lastWorldVelocityFront{0.f};
-	float2 m_lastWorldVelocityBack{0.f};
+
 	float m_wagonLength = 8.f; // Length in between the 2 bogeys
 	float m_velocity{0.f};
 	float m_acceleration{0.f};
 	float m_airDragCoefficient{1.5f}; // Amount of drag experienced by this wagon from air (this only applies to the front wagon)
-	float m_trackDragCoefficient{10.0f}; // Amount of drag experienced by this wagon from the track i.e hard bends etc.
+	float m_trackDragCoefficient{1.25f}; // Amount of drag experienced by this wagon from the track i.e hard bends etc.
 	float m_maxTensionForce{1000.f}; // Max force allowed to be exerted on the bogeys before derailing
 	float m_minTensionForce{0.3f}; // Min tensionforce required to affect train speed
 

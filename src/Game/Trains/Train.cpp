@@ -87,7 +87,7 @@ void Train::Update( const float deltaTime )
 		}
 	}
 
-	float trackDrag = WORLD_TRACK_ROUGHNESS * (velocityChange) * (m_velocity * m_velocity) / 2;
+	float trackDrag = WORLD_TRACK_ROUGHNESS * (velocityChange);
 	trackDrag = m_velocity > 0 ? trackDrag : -trackDrag;
 	newVelocity = m_velocity - trackDrag * deltaTime; // Technically frame dependent but good enough
 	if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
