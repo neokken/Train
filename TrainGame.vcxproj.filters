@@ -102,6 +102,10 @@
     <ClCompile Include="src\Game\Trains\Train.cpp">
       <Filter>Game\Trains</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Input\InputSingleton.cpp" />
+    <ClCompile Include="src\Game\Trains\Locomotive.cpp">
+      <Filter>Game\Trains</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -190,6 +194,10 @@
     <ClInclude Include="src\Game\Trains\Train.h">
       <Filter>Game\Trains</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Input\InputSingleton.h" />
+    <ClInclude Include="src\Game\Trains\Locomotive.h">
+      <Filter>Game\Trains</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -244,6 +252,9 @@
     </Filter>
     <Filter Include="Game\Trains">
       <UniqueIdentifier>{9c5e1122-ebce-45fd-92ab-c13bb9706a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Trains\Wagons">
+      <UniqueIdentifier>{e563f41b-f0ad-4143-9ccf-cd3b0c8d2891}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

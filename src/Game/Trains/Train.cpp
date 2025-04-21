@@ -7,6 +7,7 @@
 #include "Renderables/LineSegment.h"
 #include "World/World.h"
 #include "Train.h"
+#include "Locomotive.h"
 
 Train::Train( const std::vector<Wagon*>& wagons )
 	: GameObject()
@@ -36,11 +37,26 @@ Train::Train( const std::vector<Wagon*>& wagons )
 		}
 		m_wagons[i]->SetInvincible(false);
 	}
+
+	CalculateWagons();
 }
 
 void Train::Update( const float deltaTime )
 {
 	if (m_wagons.empty()) return;
+
+	//Set acceleration
+	if (m_targetVelocity > 0.f)
+	{
+		if (m_velocity < m_targetVelocity) m_acceleration = m_maxAccelerationForward;
+		else m_acceleration = 0.f;
+	}
+	else if (m_targetVelocity < 0.f)
+	{
+		if (m_velocity > m_targetVelocity) m_acceleration = -m_maxAccelerationBackwards;
+		else m_acceleration = 0.f;
+	}
+
 
 	//Physics calculations
 	m_velocity += m_acceleration * deltaTime; // Technically frame dependent but good enough
@@ -126,6 +142,29 @@ void Train::ImGuiDebugViewer()
 		ImGui::Text("Scale: %.2f %.2f", m_transform.scale.x, m_transform.scale.y);
 	}
 
+	ImGui::DragFloat("Target Velocity", &m_targetVelocity, .1f);
+	ImGui::NewLine();
 	ImGui::DragFloat("Velocity", &m_velocity, .1f);
 	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
+	ImGui::Text(("Max Acceleration:" + std::to_string(m_maxAccelerationBackwards) + "<>" + std::to_string(m_maxAccelerationForward)).c_str());
+}
+
+void Train::CalculateWagons()
+{
+	float forwardAccel{0.f};
+	float backwardAccel{0.f};
+	float brakingForce{0.f};
+	//float mass{0.f};
+	for (Wagon* wagon : m_wagons)
+	{
+		//TODO: Take into account wagon orientation
+		if (const Locomotive* locomotive = dynamic_cast<Locomotive*>(wagon))
+		{
+			forwardAccel += locomotive->GetMaxForwardAcceleration();
+			backwardAccel += locomotive->GetMaxBackwardsAcceleration();
+		}
+		brakingForce += wagon->GetBrakingForce();
+	}
+	m_maxAccelerationForward = forwardAccel;
+	m_maxAccelerationBackwards = backwardAccel;
 }
