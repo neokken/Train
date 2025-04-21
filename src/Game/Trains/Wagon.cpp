@@ -155,14 +155,14 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 
 	if (velocityChange > 0.f)
 	{
-		float amount = velocityChange * 4;
-		float speed = min(velocityChange * 4, 10.f);
+		float amount = velocityChange * 15;
+		float speed = min(velocityChange * 20, 10.f);
 		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	if (velocityChange > 0.f)
 	{
-		float amount = velocityChange * 4;
-		float speed = min(velocityChange * 4, 10.f);
+		float amount = velocityChange * 15;
+		float speed = min(velocityChange * 20, 10.f);
 		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	m_transform.position = m_frontWalker.GetPosition();
