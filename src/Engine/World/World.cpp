@@ -85,7 +85,7 @@ void Engine::World::Update( float deltaTime )
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 
-	dynamic_cast<Train*>(m_objects[5])->VisualizeStoppingDistance(GetCamera(), *m_renderTarget, *this);
+	dynamic_cast<Train*>(m_objects[5])->VisualizeDebugInfo(GetCamera(), *m_renderTarget, *this);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

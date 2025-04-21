@@ -24,7 +24,7 @@ public:
 
 	void ImGuiDebugViewer() override;
 
-	void VisualizeStoppingDistance( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const;
+	void VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const;
 
 private:
 	/**
@@ -40,6 +40,7 @@ private:
 	float m_targetVelocity{0.f};
 	float m_acceleration{0.f};
 	float m_velocity{0.f};
+	float m_targetDistance{0.f};
 
 	float m_maxAccelerationForward{0.f};
 	float m_maxAccelerationBackwards{0.f};

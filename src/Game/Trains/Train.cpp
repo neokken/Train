@@ -45,6 +45,31 @@ void Train::Update( const float deltaTime )
 {
 	if (m_wagons.empty()) return;
 
+	//Pathfinding
+	if (m_targetDistance > 0)
+	{
+		if (m_targetDistance < GetMaxStoppingDistance())
+		{
+			m_targetVelocity = 0.f;
+		}
+		else
+		{
+			m_targetVelocity = 1000000.f; // TODO: implement max speed track rules or something
+		}
+	}
+	else if (m_targetDistance < 0)
+	{
+		if (-m_targetDistance < GetMaxStoppingDistance())
+		{
+			m_targetVelocity = 0.f;
+		}
+		else
+		{
+			m_targetVelocity = -1000000.f; // TODO: implement max speed track rules or something
+		}
+	}
+
+
 	//Set acceleration
 	m_braking = false;
 	if (m_targetVelocity == 0.f) // Braking
@@ -111,6 +136,8 @@ void Train::Update( const float deltaTime )
 		if (m_velocity > 0)
 		{
 			m_wagons[0]->Move(deltaTime * m_velocity, deltaTime);
+			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
+			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
 			for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
 			{
 				TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
@@ -175,6 +202,7 @@ void Train::ImGuiDebugViewer()
 		ImGui::Text("Scale: %.2f %.2f", m_transform.scale.x, m_transform.scale.y);
 	}
 
+	ImGui::DragFloat("Target Distance", &m_targetDistance, .1f);
 	ImGui::DragFloat("Target Velocity", &m_targetVelocity, .1f);
 	ImGui::DragFloat("Velocity", &m_velocity, .1f);
 	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
@@ -183,12 +211,28 @@ void Train::ImGuiDebugViewer()
 	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
 }
 
-void Train::VisualizeStoppingDistance( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const
+void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const
 {
-	float dist = GetMaxStoppingDistance();
 	TrackWalker tempWalker;
 	tempWalker.Init(&world.GetTrackManager());
-	if (m_velocity > 0)
+
+	//Target
+	if (m_targetDistance > 0)
+	{
+		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
+		tempWalker.Move(m_targetDistance);
+		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+	}
+	else if (m_targetDistance < 0)
+	{
+		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
+		tempWalker.Move(m_targetDistance);
+		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+	}
+
+	//Stopping distance
+	float dist = GetMaxStoppingDistance();
+	if (m_velocity >= 0)
 	{
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
 		tempWalker.Move(dist);
