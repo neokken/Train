@@ -24,7 +24,15 @@ public:
 
 	void ImGuiDebugViewer() override;
 
+	void VisualizeStoppingDistance( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const;
+
 private:
+	/**
+	 * Returns the max distance the train will take to stop, the reality can be shorter due to environmental factors like track drag
+	 * @return Distance in track units
+	 */
+	float GetMaxStoppingDistance() const;
+
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
 	std::vector<Wagon*> m_wagons{};

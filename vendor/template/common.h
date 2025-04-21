@@ -23,7 +23,7 @@ constexpr uint MAX_LOD = 100u;
 
 //Physics
 constexpr float WORLD_AIR_DENSITY = 0.01f; // Density of the air used for drag      | Should be a low value <0.1
-constexpr float WORLD_TRACK_ROUGHNESS = 500.f; // Used for drag experienced from track bends     | Should be a high value around ~300-800
+constexpr float WORLD_TRACK_ROUGHNESS = 5000.f; // Used for drag experienced from track bends     | Should be a high value around ~1000-1000
 
 //Visuals
 constexpr bool SHOW_DRAG_PARTICLES = true;

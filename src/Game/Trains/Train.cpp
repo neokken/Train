@@ -95,7 +95,7 @@ void Train::Update( const float deltaTime )
 	if (m_velocity != 0.f)
 	{
 		float airDragCoefficient = m_velocity > 0 ? m_wagons[0]->GetAirDragCoefficient() : m_wagons[m_wagons.size() - 1]->GetAirDragCoefficient();
-		float drag = airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
+		float drag = airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) * 0.5f;
 		drag = m_velocity > 0 ? drag : -drag;
 		float newVelocity = m_velocity - drag / m_mass * deltaTime; // Technically frame dependent but good enough
 		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
@@ -181,6 +181,38 @@ void Train::ImGuiDebugViewer()
 	ImGui::Text(("Max Acceleration:" + std::to_string(static_cast<int>(m_maxAccelerationBackwards)) + " <-> " + std::to_string(static_cast<int>(m_maxAccelerationForward))).c_str());
 	ImGui::Text(("BrakeForce :" + std::to_string(static_cast<int>(m_maxBrakingForce))).c_str());
 	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
+}
+
+void Train::VisualizeStoppingDistance( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const
+{
+	float dist = GetMaxStoppingDistance();
+	TrackWalker tempWalker;
+	tempWalker.Init(&world.GetTrackManager());
+	if (m_velocity > 0)
+	{
+		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
+		tempWalker.Move(dist);
+	}
+	else
+	{
+		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
+		tempWalker.Move(-dist);
+	}
+
+	Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.f, 0xff0000);
+}
+
+float Train::GetMaxStoppingDistance() const
+{
+	float stopForce = m_maxBrakingForce;
+	const float airDragCoefficient = m_velocity > 0 ? m_wagons[0]->GetAirDragCoefficient() : m_wagons[m_wagons.size() - 1]->GetAirDragCoefficient();
+	stopForce += (0.5f * airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * 0.5f) * (m_velocity * 0.5f));
+
+	stopForce /= m_mass;
+	const float stopTime = m_velocity / stopForce;
+	const float distance = stopTime * m_velocity * 0.5f;
+
+	return distance;
 }
 
 void Train::CalculateWagons()

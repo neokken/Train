@@ -33,7 +33,7 @@ namespace Engine
 		Surface* GetRenderTarget() const;
 
 		ParticleSystem& GetParticleSystem() { return m_particles; }
-
+		TrackManager& GetTrackManager() { return m_trackManager; }
 	private:
 		std::vector<GameObject*> m_objects;
 

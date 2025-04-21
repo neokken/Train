@@ -27,7 +27,6 @@ void Application::Tick( const float deltaTime )
 
 	// Update logic
 	m_world.Update(deltaTime);
-
 	//DEBUG BEHAVIOUR
 	if (Input::get().IsKeyJustDown(GLFW_KEY_F1))
 	{

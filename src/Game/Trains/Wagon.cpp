@@ -28,7 +28,7 @@ Wagon::Wagon( const TrackWalker& trainWalker )
 
 void Wagon::Update( const float deltaTime )
 {
-	if (!m_locked)
+	if (!m_locked) // This is currently a bit outdated however I feel like you always want a wagon to be moved as part of a train so this shouldn't really be used
 	{
 		//Physics calculations
 		m_velocity += m_acceleration * deltaTime; // Technically frame dependent but good enough
@@ -115,23 +115,24 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		float2 oldFrontDir = m_frontWalker.GetDirection();
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(distance);
+
 		frontDirChange = 1.f - dot(oldFrontDir, m_frontWalker.GetDirection());
-		frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+			frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
 
-		float2 oldBackDir = m_frontWalker.GetDirection();
+		float2 oldBackDir = m_backWalker.GetDirection();
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(walkerDistance - m_wagonLength);
 		backPosChange = length(oldBackPos - m_backWalker.GetPosition());
 		backDirChange = 1.f - dot(oldBackDir, m_backWalker.GetDirection());
 
 		float tensionForce = abs(frontPosChange - backPosChange);
-		if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
+		if (tensionForce > m_maxTensionForce * deltaTime) Derail();
 	}
 	else
 	{
-		float2 oldBackDir = m_frontWalker.GetDirection();
+		float2 oldBackDir = m_backWalker.GetDirection();
 
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(distance);
@@ -143,11 +144,12 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		float2 oldFrontDir = m_frontWalker.GetDirection();
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(m_wagonLength - walkerDistance);
+
 		frontDirChange = 1.f - dot(oldFrontDir, m_frontWalker.GetDirection());
-		frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
+			frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
 		float tensionForce = abs(frontPosChange - backPosChange);
-		if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
+		if (tensionForce > m_maxTensionForce * deltaTime) Derail();
 	}
 	float velocityChange = frontDirChange + backDirChange;
 	velocityChange *= m_trackDragCoefficient * distance * m_mass;
