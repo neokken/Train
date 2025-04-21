@@ -1,4 +1,4 @@
-![Game_debug_zkVauVe6CC](https://github.com/user-attachments/assets/67937ba7-41ce-4b47-b409-b6050772a04e)
+![N](https://github.com/user-attachments/assets/e1a7bcf4-9a60-43b2-88e4-84ddd22a6202)
 
 Train simulation game,
 
