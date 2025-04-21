@@ -206,6 +206,7 @@
     <None Include="vendor\template\LICENSE">
       <Filter>template</Filter>
     </None>
+    <None Include="Documentation.md" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template">

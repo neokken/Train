@@ -42,13 +42,17 @@ public:
 	void SetLocked( const bool locked ) { m_locked = locked; }
 	[[nodiscard]] float GetWagonLength() const { return m_wagonLength; }
 
-	float GetBrakingForce() const { return m_maxBrakingForce; }
+	[[nodiscard]] float GetBrakingForce() const { return m_maxBrakingForce; }
+	[[nodiscard]] float GetMass() const { return m_mass; }
 
 protected:
 	TrackWalker m_frontWalker;
 	TrackWalker m_backWalker;
 
 	float m_wagonLength = 8.f; // Length in between the 2 bogeys
+	float m_mass{15.f}; // Current mass of the wagon
+	float m_tareWeight{15.f}; // Weight of the base wagon i.e without cargo
+
 	float m_velocity{0.f};
 	float m_acceleration{0.f};
 	float m_airDragCoefficient{1.5f}; // Amount of drag experienced by this wagon from air (this only applies to the front wagon)

@@ -12,6 +12,7 @@ public:
 	float GetMaxBackwardsAcceleration() const { return m_maxBackwardsAcceleration; }
 
 private:
-	float m_maxForwardAcceleration{50.f};
-	float m_maxBackwardsAcceleration{5.f};
+	//Acceleration in kn
+	float m_maxForwardAcceleration{250.f};
+	float m_maxBackwardsAcceleration{50.f};
 };

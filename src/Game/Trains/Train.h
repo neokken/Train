@@ -36,6 +36,7 @@ private:
 
 	float m_maxAccelerationForward{0.f};
 	float m_maxAccelerationBackwards{0.f};
+	float m_mass{0.f};
 	float m_maxBrakingForce{0.f};
 
 	uint m_wireColor{0x303040}; // Color of the wire in between wagons

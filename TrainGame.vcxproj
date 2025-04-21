@@ -230,6 +230,7 @@
     <ClInclude Include="vendor\template\tmpl8math.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Documentation.md" />
     <None Include="README.md" />
     <None Include="vendor\template\LICENSE" />
   </ItemGroup>

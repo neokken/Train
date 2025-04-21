@@ -57,14 +57,13 @@ void Train::Update( const float deltaTime )
 		else m_acceleration = 0.f;
 	}
 
-
 	//Physics calculations
-	m_velocity += m_acceleration * deltaTime; // Technically frame dependent but good enough
+	m_velocity += (m_acceleration / m_mass) * deltaTime; // Technically frame dependent but good enough
 
 	float airDragCoefficient = m_velocity > 0 ? m_wagons[0]->GetAirDragCoefficient() : m_wagons[m_wagons.size() - 1]->GetAirDragCoefficient();
 	float drag = airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
 	drag = m_velocity > 0 ? drag : -drag;
-	float newVelocity = m_velocity - drag * deltaTime; // Technically frame dependent but good enough
+	float newVelocity = m_velocity - drag / m_mass * deltaTime; // Technically frame dependent but good enough
 	if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
 	{
 		m_velocity = 0.0f;
@@ -104,8 +103,7 @@ void Train::Update( const float deltaTime )
 	}
 
 	float trackDrag = WORLD_TRACK_ROUGHNESS * (velocityChange);
-	trackDrag = m_velocity > 0 ? trackDrag : -trackDrag;
-	newVelocity = m_velocity - trackDrag * deltaTime; // Technically frame dependent but good enough
+	newVelocity = m_velocity - trackDrag / m_mass * deltaTime; // Technically frame dependent but good enough
 	if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
 	{
 		m_velocity = 0.0f;
@@ -143,10 +141,10 @@ void Train::ImGuiDebugViewer()
 	}
 
 	ImGui::DragFloat("Target Velocity", &m_targetVelocity, .1f);
-	ImGui::NewLine();
 	ImGui::DragFloat("Velocity", &m_velocity, .1f);
 	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
-	ImGui::Text(("Max Acceleration:" + std::to_string(m_maxAccelerationBackwards) + "<>" + std::to_string(m_maxAccelerationForward)).c_str());
+	ImGui::Text(("Max Acceleration:" + std::to_string(round(m_maxAccelerationBackwards)) + " <-> " + std::to_string(round(m_maxAccelerationForward))).c_str());
+	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
 }
 
 void Train::CalculateWagons()
@@ -154,7 +152,7 @@ void Train::CalculateWagons()
 	float forwardAccel{0.f};
 	float backwardAccel{0.f};
 	float brakingForce{0.f};
-	//float mass{0.f};
+	float mass{0.f};
 	for (Wagon* wagon : m_wagons)
 	{
 		//TODO: Take into account wagon orientation
@@ -164,7 +162,10 @@ void Train::CalculateWagons()
 			backwardAccel += locomotive->GetMaxBackwardsAcceleration();
 		}
 		brakingForce += wagon->GetBrakingForce();
+		mass += wagon->GetMass();
 	}
 	m_maxAccelerationForward = forwardAccel;
 	m_maxAccelerationBackwards = backwardAccel;
+	m_maxBrakingForce = brakingForce;
+	m_mass = mass;
 }

@@ -150,19 +150,19 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
 	}
 	float velocityChange = frontDirChange + backDirChange;
-	velocityChange *= m_trackDragCoefficient * distance;
+	velocityChange *= m_trackDragCoefficient * distance * m_mass;
 	//if (velocityChange > 150.f) DebugBreak();
 
 	if (velocityChange > 0.f)
 	{
-		float amount = velocityChange * 15;
-		float speed = min(velocityChange * 20, 10.f);
+		float amount = velocityChange * 5;
+		float speed = min(velocityChange * 10, 10.f);
 		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	if (velocityChange > 0.f)
 	{
-		float amount = velocityChange * 15;
-		float speed = min(velocityChange * 20, 10.f);
+		float amount = velocityChange * 5;
+		float speed = min(velocityChange * 10, 10.f);
 		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	m_transform.position = m_frontWalker.GetPosition();
