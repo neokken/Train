@@ -46,71 +46,106 @@ void Train::Update( const float deltaTime )
 	if (m_wagons.empty()) return;
 
 	//Set acceleration
-	if (m_targetVelocity > 0.f)
+	m_braking = false;
+	if (m_targetVelocity == 0.f) // Braking
 	{
-		if (m_velocity < m_targetVelocity) m_acceleration = m_maxAccelerationForward;
+		m_braking = true;
+	}
+	else if (m_targetVelocity > 0.f)
+	{
+		if (m_velocity < m_targetVelocity)
+		{
+			if (m_velocity < 0) m_braking = true;
+			else m_acceleration = m_maxAccelerationForward;
+		}
 		else m_acceleration = 0.f;
 	}
 	else if (m_targetVelocity < 0.f)
 	{
-		if (m_velocity > m_targetVelocity) m_acceleration = -m_maxAccelerationBackwards;
+		if (m_velocity > m_targetVelocity)
+		{
+			if (m_velocity > 0) m_braking = true;
+			else m_acceleration = -m_maxAccelerationBackwards;
+		}
 		else m_acceleration = 0.f;
 	}
-
 	//Physics calculations
-	m_velocity += (m_acceleration / m_mass) * deltaTime; // Technically frame dependent but good enough
 
-	float airDragCoefficient = m_velocity > 0 ? m_wagons[0]->GetAirDragCoefficient() : m_wagons[m_wagons.size() - 1]->GetAirDragCoefficient();
-	float drag = airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
-	drag = m_velocity > 0 ? drag : -drag;
-	float newVelocity = m_velocity - drag / m_mass * deltaTime; // Technically frame dependent but good enough
-	if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
+	if (m_braking) // When braking stop engines
 	{
-		m_velocity = 0.0f;
+		if (m_velocity != 0.f)
+		{
+			m_acceleration = 0.f;
+			float brakeForce = m_velocity > 0 ? m_maxBrakingForce : -m_maxBrakingForce;
+			float newVelocity = m_velocity - brakeForce / m_mass * deltaTime;
+			if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
+			{
+				m_velocity = 0.0f;
+			}
+			else
+			{
+				m_velocity = newVelocity;
+			}
+		}
 	}
 	else
 	{
-		m_velocity = newVelocity;
+		m_velocity += (m_acceleration / m_mass) * deltaTime; // Technically frame dependent but good enough
 	}
-
-	float velocityChange = 0.f;
-	if (m_velocity > 0)
+	if (m_velocity != 0.f)
 	{
-		m_wagons[0]->Move(deltaTime * m_velocity, deltaTime);
-		for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
+		float airDragCoefficient = m_velocity > 0 ? m_wagons[0]->GetAirDragCoefficient() : m_wagons[m_wagons.size() - 1]->GetAirDragCoefficient();
+		float drag = airDragCoefficient * WORLD_AIR_DENSITY * (m_velocity * m_velocity) / 2;
+		drag = m_velocity > 0 ? drag : -drag;
+		float newVelocity = m_velocity - drag / m_mass * deltaTime; // Technically frame dependent but good enough
+		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
 		{
-			TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
-			TrackWalker& back = m_wagons[i]->GetFrontWalker();
-
-			float walkerDistance = length(front.GetPosition() - back.GetPosition());
-			float diff = walkerDistance - m_wagonSpacing;
-			WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
-			velocityChange += moveInfo.velocityChangeAmount;
+			m_velocity = 0.0f;
 		}
-	}
-	else if (m_velocity < 0)
-	{
-		m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity, deltaTime);
-		for (int i = static_cast<int>(m_wagons.size()) - 2; i >= 0; --i)
+		else
 		{
-			TrackWalker& front = m_wagons[i + 1]->GetFrontWalker();
-			TrackWalker& back = m_wagons[i]->GetBackWalker();
-			float walkerDistance = length(front.GetPosition() - back.GetPosition());
-			float diff = m_wagonSpacing - walkerDistance;
-			WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
-			velocityChange += moveInfo.velocityChangeAmount;
+			m_velocity = newVelocity;
 		}
-	}
 
-	float trackDrag = WORLD_TRACK_ROUGHNESS * (velocityChange);
-	newVelocity = m_velocity - trackDrag / m_mass * deltaTime; // Technically frame dependent but good enough
-	if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
-	{
-		m_velocity = 0.0f;
-	}
-	else
-	{
-		m_velocity = newVelocity;
+		float velocityChange = 0.f;
+		if (m_velocity > 0)
+		{
+			m_wagons[0]->Move(deltaTime * m_velocity, deltaTime);
+			for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
+			{
+				TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
+				TrackWalker& back = m_wagons[i]->GetFrontWalker();
+
+				float walkerDistance = length(front.GetPosition() - back.GetPosition());
+				float diff = walkerDistance - m_wagonSpacing;
+				WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
+				velocityChange += moveInfo.velocityChangeAmount;
+			}
+		}
+		else if (m_velocity < 0)
+		{
+			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity, deltaTime);
+			for (int i = static_cast<int>(m_wagons.size()) - 2; i >= 0; --i)
+			{
+				TrackWalker& front = m_wagons[i + 1]->GetFrontWalker();
+				TrackWalker& back = m_wagons[i]->GetBackWalker();
+				float walkerDistance = length(front.GetPosition() - back.GetPosition());
+				float diff = m_wagonSpacing - walkerDistance;
+				WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
+				velocityChange += moveInfo.velocityChangeAmount;
+			}
+		}
+
+		float trackDrag = WORLD_TRACK_ROUGHNESS * (velocityChange);
+		newVelocity = m_velocity - trackDrag / m_mass * deltaTime; // Technically frame dependent but good enough
+		if ((m_velocity > 0 && newVelocity < 0) || (m_velocity < 0 && newVelocity > 0)) // Fix overcorrecting
+		{
+			m_velocity = 0.0f;
+		}
+		else
+		{
+			m_velocity = newVelocity;
+		}
 	}
 }
 
@@ -143,7 +178,8 @@ void Train::ImGuiDebugViewer()
 	ImGui::DragFloat("Target Velocity", &m_targetVelocity, .1f);
 	ImGui::DragFloat("Velocity", &m_velocity, .1f);
 	ImGui::DragFloat("Acceleration", &m_acceleration, .1f);
-	ImGui::Text(("Max Acceleration:" + std::to_string(round(m_maxAccelerationBackwards)) + " <-> " + std::to_string(round(m_maxAccelerationForward))).c_str());
+	ImGui::Text(("Max Acceleration:" + std::to_string(static_cast<int>(m_maxAccelerationBackwards)) + " <-> " + std::to_string(static_cast<int>(m_maxAccelerationForward))).c_str());
+	ImGui::Text(("BrakeForce :" + std::to_string(static_cast<int>(m_maxBrakingForce))).c_str());
 	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
 }
 

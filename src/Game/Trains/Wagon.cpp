@@ -64,7 +64,7 @@ void Wagon::Update( const float deltaTime )
 			backPosChange = length(oldBackPos - m_backWalker.GetPosition());
 			backDirChange = 1.f - dot(oldBackDir, m_frontWalker.GetDirection());
 
-			float tensionForce = abs(frontPosChange - backPosChange);
+			tensionForce = abs(frontPosChange - backPosChange);
 			if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
 		}
 		else
@@ -84,7 +84,7 @@ void Wagon::Update( const float deltaTime )
 			frontDirChange = 1.f - dot(oldFrontDir, m_frontWalker.GetDirection());
 			frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
-			float tensionForce = abs(frontPosChange - backPosChange);
+			tensionForce = abs(frontPosChange - backPosChange);
 			if (tensionForce > m_maxTensionForce * deltaTime) DebugBreak(), Derail();
 		}
 		if (tensionForce > m_maxTensionForce) Derail();
@@ -157,13 +157,13 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 	{
 		float amount = velocityChange * 5;
 		float speed = min(velocityChange * 10, 10.f);
-		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
+		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_frontWalker.GetPosition(), 0.5f, static_cast<int>(amount), float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	if (velocityChange > 0.f)
 	{
 		float amount = velocityChange * 5;
 		float speed = min(velocityChange * 10, 10.f);
-		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, amount, float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
+		if (amount > 1.f) m_world->GetParticleSystem().SpawnParticles(m_backWalker.GetPosition(), 0.5f, static_cast<int>(amount), float2(speed, speed), float2(0.1f, 0.4f), 0.1f, 0xffffff, 0xffee00);
 	}
 	m_transform.position = m_frontWalker.GetPosition();
 	return {velocityChange};

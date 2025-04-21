@@ -63,7 +63,7 @@ protected:
 	bool m_invincible{true}; // Stops derailing
 	bool m_locked{false}; // kinematic movement of this wagon, i.e this train can only be moved by using Move()
 
-	float m_maxBrakingForce{5.f};
+	float m_maxBrakingForce{25.f}; // Force for stopping velocity
 
 	uint m_bogeyColor{0x494b50};
 	uint m_wagonColor{0x8b96aa};

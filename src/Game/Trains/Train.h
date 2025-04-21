@@ -24,7 +24,6 @@ public:
 
 	void ImGuiDebugViewer() override;
 
-	
 private:
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
@@ -38,6 +37,6 @@ private:
 	float m_maxAccelerationBackwards{0.f};
 	float m_mass{0.f};
 	float m_maxBrakingForce{0.f};
-
+	bool m_braking{false};
 	uint m_wireColor{0x303040}; // Color of the wire in between wagons
 };
