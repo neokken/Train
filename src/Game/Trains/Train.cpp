@@ -152,6 +152,8 @@ void Train::Update( const float deltaTime )
 		else if (m_velocity < 0)
 		{
 			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity, deltaTime);
+			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
+			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
 			for (int i = static_cast<int>(m_wagons.size()) - 2; i >= 0; --i)
 			{
 				TrackWalker& front = m_wagons[i + 1]->GetFrontWalker();
