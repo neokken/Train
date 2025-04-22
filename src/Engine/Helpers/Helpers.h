@@ -16,6 +16,9 @@ namespace Engine
 
 		~ScopedTimer();
 	};
+
+	float3 RGB8ToRGB32( uint color );
+
 }
 
 #define PROFILE_FUNCTION() Engine::ScopedTimer timer(__FUNCTION__)

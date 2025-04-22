@@ -230,6 +230,8 @@
     <ClInclude Include="vendor\template\tmpl8math.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shaders\line.frag" />
+    <None Include="assets\shaders\line.vert" />
     <None Include="README.md" />
     <None Include="vendor\template\LICENSE" />
   </ItemGroup>

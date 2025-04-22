@@ -271,6 +271,10 @@ namespace Tmpl8
 		{
 		}
 
+		float3( const float2 a, const float b ) : x(a.x), y(a.y), z(b)
+		{
+		}
+
 		float3( const float a ) : x(a), y(a), z(a)
 		{
 		}

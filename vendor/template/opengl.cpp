@@ -17,7 +17,7 @@ void _CheckGL( const char* f, int l )
 		else if (error == 0x502) errStr = "INVALID OPERATION";
 		else if (error == 0x501) errStr = "INVALID VALUE";
 		else if (error == 0x506) errStr = "INVALID FRAMEBUFFER OPERATION";
-		FatalError( "GL error %d: %s at %s:%d\n", error, errStr, f, l );
+		Engine::Logger::Error("GL error {}: {} at {}:{}\n", error, errStr, f, l);
 	}
 }
 
@@ -91,8 +91,8 @@ GLTexture::GLTexture( uint w, uint h, uint type )
 	{
 		// regular texture
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, 0 );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 	else if (type == INTTARGET)
 	{
