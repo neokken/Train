@@ -34,6 +34,7 @@ void TrackBuilder::Update( Engine::Camera& camera, [[maybe_unused]] float deltaT
 	{
 		camera.SetBuildMode(false);
 		m_currentProgress = BuildProgress::NoBuild;
+		m_hoveredSegment = TrackSegmentID::Invalid;
 		return;
 	}
 
