@@ -1,6 +1,10 @@
-# Train
+![N](https://github.com/user-attachments/assets/b602341f-71b8-458d-9c22-11de2d2cf2de)
 
+Train simulation game,
 
+# Installation
+1) Clone the repository
+2) Build using visual studio
 
 ## controls
 - WASD or left/right mouse drag: to move camera
