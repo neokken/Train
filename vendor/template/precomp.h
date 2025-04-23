@@ -19,6 +19,8 @@
 #include <assert.h>				// runtime assertions
 #include <unordered_map>
 #include <ranges>
+#include <queue>
+#include <set>
 
 // header for AVX, and every technology before it.
 // if your CPU does not support this (unlikely), include the appropriate header instead.

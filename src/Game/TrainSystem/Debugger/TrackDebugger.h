@@ -50,9 +50,13 @@ public:
 	[[nodiscard]] bool GetVisibility() const;
 
 private:
+	void RenderConnectedSegments( const Engine::Camera& camera, Surface& targetSurface ) const;
+
 	TrackManager* m_trackManager{nullptr};
 
 	TrackRenderer* m_trackRenderer{nullptr};
 
 	bool m_visible{false};
+
+	bool m_renderConnectedSegments{false};
 };
