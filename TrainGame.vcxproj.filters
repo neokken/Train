@@ -35,8 +35,8 @@
     <ClCompile Include="src\Engine\Camera\Camera.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Buildings\Building.cpp">
-      <Filter>Game\Buildings</Filter>
+    <ClCompile Include="src\Game\Production\Producer.cpp">
+      <Filter>Game\Production</Filter>
     </ClCompile>
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
       <Filter>Vendor\ImGui</Filter>
@@ -102,6 +102,10 @@
     <ClCompile Include="src\Game\Trains\Train.cpp">
       <Filter>Game\Trains</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Input\InputSingleton.cpp" />
+    <ClCompile Include="src\Game\Production\ProducersManager.cpp">
+      <Filter>Game\Production</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -144,8 +148,8 @@
     <ClInclude Include="src\Engine\Camera\Camera.h">
       <Filter>Engine\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Buildings\Building.h">
-      <Filter>Game\Buildings</Filter>
+    <ClInclude Include="src\Game\Production\Producer.h">
+      <Filter>Game\Production</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h">
       <Filter>Game\TrainSystem</Filter>
@@ -190,6 +194,13 @@
     <ClInclude Include="src\Game\Trains\Train.h">
       <Filter>Game\Trains</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Input\InputSingleton.h" />
+    <ClInclude Include="src\Game\Production\ProducersManager.h">
+      <Filter>Game\Production</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Production\ProduceType.h">
+      <Filter>Game\Production</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -227,9 +238,6 @@
     <Filter Include="Engine\Camera">
       <UniqueIdentifier>{5022b4c9-8a9d-4f9c-a37d-66de7714b96f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Buildings">
-      <UniqueIdentifier>{58cb971e-30af-4758-bff9-0a081309f68b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{154d7373-fb40-4314-93fb-831af533856b}</UniqueIdentifier>
     </Filter>
@@ -244,6 +252,9 @@
     </Filter>
     <Filter Include="Game\Trains">
       <UniqueIdentifier>{9c5e1122-ebce-45fd-92ab-c13bb9706a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Production">
+      <UniqueIdentifier>{58cb971e-30af-4758-bff9-0a081309f68b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

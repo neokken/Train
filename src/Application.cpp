@@ -12,6 +12,8 @@
 // -----------------------------------------------------------
 void Application::Init()
 {
+	InitSeed(static_cast<uint>(time(nullptr)));
+
 	Engine::Logger::Init();
 	Engine::UIManager::Init();
 	m_world.Init(screen);

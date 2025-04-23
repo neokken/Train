@@ -1,17 +1,19 @@
 #pragma once
 
 #include "GameObject/GameObject.h"
+#include "ProduceType.h"
 
 namespace Game
 {
-	class Building : public Engine::GameObject
+	class Producer : public Engine::GameObject
 	{
 	public:
-		Building( Engine::Transform transform );
+		Producer( Engine::Transform transform, ProduceType type );
 		void Update( float deltaTime ) override;
 		void Render( const Engine::Camera& camera, Surface& target ) override;
 
 	private:
 		float m_time = 0.f;
+		ProduceType m_type = ProduceType::Unknown;
 	};
 }

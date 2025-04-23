@@ -8,6 +8,7 @@
 #include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/TrackRenderer.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
+#include "Game/Production/ProducersManager.h"
 
 namespace Engine
 {
@@ -43,6 +44,7 @@ namespace Engine
 		TrackManager m_trackManager;
 		TrackBuilder m_trackBuilder;
 		TrackRenderer m_trackRenderer;
+		Game::ProducersManager m_producersManager;
 
 		TrackDebugger m_trackDebugger;
 

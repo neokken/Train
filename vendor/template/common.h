@@ -74,6 +74,14 @@ inline uint GetColor( const Color c )
 	return s_colorMap[c];
 }
 
+inline float2 SnapToGrid( const float2& v, const uint gridSize )
+{
+	return float2(
+		round(v.x / gridSize) * gridSize,
+		round(v.y / gridSize) * gridSize
+	);
+}
+
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>

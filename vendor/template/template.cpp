@@ -66,6 +66,7 @@ void KeyEventCallback( GLFWwindow*, int key, int, int action, int )
 	if (action == GLFW_PRESS)
 	{
 		if (app) if (key >= 0) app->KeyDown(key);
+		if (key == GLFW_KEY_ESCAPE) running = false;
 		keystate[key & 255] = 1;
 	}
 	else if (action == GLFW_RELEASE)

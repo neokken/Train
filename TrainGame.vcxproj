@@ -82,6 +82,8 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <OpenMPSupport Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</OpenMPSupport>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <TreatAngleIncludeAsExternal Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -119,6 +121,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <!-- END Custom section -->
@@ -139,7 +143,8 @@
     <ClCompile Include="src\Engine\Renderables\LineSegment.cpp" />
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
-    <ClCompile Include="src\Game\Buildings\Building.cpp" />
+    <ClCompile Include="src\Game\Production\Producer.cpp" />
+    <ClCompile Include="src\Game\Production\ProducersManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
@@ -208,7 +213,9 @@
     <ClInclude Include="src\Engine\Renderables\LineSegment.h" />
     <ClInclude Include="src\Engine\Renderables\Renderable.h" />
     <ClInclude Include="src\Engine\World\World.h" />
-    <ClInclude Include="src\Game\Buildings\Building.h" />
+    <ClInclude Include="src\Game\Production\Producer.h" />
+    <ClInclude Include="src\Game\Production\ProducersManager.h" />
+    <ClInclude Include="src\Game\Production\ProduceType.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />

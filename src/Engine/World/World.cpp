@@ -7,7 +7,7 @@
 
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
 #include "Game/Trains/Wagon.h"
-#include "Game/Buildings/Building.h"
+#include "Game/Production//Producer.h"
 #include "Game/Trains/Train.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "UI/UIManager.h"
@@ -33,10 +33,7 @@ void Engine::World::Init( Surface* renderTarget )
 	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
 	m_trackDebugger.Init(&m_trackManager);
-
-	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
-
-	AddObject(building);
+	m_producersManager.Init(this, &m_trackManager);
 
 	//Set up a track with a train on it for debugging
 	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);

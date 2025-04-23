@@ -1,19 +1,18 @@
 #include "precomp.h"
-#include "Building.h"
+#include "Producer.h"
 #include "Renderables/LineSegment.h"
 
-#include "World/World.h"
-
-Game::Building::Building( Engine::Transform transform ) : GameObject::GameObject(transform)
+Game::Producer::Producer( Engine::Transform transform, ProduceType type ) : GameObject::GameObject(transform)
 {
+	m_type = type;
 }
 
-void Game::Building::Update( float deltaTime )
+void Game::Producer::Update( float deltaTime )
 {
 	m_time += deltaTime;
 }
 
-void Game::Building::Render( const Engine::Camera& _camera, Surface& renderTarget )
+void Game::Producer::Render( const Engine::Camera& _camera, Surface& renderTarget )
 {
 	auto& camera = _camera;
 	auto& target = renderTarget;
