@@ -201,6 +201,9 @@
     <ClInclude Include="src\Game\Production\ProduceType.h">
       <Filter>Game\Production</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Production\ProducerStats.h">
+      <Filter>Game\Production</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">

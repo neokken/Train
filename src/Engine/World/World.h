@@ -26,6 +26,8 @@ namespace Engine
 		void Update( float deltaTime );
 		void UI();
 
+		void Simulate() const;
+
 		// World management functions
 		void AddObject( GameObject* obj );
 		void DestroyObject( GameObject* obj );
@@ -34,6 +36,9 @@ namespace Engine
 		Surface* GetRenderTarget() const;
 
 		ParticleSystem& GetParticleSystem() { return m_particles; }
+
+	private:
+		void Ticks( float deltaTime );
 
 	private:
 		std::vector<GameObject*> m_objects;
@@ -51,5 +56,12 @@ namespace Engine
 		ParticleSystem m_particles = {10000};
 
 		Surface* m_renderTarget = nullptr;
+
+		// Ticks
+		uint m_ticksPerSecond = 20;
+		uint m_ticks = 0;
+
+		float m_heartbeat = 1.0f / static_cast<float>(m_ticksPerSecond);
+		float m_timeUntilNextTick = 0.0f;
 	};
 }

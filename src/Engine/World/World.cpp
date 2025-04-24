@@ -54,6 +54,8 @@ void Engine::World::Init( Surface* renderTarget )
 
 void Engine::World::Update( float deltaTime )
 {
+	Ticks(deltaTime);
+
 	std::erase_if(m_objects, []( GameObject* obj ) { return obj->MarkedForDestroy(); });
 
 	// Update pass
@@ -103,6 +105,11 @@ void Engine::World::UI()
 	Engine::UIManager::EndDebugWindow();
 }
 
+void Engine::World::Simulate() const
+{
+	m_producersManager.Simulate();
+}
+
 void Engine::World::AddObject( GameObject* obj )
 {
 	obj->Init(this);
@@ -122,4 +129,15 @@ const Engine::Camera& Engine::World::GetCamera() const
 Surface* Engine::World::GetRenderTarget() const
 {
 	return m_renderTarget;
+}
+
+void Engine::World::Ticks( float deltaTime )
+{
+	m_timeUntilNextTick -= deltaTime;
+
+	if (m_timeUntilNextTick > 0) return;
+
+	m_timeUntilNextTick = m_heartbeat;
+	m_ticks++;
+	Simulate();
 }

@@ -215,6 +215,7 @@
     <ClInclude Include="src\Engine\World\World.h" />
     <ClInclude Include="src\Game\Production\Producer.h" />
     <ClInclude Include="src\Game\Production\ProducersManager.h" />
+    <ClInclude Include="src\Game\Production\ProducerStats.h" />
     <ClInclude Include="src\Game\Production\ProduceType.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
