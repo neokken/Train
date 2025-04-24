@@ -388,6 +388,8 @@ TrackSegment& TrackManager::GetMutableTrackSegment( const TrackSegmentID id )
 
 std::vector<int> TrackManager::CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const
 {
+	if (!DoesSegmentExists(startID) || !DoesSegmentExists(targetID)) return {};
+
 	std::vector<std::unique_ptr<AStarNode>> allNodes;
 
 	struct CompareNodes
