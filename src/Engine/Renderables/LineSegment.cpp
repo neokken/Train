@@ -11,7 +11,7 @@ Engine::LineSegment::LineSegment( const float2& lStart, const float2& lEnd, cons
 	m_color = color;
 }
 
-void Engine::LineSegment::Render( const Camera& camera, Surface& drawSurface )
+void Engine::LineSegment::Render( const Camera& camera )
 {
 	RenderWorldPos(camera, m_lineStart, m_lineEnd, m_color);
 }
@@ -20,7 +20,7 @@ void Engine::LineSegment::RenderWorldPos( const Camera& camera, const float2& lS
 {
 	float2 localPosS = camera.GetCameraPosition(lStart);
 	float2 localPosE = camera.GetCameraPosition(lEnd);
-	Renderer::GetRenderer().DrawLine({float3(localPosS, height), float3(localPosE, height), RGB8ToRGB32(lColor), width * camera.GetZoomLevel()});
+	Renderer::GetRenderer().DrawLine({float3(localPosS, static_cast<float>(height)), float3(localPosE, static_cast<float>(height)), RGB8ToRGB32(lColor), width * camera.GetZoomLevel()});
 	//drawSurface.Line(localPosS.x, localPosS.y, localPosE.x, localPosE.y, lColor);
 }
 

@@ -12,7 +12,7 @@ Engine::Arrow::Arrow( const float2& base, const float2& dir, const float length,
 	m_color = color;
 }
 
-void Engine::Arrow::Render( const Camera& camera, Surface& drawSurface )
+void Engine::Arrow::Render( const Camera& camera )
 {
 	const float2 normDir = normalize(m_dir);
 	const float2 tip = m_base + normDir * m_length;
@@ -29,7 +29,7 @@ void Engine::Arrow::Render( const Camera& camera, Surface& drawSurface )
 	LineSegment::RenderWorldPos(camera, tip, headRight, m_color);
 }
 
-void Engine::Arrow::RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& base, const float2& dir, const float length, const uint color )
+void Engine::Arrow::RenderWorldPos( const Camera& camera, const float2& base, const float2& dir, const float length, const uint color )
 {
 	const float2 normDir = normalize(dir);
 	const float2 tip = base + normDir * length;

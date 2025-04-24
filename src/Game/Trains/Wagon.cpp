@@ -99,7 +99,7 @@ void Wagon::Move( const float distance )
 	m_transform.position = m_frontWalker.GetPosition();
 }
 
-void Wagon::Render( const Engine::Camera& camera, Surface& target )
+void Wagon::Render( const Engine::Camera& camera )
 {
 	Engine::LineSegment::RenderWorldPos(camera, m_frontWalker.GetPosition(), m_backWalker.GetPosition(), 0x0000ff);
 
@@ -107,10 +107,10 @@ void Wagon::Render( const Engine::Camera& camera, Surface& target )
 	//Front bogey
 	float2 scale = float2(0.85f, 1.f);
 	renderer.DrawRectangle(float3(camera.GetCameraPosition(m_frontWalker.GetPosition()), HeightLayer::Trains - 1), m_frontWalker.GetDirection(), camera.GetZoomLevel() * scale, Engine::RGB8ToRGB32(m_bogeyColor));
-	Engine::Arrow::RenderWorldPos(camera, target, m_frontWalker.GetPosition(), m_frontWalker.GetDirection(), 0.5f, 0xff0000);
+	Engine::Arrow::RenderWorldPos(camera, m_frontWalker.GetPosition(), m_frontWalker.GetDirection(), 0.5f, 0xff0000);
 	//Back bogey
 	renderer.DrawRectangle(float3(camera.GetCameraPosition(m_backWalker.GetPosition()), HeightLayer::Trains - 1), m_backWalker.GetDirection(), camera.GetZoomLevel() * scale, Engine::RGB8ToRGB32(m_bogeyColor));
-	Engine::Arrow::RenderWorldPos(camera, target, m_backWalker.GetPosition(), m_backWalker.GetDirection(), 0.5f, 0xff0000);
+	Engine::Arrow::RenderWorldPos(camera, m_backWalker.GetPosition(), m_backWalker.GetDirection(), 0.5f, 0xff0000);
 
 	//Wagon
 	float2 dir = m_frontWalker.GetPosition() - m_backWalker.GetPosition();

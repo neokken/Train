@@ -4,7 +4,7 @@
 #include "Camera/Camera.h"
 #include "LineSegment.h"
 
-void Engine::Grid::Render( const Camera& camera, Surface& drawSurface )
+void Engine::Grid::Render( const Camera& camera )
 {
 	const float cameraZoomLevel = camera.GetZoomLevel();
 

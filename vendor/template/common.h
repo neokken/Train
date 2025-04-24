@@ -82,7 +82,8 @@ namespace HeightLayer
 		Tracks = 10,
 		Trains = 20,
 		Default = 30,
-		Buildings = 40
+		Buildings = 40,
+		Debug = 80
 	};
 }
 

@@ -59,7 +59,7 @@ void Train::Update( const float deltaTime )
 	}
 }
 
-void Train::Render( const Engine::Camera& camera, Surface& target )
+void Train::Render( const Engine::Camera& camera )
 {
 	for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
 	{

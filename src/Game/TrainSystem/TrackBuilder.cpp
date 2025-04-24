@@ -142,8 +142,8 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 		for (const auto& node : std::views::values(nodes))
 		{
-			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 10);
-			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 4);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 10);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 4);
 		}
 	}
 
@@ -291,7 +291,7 @@ void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarg
 {
 	const float2 dir = data.directionFloat2;
 
-	Engine::Arrow::RenderWorldPos(camera, renderTarget, data.trackNodePosition, data.directionFloat2, .5f, colorNode);
+	Engine::Arrow::RenderWorldPos(camera, data.trackNodePosition, data.directionFloat2, .5f, colorNode);
 
 	if (!onlyShowArrow)
 	{

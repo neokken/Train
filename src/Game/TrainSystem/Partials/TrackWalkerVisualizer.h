@@ -10,7 +10,7 @@ public:
 
 	void Update( float deltaTime ) override;
 
-	void Render( const Engine::Camera& camera, Surface& target ) override;
+	void Render( const Engine::Camera& camera ) override;
 
 	// TrackWalker specific code
 	[[nodiscard]] float GetMoveSpeed() const { return m_moveSpeed; }

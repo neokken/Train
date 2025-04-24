@@ -13,10 +13,9 @@ void Game::Building::Update( float deltaTime )
 	m_time += deltaTime;
 }
 
-void Game::Building::Render( const Engine::Camera& _camera, Surface& renderTarget )
+void Game::Building::Render( const Engine::Camera& _camera )
 {
 	auto& camera = _camera;
-	auto& target = renderTarget;
 
 	float2 base = m_transform.position;
 

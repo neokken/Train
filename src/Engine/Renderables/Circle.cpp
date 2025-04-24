@@ -7,12 +7,12 @@ Engine::Circle::Circle( const float2& center, float size, uint color, int segmen
 {
 }
 
-void Engine::Circle::Render( const Camera& camera, Surface& drawSurface )
+void Engine::Circle::Render( const Camera& camera )
 {
-	RenderWorldPos(camera, drawSurface, m_center, m_size, m_color, m_segmentCount);
+	RenderWorldPos(camera, m_center, m_size, m_color, m_segmentCount);
 }
 
-void Engine::Circle::RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& center, float size, uint color, int segmentCount )
+void Engine::Circle::RenderWorldPos( const Camera& camera, const float2& center, float size, uint color, int segmentCount )
 {
 	const float segmentCountF = static_cast<float>(segmentCount);
 

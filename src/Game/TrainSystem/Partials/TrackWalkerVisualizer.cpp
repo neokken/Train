@@ -2,6 +2,7 @@
 #include "TrackWalkerVisualizer.h"
 
 #include "Camera/Camera.h"
+#include "Helpers/Renderer.h"
 #include "Renderables/Arrow.h"
 #include "Renderables/LineSegment.h"
 
@@ -18,11 +19,11 @@ void TrackWalkerVisualizer::Update( const float deltaTime )
 	m_transform.position = m_walker.GetPosition();
 }
 
-void TrackWalkerVisualizer::Render( const Engine::Camera& camera, Surface& target )
+void TrackWalkerVisualizer::Render( const Engine::Camera& camera )
 {
-	const float2 scale = m_transform.scale * 2.5f * float2(0.5f, 1.f);
-	target.Rectangle(camera.GetCameraPosition(m_transform.position), m_walker.GetDirection(), camera.GetZoomLevel() * scale, m_color);
-	Engine::Arrow::RenderWorldPos(camera, target, m_transform.position, m_walker.GetDirection(), 2.f, 0xff0000);
+	const float2 scale = m_transform.scale * 2.5f * float2(0.5f, 1.f) * 0.5f;
+	Engine::Renderer::GetRenderer().DrawRectangle(float3(camera.GetCameraPosition(m_transform.position), HeightLayer::Debug), m_walker.GetDirection(), camera.GetZoomLevel() * scale, Engine::RGB8ToRGB32(m_color));
+	Engine::Arrow::RenderWorldPos(camera, m_transform.position, m_walker.GetDirection(), 2.f, 0xff0000);
 }
 
 void TrackWalkerVisualizer::ImGuiDebugViewer()

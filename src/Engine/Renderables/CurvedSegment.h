@@ -41,19 +41,19 @@ namespace Engine
 		void SetupPoints( const float2& lStart, const float2& lEnd, const float2& lStartDir, const float2& lEndDir,
 		                  float hardness, CurveSetupMode setupMode = CurveSetupMode::LongestBend );
 
-		void Render( const Camera& camera, Surface& drawSurface ) override;
-		void RenderBezierPoints( const Camera& camera, Surface& drawSurface ) const;
+		void Render( const Camera& camera ) override;
+		void RenderBezierPoints( const Camera& camera ) const;
 
 		/**
 		 * Render a curve statically from data slightly more expensive than keeping an object
 		 */
-		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, CurveData curve, uint color );
+		static void RenderWorldPos( const Camera& camera, CurveData curve, uint color );
 
 		/**
 		* Render a track made of arrows statically
 		* @return the length of the drawn track
 		*/
-		static float RenderArrowsWorldPos( const Camera& camera, Surface& drawSurface, const CurveData& curve, uint color, float width );
+		static float RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width );
 
 		/**
 		* Render a full track
@@ -65,7 +65,7 @@ namespace Engine
 		* Render 2 lines following a curve statically 
 		* @return the length of the drawn track
 		*/
-		static float RenderTrackLinesWorldPos( const Camera& camera, Surface& drawSurface, CurveData curve, uint color, float width );
+		static float RenderTrackLinesWorldPos( const Camera& camera, CurveData curve, uint color, float width );
 
 		/**
 		* Render track spokes, should be rendered together with a track
@@ -85,7 +85,7 @@ namespace Engine
 		 * @return
 		 * Length of the drawn segment in units
 		 */
-		static float RenderWorldPosAndGetLength( const Camera& camera, Surface& drawSurface, CurveData curve, uint color );
+		static float RenderWorldPosAndGetLength( const Camera& camera, CurveData curve, uint color );
 		/**
 		 * @param t how far along the path from 0 to 1
 		 * @return
@@ -122,7 +122,7 @@ namespace Engine
 		float m_length{0.f};
 
 		uint m_color{0xffffffff};
-		static void DrawCircle( const Camera& camera, Surface& targetSurface, int segmentCount, const float2& center,
+		static void DrawCircle( const Camera& camera, int segmentCount, const float2& center,
 		                        float circleSize, uint color );
 	};
 }
