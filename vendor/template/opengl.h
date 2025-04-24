@@ -9,6 +9,7 @@ class GLTexture
 {
 public:
 	enum { DEFAULT = 0, FLOAT = 1, INTTARGET = 2 };
+
 	// constructor / destructor
 	GLTexture( uint width, uint height, uint type = DEFAULT );
 	~GLTexture();
@@ -16,6 +17,7 @@ public:
 	void Bind( const uint slot = 0 );
 	void CopyFrom( Tmpl8::Surface* src );
 	void CopyTo( Tmpl8::Surface* dst );
+
 public:
 	// public data members
 	GLuint ID = 0;
@@ -32,22 +34,28 @@ class Shader
 public:
 	// constructor / destructor
 	Shader( const char* vfile, const char* pfile, bool fromString );
+	Shader( const char* vfile, const char* pfile, const char* gfile );
 	~Shader();
 	// methods
 	void Init( const char* vfile, const char* pfile );
+	void Init( const char* vfile, const char* pfile, const char* gfile );
 	void Compile( const char* vtext, const char* ftext );
+	void Compile( const char* vtext, const char* ftext, const char* gtext );
 	void Bind();
 	void SetInputTexture( uint slot, const char* name, GLTexture* texture );
 	void SetInputMatrix( const char* name, const mat4& matrix );
 	void SetFloat( const char* name, const float v );
+	void SetFloat2( const char* name, const float2& v );
 	void SetInt( const char* name, const int v );
 	void SetUInt( const char* name, const uint v );
 	void Unbind();
+
 private:
 	// data members
-	uint vertex = 0;	// vertex shader identifier
-	uint pixel = 0;		// fragment shader identifier
-	uint ID = 0;		// shader program identifier
+	uint vertex = 0; // vertex shader identifier
+	uint pixel = 0; // fragment shader identifier
+	uint geometry = 0; // geometry shader identifier
+	uint ID = 0; // shader program identifier
 };
 
 // generic error checking for OpenGL code

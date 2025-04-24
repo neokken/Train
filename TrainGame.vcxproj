@@ -232,6 +232,7 @@
   <ItemGroup>
     <None Include="assets\shaders\line.frag" />
     <None Include="assets\shaders\line.vert" />
+    <None Include="assets\shaders\rectangle.geom" />
     <None Include="README.md" />
     <None Include="vendor\template\LICENSE" />
   </ItemGroup>

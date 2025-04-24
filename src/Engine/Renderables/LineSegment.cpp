@@ -20,7 +20,7 @@ void Engine::LineSegment::RenderWorldPos( const Camera& camera, const float2& lS
 {
 	float2 localPosS = camera.GetCameraPosition(lStart);
 	float2 localPosE = camera.GetCameraPosition(lEnd);
-	Renderer::GetRenderer().DrawLine({float3(localPosS, height), float3(localPosE, height), RGB8ToRGB32(lColor), width});
+	Renderer::GetRenderer().DrawLine({float3(localPosS, height), float3(localPosE, height), RGB8ToRGB32(lColor), width * camera.GetZoomLevel()});
 	//drawSurface.Line(localPosS.x, localPosS.y, localPosE.x, localPosE.y, lColor);
 }
 

@@ -1480,6 +1480,8 @@ public:
 		return M;
 	}
 
+	static mat4 Orthographic( float2 pos, float width, float height, const float nearZ, const float farZ );
+
 	constexpr static mat4 Identity() { return mat4{}; }
 
 	static mat4 ZeroMatrix()

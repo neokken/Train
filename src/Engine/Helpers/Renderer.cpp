@@ -7,10 +7,6 @@ namespace Engine
 
 	void Renderer::Render()
 	{
-		static const float3 screenWidthReciprical = float3(float2(1 / float2(SCRWIDTH, SCRHEIGHT)), 1.f) * 2.f;
-
-		m_lineShader->Bind();
-		m_lineShader->SetInputMatrix("MVP", view);
 		glViewport(0, 0, SCRWIDTH, SCRHEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 		glBindVertexArray(m_lineVAO);
@@ -20,7 +16,7 @@ namespace Engine
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//                   width            {xyz},{rgb}
-		std::vector<std::pair<float, std::vector<float3>>> lineVertices;
+		std::vector<std::pair<float, std::vector<float>>> lineVertices;
 		for (auto line : m_queuedLines) // Might be slow but probably fine
 		{
 			bool inserted = false;
@@ -28,31 +24,51 @@ namespace Engine
 			{
 				if (size.first == line.width) // NOLINT(clang-diagnostic-float-equal)
 				{
-					size.second.insert(size.second.end(), {line.startPos * screenWidthReciprical - float3(1), line.color, line.endPos * screenWidthReciprical - float3(1), line.color});
+					size.second.push_back(line.startPos.x);
+					size.second.push_back(line.startPos.y);
+					size.second.push_back(-line.startPos.z);
+					size.second.push_back(line.color.x);
+					size.second.push_back(line.color.y);
+					size.second.push_back(line.color.z);
+					size.second.push_back(line.endPos.x);
+					size.second.push_back(line.endPos.y);
+					size.second.push_back(-line.endPos.z);
+					size.second.push_back(line.color.x);
+					size.second.push_back(line.color.y);
+					size.second.push_back(line.color.z);
 					inserted = true;
 				}
 			}
 			if (!inserted)
 			{
-				lineVertices.push_back(std::pair<float, std::vector<float3>>(line.width, {line.startPos * screenWidthReciprical - float3(1), line.color, line.endPos * screenWidthReciprical - float3(1), line.color}));
+				float3 start = line.startPos;
+				float3 end = line.endPos;
+				lineVertices.push_back(std::pair<float, std::vector<float>>(line.width, {start.x, start.y, -start.z, line.color.x, line.color.y, line.color.z, end.x, end.y, -end.z, line.color.x, line.color.y, line.color.z}));
 			}
 		}
 
 		for (auto line : lineVertices)
 		{
+			if (line.first <= 0.f)
+			{
+				m_lineShader->Bind();
+				m_lineShader->SetInputMatrix("MVP", view);
+			}
+			else
+			{
+				m_rectangleShader->Bind();
+				m_rectangleShader->SetInputMatrix("MVP", view);
+				m_rectangleShader->SetFloat("width", line.first);
+				m_rectangleShader->SetFloat2("resolution", float2(SCRWIDTH, SCRHEIGHT));
+			}
+
 			//Draw lines
+			glBindVertexArray(m_lineVAO);
 			glBindBuffer(GL_ARRAY_BUFFER, m_lineVBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float3) * line.second.size(), line.second.data(), GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * line.second.size(), line.second.data(), GL_DYNAMIC_DRAW);
 
-			// Set up the vertex attributes
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); // positions
 
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); // colors
 
-			//I set this whole fucking shit up to support with but opengl core doesnt support it bruuuuuh
-			//glLineWidth(line.first);
 			glDrawArrays(GL_LINES, 0, static_cast<int>(line.second.size() / 2));
 		}
 
@@ -73,6 +89,14 @@ namespace Engine
 		m_queuedLines.push_back(line);
 	}
 
+	void Renderer::DrawRectangle( const float3& position, const float2 direction, const float2 halfSize, const float3 color )
+	{
+		float3 posA = position + float3(direction, 0.f) * halfSize.y;
+		float3 posB = position - float3(direction, 0.f) * halfSize.y;
+		float width = halfSize.x * 2.f;
+		m_queuedLines.push_back({posA, posB, color, width});
+	}
+
 	// ReSharper disable once CppMemberFunctionMayBeConst
 	GLTexture& Renderer::GetRenderTexture()
 	{
@@ -83,21 +107,24 @@ namespace Engine
 	{
 		float nearPlane = 0.0f;
 		float farPlane = 1000.0f;
-
-		float proj[16] = {
-			// Ortho projection
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, -2.0f / (farPlane - nearPlane), (farPlane + nearPlane) / (farPlane - nearPlane),
-			0, 0, 0, 1
-		};
-		view = mat4::FromColumnMajor(*reinterpret_cast<mat4*>(&proj));
+		view = mat4::Orthographic(float2(0), SCRWIDTH, SCRHEIGHT, nearPlane, farPlane);
 
 		m_lineShader = new Shader("./assets/shaders/line.vert", "./assets/shaders/line.frag", false);
+		m_rectangleShader = new Shader("./assets/shaders/line.vert", "./assets/shaders/line.frag", "./assets/shaders/rectangle.geom");
 
 		//Set up VBO
 		glGenBuffers(1, &m_lineVBO);
 		glGenVertexArrays(1, &m_lineVAO);
+
+		glBindVertexArray(m_lineVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_lineVBO);
+
+		// Set up the vertex attributes
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); // positions
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); // colors
 
 		//Set up framebuffer for blurring
 		glGenFramebuffers(1, &m_FBO);

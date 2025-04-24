@@ -4,7 +4,7 @@ namespace Engine
 	{
 		float3 startPos, endPos;
 		float3 color;
-		float width = 1.f; // DEPRECATED
+		float width = 0.f;
 	};
 
 	class Renderer
@@ -13,6 +13,13 @@ namespace Engine
 		void Render();
 		static Renderer& GetRenderer();
 		void DrawLine( const Line& line );
+
+		/**
+		 * Draws a line in the form of a rectangle
+		 * @param direction normalized direction
+		 * @param size halfSize, y is aligned with direction
+		 */
+		void DrawRectangle( const float3& position, float2 direction, float2 halfSize, float3 color );
 		GLTexture& GetRenderTexture();
 	private:
 		Renderer();
@@ -26,5 +33,6 @@ namespace Engine
 		uint m_lineVAO{0};
 		GLTexture* m_renderTexture{nullptr};
 		Shader* m_lineShader;
+		Shader* m_rectangleShader;
 	};
 }
