@@ -461,14 +461,16 @@ std::vector<int> TrackManager::CalculatePath( const TrackSegmentID startID, bool
 					neighborAStar->parent = current;
 					neighborAStar->parentLever = i;
 					neighborAStar->g = tentativeG;
-					neighborAStar->h = PathHeuristic(GetTrackSegment(neighbors[i]).nodeA, GetTrackSegment(targetID).nodeA);
+					TrackNodeID neighborNode = (currentSeg.nodeA == connectingSegment.nodeA || currentSeg.nodeB == connectingSegment.nodeA) ? connectingSegment.nodeB : connectingSegment.nodeA;
+					neighborAStar->h = PathHeuristic(neighborNode, GetTrackSegment(targetID).nodeA);
 					openMap.erase(neighbors[i]);
 					openMap.insert(std::pair(neighbors[i], neighborAStar));
 				}
 			}
 			else
 			{
-				allNodes.push_back(std::make_unique<AStarNode>(neighbors[i], tentativeG, PathHeuristic(GetTrackSegment(neighbors[i]).nodeA, GetTrackSegment(targetID).nodeA), current, i));
+				TrackNodeID neighborNode = (currentSeg.nodeA == connectingSegment.nodeA || currentSeg.nodeB == connectingSegment.nodeA) ? connectingSegment.nodeB : connectingSegment.nodeA;
+				allNodes.push_back(std::make_unique<AStarNode>(neighbors[i], tentativeG, PathHeuristic(neighborNode, GetTrackSegment(targetID).nodeA), current, i));
 				neighborAStar = allNodes.back().get();
 				open.push(neighborAStar);
 				openMap.insert(std::pair(neighbors[i], neighborAStar));
