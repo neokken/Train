@@ -47,6 +47,8 @@ public:
 
 	std::vector<int> CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const;
 
+	void SetNodeLever( const TrackNodeID node, TrackSegmentID segment, const int leverValue );
+
 private:
 	//nobody outside this class should touch nodes/segments
 	// if there is a case handle it differently...

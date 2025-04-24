@@ -423,7 +423,7 @@ std::vector<int> TrackManager::CalculatePath( const TrackSegmentID startID, bool
 		TrackNodeID currentTNode;
 
 		//Find next node in the correct direction
-		if (current->parent != nullptr) 
+		if (current->parent != nullptr)
 		{
 			const TrackSegment& parentSeg = GetTrackSegment(current->parent->segment);
 			if (parentSeg.nodeA == currentSeg.nodeA || parentSeg.nodeB == currentSeg.nodeA) currentTNode = currentSeg.nodeB;
@@ -476,6 +476,11 @@ std::vector<int> TrackManager::CalculatePath( const TrackSegmentID startID, bool
 		}
 	}
 	return {}; // No path exists
+}
+
+void TrackManager::SetNodeLever( const TrackNodeID node, const TrackSegmentID segment, const int leverValue )
+{
+	GetMutableTrackNode(node).connectionLever.at(segment) = leverValue;
 }
 
 float TrackManager::PathHeuristic( const TrackNodeID a, const TrackNodeID b ) const
