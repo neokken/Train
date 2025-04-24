@@ -74,6 +74,18 @@ inline uint GetColor( const Color c )
 	return s_colorMap[c];
 }
 
+namespace HeightLayer
+{
+	enum HeightLayer : std::uint8_t
+	{
+		Background = 0,
+		Tracks = 10,
+		Trains = 20,
+		Default = 30,
+		Buildings = 40
+	};
+}
+
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>

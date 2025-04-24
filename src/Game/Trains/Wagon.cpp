@@ -100,7 +100,7 @@ void Wagon::Move( const float distance )
 
 void Wagon::Render( const Engine::Camera& camera, Surface& target )
 {
-	Engine::LineSegment::RenderWorldPos(camera, target, m_frontWalker.GetPosition(), m_backWalker.GetPosition(), 0x0000ff);
+	Engine::LineSegment::RenderWorldPos(camera, m_frontWalker.GetPosition(), m_backWalker.GetPosition(), 0x0000ff);
 
 	//Front bogey
 	float2 scale = float2(1.7f, 2.f);
@@ -116,11 +116,12 @@ void Wagon::Render( const Engine::Camera& camera, Surface& target )
 	scale = float2(1.7f, m_wagonLength + 2.15f);
 	float2 pos = m_backWalker.GetPosition() + dir / 2;
 	dir /= max(dirLength, 0.0001f);
-	target.Rectangle(camera.GetCameraPosition(pos), dir, camera.GetZoomLevel() * scale, m_wagonColor);
-	target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.6f, 2.7f), m_wagonColor);
-	target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.4f, 2.8f), m_wagonColor);
-	target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.2f, 3.0f), m_wagonColor);
-	target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(.9f, 3.2f), m_wagonColor);
+	Engine::LineSegment::RenderWorldPos(camera, m_backWalker.GetPosition(), m_frontWalker.GetPosition(), m_wagonColor, HeightLayer::Trains, 1.f);
+	//target.Rectangle(camera.GetCameraPosition(pos), dir, camera.GetZoomLevel() * scale, m_wagonColor);
+	//target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.6f, 2.7f), m_wagonColor);
+	//target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.4f, 2.8f), m_wagonColor);
+	//target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(1.2f, 3.0f), m_wagonColor);
+	//target.Rectangle(camera.GetCameraPosition(m_frontWalker.GetPosition()), dir, camera.GetZoomLevel() * float2(.9f, 3.2f), m_wagonColor);
 }
 
 void Wagon::Derail()

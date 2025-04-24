@@ -4,7 +4,7 @@ namespace Engine
 	{
 		float3 startPos, endPos;
 		float3 color;
-		float width = 1.f;
+		float width = 1.f; // DEPRECATED
 	};
 
 	class Renderer
@@ -20,6 +20,7 @@ namespace Engine
 
 		std::vector<Line> m_queuedLines;
 
+		mat4 view;
 		uint m_FBO{0};
 		uint m_lineVBO{0};
 		uint m_lineVAO{0};

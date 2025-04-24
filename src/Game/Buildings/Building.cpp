@@ -20,8 +20,8 @@ void Game::Building::Render( const Engine::Camera& _camera, Surface& renderTarge
 
 	float2 base = m_transform.position;
 
-	Engine::LineSegment::RenderWorldPos(camera, target, base, base + float2{20.0f, 0.0f}, 0x00ff00);
-	Engine::LineSegment::RenderWorldPos(camera, target, base + float2{20.0f, 0.0f}, base + float2{20.0f, -10.0f}, 0x00ff00);
-	Engine::LineSegment::RenderWorldPos(camera, target, base + float2{20.0f, -10.0f}, base + float2{0.0f, -10.0f}, 0x00ff00);
-	Engine::LineSegment::RenderWorldPos(camera, target, base + float2{0.0f, -10.0f}, base, 0x00ff00);
+	Engine::LineSegment::RenderWorldPos(camera, base, base + float2{20.0f, 0.0f}, 0x00ff00);
+	Engine::LineSegment::RenderWorldPos(camera, base + float2{20.0f, 0.0f}, base + float2{20.0f, -10.0f}, 0x00ff00);
+	Engine::LineSegment::RenderWorldPos(camera, base + float2{20.0f, -10.0f}, base + float2{0.0f, -10.0f}, 0x00ff00);
+	Engine::LineSegment::RenderWorldPos(camera, base + float2{0.0f, -10.0f}, base, 0x00ff00);
 }

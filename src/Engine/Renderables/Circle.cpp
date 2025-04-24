@@ -26,6 +26,6 @@ void Engine::Circle::RenderWorldPos( const Camera& camera, Surface& drawSurface,
 		float2 p1 = center + float2{size * cos(angle1), size * sin(angle1)};
 		float2 p2 = center + float2{size * cos(angle2), size * sin(angle2)};
 
-		Engine::LineSegment::RenderWorldPos(camera, drawSurface, p1, p2, color);
+		Engine::LineSegment::RenderWorldPos(camera, p1, p2, color);
 	}
 }

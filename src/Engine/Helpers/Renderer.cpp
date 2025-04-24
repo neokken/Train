@@ -10,7 +10,7 @@ namespace Engine
 		static const float3 screenWidthReciprical = float3(float2(1 / float2(SCRWIDTH, SCRHEIGHT)), 1.f) * 2.f;
 
 		m_lineShader->Bind();
-		m_lineShader->SetInputMatrix("MVP", mat4::Identity());
+		m_lineShader->SetInputMatrix("MVP", view);
 		glViewport(0, 0, SCRWIDTH, SCRHEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 		glBindVertexArray(m_lineVAO);
@@ -51,7 +51,8 @@ namespace Engine
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); // colors
 
-			glLineWidth(line.first);
+			//I set this whole fucking shit up to support with but opengl core doesnt support it bruuuuuh
+			//glLineWidth(line.first);
 			glDrawArrays(GL_LINES, 0, static_cast<int>(line.second.size() / 2));
 		}
 
@@ -80,6 +81,18 @@ namespace Engine
 
 	Renderer::Renderer()
 	{
+		float nearPlane = 0.0f;
+		float farPlane = 1000.0f;
+
+		float proj[16] = {
+			// Ortho projection
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, -2.0f / (farPlane - nearPlane), (farPlane + nearPlane) / (farPlane - nearPlane),
+			0, 0, 0, 1
+		};
+		view = mat4::FromColumnMajor(*reinterpret_cast<mat4*>(&proj));
+
 		m_lineShader = new Shader("./assets/shaders/line.vert", "./assets/shaders/line.frag", false);
 
 		//Set up VBO

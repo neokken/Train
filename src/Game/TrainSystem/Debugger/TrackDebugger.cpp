@@ -111,8 +111,8 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 
 		//RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
 
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
 	}
 }
 

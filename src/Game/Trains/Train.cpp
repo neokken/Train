@@ -65,7 +65,7 @@ void Train::Render( const Engine::Camera& camera, Surface& target )
 	{
 		TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
 		TrackWalker& back = m_wagons[i]->GetFrontWalker();
-		Engine::LineSegment::RenderWorldPos(camera, target, front.GetPosition(), back.GetPosition(), m_wireColor);
+		Engine::LineSegment::RenderWorldPos(camera, front.GetPosition(), back.GetPosition(), m_wireColor);
 	}
 }
 

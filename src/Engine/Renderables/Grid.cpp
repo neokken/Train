@@ -28,14 +28,14 @@ void Engine::Grid::Render( const Camera& camera, Surface& drawSurface )
 		{
 			const int x = i * gridData.pixelDistance;
 
-			LineSegment::RenderWorldPos(camera, drawSurface, float2(static_cast<float>(x), topLeftWorldPos.y), float2(static_cast<float>(x), bottomRightWorldPos.y), gridData.lineColor);
+			LineSegment::RenderWorldPos(camera, float2(static_cast<float>(x), topLeftWorldPos.y), float2(static_cast<float>(x), bottomRightWorldPos.y), gridData.lineColor);
 		}
 
 		for (int i = startY; i <= endY; i++)
 		{
 			const int y = i * gridData.pixelDistance;
 
-			LineSegment::RenderWorldPos(camera, drawSurface, float2(topLeftWorldPos.x, static_cast<float>(y)), float2(bottomRightWorldPos.x, static_cast<float>(y)), gridData.lineColor);
+			LineSegment::RenderWorldPos(camera, float2(topLeftWorldPos.x, static_cast<float>(y)), float2(bottomRightWorldPos.x, static_cast<float>(y)), gridData.lineColor);
 		}
 	}
 }

@@ -13,14 +13,14 @@ Engine::LineSegment::LineSegment( const float2& lStart, const float2& lEnd, cons
 
 void Engine::LineSegment::Render( const Camera& camera, Surface& drawSurface )
 {
-	RenderWorldPos(camera, drawSurface, m_lineStart, m_lineEnd, m_color);
+	RenderWorldPos(camera, m_lineStart, m_lineEnd, m_color);
 }
 
-void Engine::LineSegment::RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lEnd, uint lColor )
+void Engine::LineSegment::RenderWorldPos( const Camera& camera, const float2& lStart, const float2& lEnd, const uint lColor, const int height, const float width )
 {
 	float2 localPosS = camera.GetCameraPosition(lStart);
 	float2 localPosE = camera.GetCameraPosition(lEnd);
-	Renderer::GetRenderer().DrawLine({float3(localPosS, 0.f), float3(localPosE, 0.f), RGB8ToRGB32(lColor), 1.f});
+	Renderer::GetRenderer().DrawLine({float3(localPosS, height), float3(localPosE, height), RGB8ToRGB32(lColor), width});
 	//drawSurface.Line(localPosS.x, localPosS.y, localPosE.x, localPosE.y, lColor);
 }
 
