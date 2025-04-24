@@ -4,6 +4,16 @@
 
 #include <json.hpp>
 
+struct AStarNode
+{
+	TrackSegmentID segment;
+	float g = 0.f;
+	float h = 0.f;
+	[[nodiscard]] float f() const { return g + h; }
+	const AStarNode* parent = nullptr;
+	int parentLever = -1;
+};
+
 class TrackManager
 {
 public:
@@ -22,6 +32,8 @@ public:
 
 	[[nodiscard]] const TrackNode& GetTrackNode( TrackNodeID id ) const;
 	[[nodiscard]] const TrackSegment& GetTrackSegment( TrackSegmentID id ) const;
+	//Get a track segment from its connecting nodes
+	[[nodiscard]] const TrackSegmentID GetTrackSegment( TrackNodeID a, TrackNodeID b ) const;
 
 	[[nodiscard]] TrackSegmentID GetNextSegmentPositive( TrackSegmentID id ) const;
 	[[nodiscard]] TrackSegmentID GetNextSegmentNegative( TrackSegmentID id ) const;
@@ -32,6 +44,8 @@ public:
 
 	[[nodiscard]] const std::unordered_map<TrackSegmentID, TrackSegment>& GetSegmentMap() const { return m_segments; }
 	[[nodiscard]] const std::unordered_map<TrackNodeID, TrackNode>& GetNodeMap() const { return m_nodes; }
+
+	std::vector<int> CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const;
 
 private:
 	//nobody outside this class should touch nodes/segments
@@ -44,6 +58,15 @@ private:
 
 	[[nodiscard]] TrackNode& GetMutableTrackNode( TrackNodeID id );
 	[[nodiscard]] TrackSegment& GetMutableTrackSegment( TrackSegmentID id );
+
+
+
+	//A*
+	//Estimated heuristic for a path ( h )
+	[[nodiscard]] float PathHeuristic( TrackNodeID a, TrackNodeID b ) const;
+	//Actual heuristic ( g )
+	[[nodiscard]] static float PathDistance( const TrackSegment& segment );
+	[[nodiscard]] static std::vector<int> ReconstructPath( const AStarNode& finalNode );
 
 private:
 	Engine::IDGenerator<TrackNodeID> m_nodeIDGenerator;
