@@ -87,6 +87,14 @@ namespace HeightLayer
 	};
 }
 
+//Debug assert
+#if _DEBUG
+#define DEBUG_ASSERT(expression, message) if(!(expression)) printf("Assertion Failed:"#message"\n"), DebugBreak();
+#else
+#define DEBUG_ASSERT
+#endif
+
+
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
