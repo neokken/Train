@@ -4,6 +4,7 @@
 
 #include "precomp.h"
 #include "Application.h"
+#include "Helpers/Renderer.h"
 #include "UI/UIManager.h"
 
 #include "ImGui/imgui.h"
@@ -376,10 +377,14 @@ int main()
 			//DrawQuad();
 			//shader->Unbind();
 
-			Engine::UIManager::DrawMainWindow(renderTarget->ID);
+			//Engine::UIManager::DrawMainWindow(renderTarget->ID);
+
+			Engine::Renderer::GetRenderer().Render();
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			Engine::UIManager::DrawMainWindow(Engine::Renderer::GetRenderer().GetRenderTexture().ID);
+
 
 			app->UI();
-
 			Engine::UIManager::Render();
 
 			glfwSwapBuffers(window);

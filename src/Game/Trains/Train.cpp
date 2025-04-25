@@ -59,13 +59,13 @@ void Train::Update( const float deltaTime )
 	}
 }
 
-void Train::Render( const Engine::Camera& camera, Surface& target )
+void Train::Render( const Engine::Camera& camera )
 {
 	for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
 	{
 		TrackWalker& front = m_wagons[i - 1]->GetBackWalker();
 		TrackWalker& back = m_wagons[i]->GetFrontWalker();
-		Engine::LineSegment::RenderWorldPos(camera, target, front.GetPosition(), back.GetPosition(), m_wireColor);
+		Engine::LineSegment::RenderWorldPos(camera, front.GetPosition(), back.GetPosition(), m_wireColor);
 	}
 }
 

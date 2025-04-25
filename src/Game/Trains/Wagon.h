@@ -11,7 +11,7 @@ public:
 
 	void Update( float deltaTime ) override;
 	void Move( float distance );
-	void Render( const Engine::Camera& camera, Surface& target ) override;
+	void Render( const Engine::Camera& camera ) override;
 
 	virtual void Derail();
 

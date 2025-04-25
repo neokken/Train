@@ -74,7 +74,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 	m_hoveredTrackSegment = TrackSegmentID::Invalid;
 }
 
-void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface ) const
+void TrackDebugger::Render( const Engine::Camera& camera ) const
 {
 	const Engine::InputManager& input = Input::get();
 
@@ -90,7 +90,7 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 		if (node.id == m_selectedTrackNode) color = NODE_COLOR_SELECT;
 		if (node.id == m_selectedTrackNode && node.id == m_hoveredTrackNode) color = NODE_COLOR_SELECT_HOVER;
 
-		Engine::Circle::RenderWorldPos(camera, targetSurface, node.nodePosition, NODE_DISPLAY_SIZE, color);
+		Engine::Circle::RenderWorldPos(camera, node.nodePosition, NODE_DISPLAY_SIZE, color);
 	}
 
 	for (const auto& segment : std::views::values(m_trackManager->m_segments))
@@ -111,8 +111,8 @@ void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface
 
 		//RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
 
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
-		Engine::LineSegment::RenderWorldPos(camera, targetSurface, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
+		Engine::LineSegment::RenderWorldPos(camera, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
 	}
 }
 
@@ -293,7 +293,7 @@ void TrackDebugger::UI() const
 	Engine::UIManager::EndDebugWindow();
 }
 
-void TrackDebugger::RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegmentID trackID, const int segmentCount, const uint color ) const
+void TrackDebugger::RenderTrackSegment( const Engine::Camera& camera, const TrackSegmentID trackID, const int segmentCount, const uint color ) const
 {
 	const TrackSegment& segment = m_trackManager->GetTrackSegment(trackID);
 

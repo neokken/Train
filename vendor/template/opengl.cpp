@@ -17,7 +17,7 @@ void _CheckGL( const char* f, int l )
 		else if (error == 0x502) errStr = "INVALID OPERATION";
 		else if (error == 0x501) errStr = "INVALID VALUE";
 		else if (error == 0x506) errStr = "INVALID FRAMEBUFFER OPERATION";
-		FatalError( "GL error %d: %s at %s:%d\n", error, errStr, f, l );
+		Engine::Logger::Error("GL error {}: {} at {}:{}\n", error, errStr, f, l);
 	}
 }
 
@@ -91,8 +91,8 @@ GLTexture::GLTexture( uint w, uint h, uint type )
 	{
 		// regular texture
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, 0 );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 	else if (type == INTTARGET)
 	{
@@ -155,6 +155,11 @@ Shader::Shader( const char* vfile, const char* pfile, bool fromString )
 	}
 }
 
+Shader::Shader( const char* vfile, const char* pfile, const char* gfile )
+{
+	Init(vfile, pfile, gfile);
+}
+
 Shader::~Shader()
 {
 	glDetachShader( ID, pixel );
@@ -167,13 +172,27 @@ Shader::~Shader()
 
 void Shader::Init( const char* vfile, const char* pfile )
 {
-	string vsText = TextFileRead( vfile );
-	string fsText = TextFileRead( pfile );
+	string vsText = "#version 330 core\n" + TextFileRead(vfile);
+	string fsText = "#version 330 core\n" + TextFileRead(pfile);
 	FATALERROR_IF( vsText.size() == 0, "File %s not found", vfile );
 	FATALERROR_IF( fsText.size() == 0, "File %s not found", pfile );
 	const char* vertexText = vsText.c_str();
 	const char* fragmentText = fsText.c_str();
 	Compile( vertexText, fragmentText );
+}
+
+void Shader::Init( const char* vfile, const char* pfile, const char* gfile )
+{
+	string vsText = "#version 330 core\n#define USING_GEOMETRY_SHADER\n" + TextFileRead(vfile);
+	string fsText = "#version 330 core\n#define USING_GEOMETRY_SHADER\n" + TextFileRead(pfile);
+	string gsText = "#version 330 core\n" + TextFileRead(gfile);
+	FATALERROR_IF(vsText.size() == 0, "File %s not found", vfile);
+	FATALERROR_IF(fsText.size() == 0, "File %s not found", pfile);
+	FATALERROR_IF(gsText.size() == 0, "File %s not found", gfile);
+	const char* vertexText = vsText.c_str();
+	const char* fragmentText = fsText.c_str();
+	const char* geometryText = gsText.c_str();
+	Compile(vertexText, fragmentText, geometryText);
 }
 
 void Shader::Compile( const char* vtext, const char* ftext )
@@ -194,6 +213,32 @@ void Shader::Compile( const char* vtext, const char* ftext )
 	CheckGL();
 	glLinkProgram( ID );
 	CheckProgram( ID );
+	CheckGL();
+}
+
+void Shader::Compile( const char* vtext, const char* ftext, const char* gtext )
+{
+	vertex = glCreateShader(GL_VERTEX_SHADER);
+	pixel = glCreateShader(GL_FRAGMENT_SHADER);
+	geometry = glCreateShader(GL_GEOMETRY_SHADER);
+	glShaderSource(vertex, 1, &vtext, 0);
+	glCompileShader(vertex);
+	CheckShader(vertex);
+	glShaderSource(pixel, 1, &ftext, 0);
+	glCompileShader(pixel);
+	CheckShader(pixel);
+	glShaderSource(geometry, 1, &gtext, 0);
+	glCompileShader(geometry);
+	CheckShader(geometry);
+	ID = glCreateProgram();
+	glAttachShader(ID, vertex);
+	glAttachShader(ID, pixel);
+	glAttachShader(ID, geometry);
+	glBindAttribLocation(ID, 0, "pos");
+	glBindAttribLocation(ID, 1, "tuv");
+	CheckGL();
+	glLinkProgram(ID);
+	CheckProgram(ID);
 	CheckGL();
 }
 
@@ -227,6 +272,12 @@ void Shader::SetInputMatrix( const char* name, const mat4& matrix )
 void Shader::SetFloat( const char* name, const float v )
 {
 	glUniform1f( glGetUniformLocation( ID, name ), v );
+	CheckGL();
+}
+
+void Shader::SetFloat2( const char* name, const float2& v )
+{
+	glUniform2f(glGetUniformLocation(ID, name), v.x, v.y);
 	CheckGL();
 }
 

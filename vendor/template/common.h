@@ -74,6 +74,19 @@ inline uint GetColor( const Color c )
 	return s_colorMap[c];
 }
 
+namespace HeightLayer
+{
+	enum HeightLayer : std::uint8_t
+	{
+		Background = 0,
+		Tracks = 10,
+		Trains = 20,
+		Default = 30,
+		Buildings = 40,
+		Debug = 80
+	};
+}
+
 //Debug assert
 #if _DEBUG
 #define DEBUG_ASSERT(expression, message) if(!(expression)) printf("Assertion Failed:"#message"\n"), DebugBreak();
