@@ -9,6 +9,6 @@ namespace Engine
 	public:
 		Renderable() = default;
 		virtual ~Renderable() = default;
-		virtual void Render( const Camera& camera, Surface& drawSurface ) = 0;
+		virtual void Render( const Camera& camera ) = 0;
 	};
 }

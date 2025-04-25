@@ -5,6 +5,8 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "Helpers/Renderer.h"
+#include "Renderables/LineSegment.h"
 #include "UI/UIManager.h"
 
 // -----------------------------------------------------------
@@ -27,6 +29,10 @@ void Application::Tick( const float deltaTime )
 
 	// Update logic
 	m_world.Update(deltaTime);
+
+	//Engine::LineSegment::RenderWorldPos()
+	//Engine::Renderer::GetRenderer().DrawLine({float3(0), float3(10, 10, 0), 0xff0000, 2.f});
+
 
 	//DEBUG BEHAVIOUR
 	if (Input::get().IsKeyJustDown(GLFW_KEY_F1))

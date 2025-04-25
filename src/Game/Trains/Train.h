@@ -17,7 +17,7 @@ public:
 
 	void Update( float deltaTime ) override;
 
-	void Render( const Engine::Camera& camera, Surface& target ) override;
+	void Render( const Engine::Camera& camera ) override;
 
 	[[nodiscard]] float GetMoveSpeed() const { return m_moveSpeed; }
 	void SetMoveSpeed( const float newSpeed ) { m_moveSpeed = newSpeed; }

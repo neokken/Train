@@ -143,8 +143,8 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 		for (const auto& node : std::views::values(nodes))
 		{
-			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 10);
-			Engine::Circle::RenderWorldPos(camera, renderTarget, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 4);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 10);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackNodeInfo), 4);
 		}
 	}
 
@@ -292,7 +292,7 @@ void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarg
 {
 	const float2 dir = data.directionFloat2;
 
-	Engine::Arrow::RenderWorldPos(camera, renderTarget, data.trackNodePosition, data.directionFloat2, .5f, colorNode);
+	Engine::Arrow::RenderWorldPos(camera, data.trackNodePosition, data.directionFloat2, .5f, colorNode);
 
 	if (!onlyShowArrow)
 	{
@@ -302,11 +302,11 @@ void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarg
 		const float2 leftS = data.trackNodePosition + float2(-dir.y, dir.x) * -0.70f;
 		const float2 rightS = data.trackNodePosition + float2(-dir.y, dir.x) * 0.70f;
 
-		Engine::LineSegment::RenderWorldPos(camera, renderTarget, left + dir * .5f, left + dir * -.5f, colorNode);
-		Engine::LineSegment::RenderWorldPos(camera, renderTarget, right + dir * .5f, right + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, left + dir * .5f, left + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, right + dir * .5f, right + dir * -.5f, colorNode);
 
-		Engine::LineSegment::RenderWorldPos(camera, renderTarget, leftS + dir * .5f, leftS + dir * -.5f, colorNode);
-		Engine::LineSegment::RenderWorldPos(camera, renderTarget, rightS + dir * .5f, rightS + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, leftS + dir * .5f, leftS + dir * -.5f, colorNode);
+		Engine::LineSegment::RenderWorldPos(camera, rightS + dir * .5f, rightS + dir * -.5f, colorNode);
 	}
 
 	if (data.trackSegmentId != TrackSegmentID::Invalid)

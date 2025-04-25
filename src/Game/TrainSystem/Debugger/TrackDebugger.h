@@ -24,7 +24,7 @@ public:
 
 	void Update( const Engine::Camera& camera );
 
-	void Render( const Engine::Camera& camera, Surface& targetSurface ) const;
+	void Render( const Engine::Camera& camera ) const;
 
 	void UI();
 

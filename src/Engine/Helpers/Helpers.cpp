@@ -15,6 +15,14 @@ bool Engine::IsMouseOverUI()
 	return false;
 }
 
+float3 Engine::RGB8ToRGB32( uint color )
+{
+	float r = static_cast<float>((color >> 16) & 0xff);
+	float g = static_cast<float>((color >> 8) & 0xff);
+	float b = static_cast<float>(color & 0xff);
+	return float3(r, g, b) / 255.f;
+}
+
 Engine::ScopedTimer::~ScopedTimer()
 {
 	Engine::Logger::Info("{} tooks {}ms.", name, t.elapsed() * 1000);

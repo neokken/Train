@@ -63,7 +63,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 	}
 }
 
-void TrackDebugger::Render( const Engine::Camera& camera, Surface& targetSurface ) const
+void TrackDebugger::Render( const Engine::Camera& camera ) const
 {
 	if (m_trackRenderer->GetTrackRenderer() == TrackRenderType::Debug || m_selectMode)
 	{
