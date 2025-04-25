@@ -12,26 +12,8 @@ namespace Engine
 
 // CONFIGURABLE
 
-constexpr float NODE_DISPLAY_SIZE = 1.f;
-constexpr float NODE_SELECTION_DIST = 1.5f;
+constexpr float NODE_SELECTION_DIST = 1.f;
 constexpr float SEGMENT_SELECTION_DIST = 1.f;
-
-constexpr float NODE_SELECTION_DIST_SQ = NODE_SELECTION_DIST * NODE_SELECTION_DIST;
-constexpr float SEGMENT_SELECTION_DIST_SQ = SEGMENT_SELECTION_DIST * SEGMENT_SELECTION_DIST;
-
-enum DEBUG_COLORS
-{
-	NODE_COLOR_DEFAULT = 0x6610F2,
-	NODE_COLOR_HOVER = 0x1A8FE3,
-	NODE_COLOR_SELECT = 0xF17105,
-	NODE_COLOR_SELECT_HOVER = 0xE6C229,
-
-	SEGMENT_COLOR_DEFAULT = 0x6610F2,
-	SEGMENT_COLOR_HOVER = 0x1A8FE3,
-	SEGMENT_COLOR_SELECT = 0xF17105,
-	SEGMENT_COLOR_SELECT_HOVER = 0xE6C229,
-	SEGMENT_COLOR_LINKED = 0x8FB339,
-};
 
 class TrackDebugger
 {
@@ -49,7 +31,21 @@ public:
 	void SetVisible( bool value );
 	[[nodiscard]] bool GetVisibility() const;
 
+	void EnableSelectMode( bool value );
+
 private:
+	void SetHoverNode( TrackNodeID id );
+	void SetHoverSegment( TrackSegmentID id );
+
+	void SetSelectNode( TrackNodeID id );
+	void SetSelectSegment( TrackSegmentID id );
+
+	void SegmentInfo( TrackSegmentID segmentID );
+
+	void NodeSegmentInfo( TrackSegmentID segmentID, bool nodeA );
+
+	void NodeInfo( TrackNodeID nodeID );
+
 	void RenderConnectedSegments( const Engine::Camera& camera, Surface& targetSurface ) const;
 
 	TrackManager* m_trackManager{nullptr};
@@ -59,4 +55,14 @@ private:
 	bool m_visible{false};
 
 	bool m_renderConnectedSegments{false};
+
+	bool m_selectedMode{false};
+
+	bool m_hoverSafety{false}; // if being set by ImGui is will be set. so there is a frame delay were it can be set again by update
+
+	TrackNodeID m_hoveredNode{TrackNodeID::Invalid};
+	TrackSegmentID m_hoveredSegment{TrackSegmentID::Invalid};
+
+	TrackNodeID m_selectedNode{TrackNodeID::Invalid};
+	TrackSegmentID m_selectedSegment{TrackSegmentID::Invalid};
 };
