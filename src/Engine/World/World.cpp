@@ -70,6 +70,12 @@ void Engine::World::Update( float deltaTime )
 
 	m_particles.Update(deltaTime);
 
+	if (Input::get().IsKeyJustDown(GLFW_KEY_P))
+	{
+		m_trackDebugger.EnableSelectMode(!m_trackDebugger.GetSelectMode());
+		m_trackDebugger.SetVisible(true);
+	}
+
 	m_trackDebugger.Update(m_camera);
 
 	// Render pass

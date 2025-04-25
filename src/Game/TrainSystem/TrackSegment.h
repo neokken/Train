@@ -79,7 +79,7 @@ struct TrackNode
 
 	void AddConnection( TrackSegmentID from, TrackSegmentID to );
 
-	void RemoveSegment( TrackSegmentID id );
+	void RemoveSegment( TrackSegmentID segmentID );
 };
 
 struct TrackSegment

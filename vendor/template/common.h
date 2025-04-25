@@ -62,8 +62,8 @@ inline std::unordered_map<Color, uint> s_colorMap
 	{Color::TrackSelectedInvalid, 0xDB504A},
 	{Color::TrackNodeInfo, 0x0582CA},
 
-	{Color::TrackHover_DEBUG, 0xFF8C42},
-	{Color::TrackSelect_DEBUG, 0xFFD500},
+	{Color::TrackHover_DEBUG, 0xFFD500},
+	{Color::TrackSelect_DEBUG, 0xFF8C42},
 	{Color::TrackHoverSelect_DEBUG, 0x00E5FF},
 
 };

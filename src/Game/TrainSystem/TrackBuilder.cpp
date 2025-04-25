@@ -155,7 +155,7 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 	if (m_currentProgress == BuildProgress::Start)
 	{
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR, false);
+		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, false);
 	}
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
@@ -171,8 +171,8 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackSelectedInvalid);
 		}
 
-		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, CONNECT_COLOR, true);
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, CONNECT_COLOR, false);
+		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, true);
+		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, false);
 	}
 }
 
@@ -288,7 +288,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 	}
 }
 
-void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment, const bool onlyShowArrow ) const
+void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, const bool onlyShowArrow ) const
 {
 	const float2 dir = data.directionFloat2;
 

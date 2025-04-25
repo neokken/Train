@@ -8,15 +8,15 @@ void TrackNode::AddConnection( const TrackSegmentID from, const TrackSegmentID t
 	validConnections[from].push_back(to);
 }
 
-void TrackNode::RemoveSegment( const TrackSegmentID id )
+void TrackNode::RemoveSegment( const TrackSegmentID segmentID )
 {
-	connectionLever.erase(id);
-	validConnections.erase(id);
+	connectionLever.erase(segmentID);
+	validConnections.erase(segmentID);
 
 	for (auto& [from, connections] : validConnections)
 	{
 		auto& vec = connections;
-		vec.erase(ranges::remove(vec, id).begin(), vec.end());
+		vec.erase(ranges::remove(vec, segmentID).begin(), vec.end());
 
 		if (connectionLever.contains(from))
 		{

@@ -32,6 +32,7 @@ public:
 	[[nodiscard]] bool GetVisibility() const;
 
 	void EnableSelectMode( bool value );
+	bool GetSelectMode() const;
 
 private:
 	void SetHoverNode( TrackNodeID id );
@@ -56,7 +57,7 @@ private:
 
 	bool m_renderConnectedSegments{false};
 
-	bool m_selectedMode{false};
+	bool m_selectMode{false};
 
 	bool m_hoverSafety{false}; // if being set by ImGui is will be set. so there is a frame delay were it can be set again by update
 
