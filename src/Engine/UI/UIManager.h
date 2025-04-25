@@ -18,6 +18,7 @@ namespace Engine
 		static int2 GetMainWindowCursorPos( const int2& mousePos );
 
 		static bool BeginGameplayWindow( const char* name, ImGuiWindowFlags flags = 0 );
+		static bool BeginGameplayWindow( const char* name, bool& open, ImGuiWindowFlags flags = 0 );
 		static bool BeginDebugWindow( const char* name, ImGuiWindowFlags flags = 0 );
 
 		static void EndGameplayWindow();

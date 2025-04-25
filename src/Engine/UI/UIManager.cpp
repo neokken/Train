@@ -75,6 +75,11 @@ bool Engine::UIManager::BeginGameplayWindow( const char* name, ImGuiWindowFlags 
 	return ImGui::Begin(name, nullptr, flags);
 }
 
+bool Engine::UIManager::BeginGameplayWindow( const char* name, bool& open, ImGuiWindowFlags flags )
+{
+	return ImGui::Begin(name, &open, flags);
+}
+
 bool Engine::UIManager::BeginDebugWindow( const char* name, ImGuiWindowFlags flags )
 {
 	if (!settings.debugMode) return false;

@@ -23,6 +23,8 @@ namespace Engine
 
 		virtual void ImGuiDebugViewer();
 
+		const Transform& GetTransform() const { return m_transform; }
+
 	protected:
 		Transform m_transform{};
 

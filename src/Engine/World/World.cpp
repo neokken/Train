@@ -34,6 +34,7 @@ void Engine::World::Init( Surface* renderTarget )
 	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
 	m_trackDebugger.Init(&m_trackManager);
+	m_trainDebugger.Init(m_trackManager, m_trainManager);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
@@ -41,19 +42,6 @@ void Engine::World::Init( Surface* renderTarget )
 
 	//Set up a track with a train on it for debugging
 	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
-	TrackWalker tWalk;
-	tWalk.Init(&m_trackManager);
-	tWalk.SetCurrentTrackSegment(seg1, 37);
-	Wagon* wag1 = new Locomotive(Wagon(tWalk));
-	Wagon* wag2 = new Wagon(tWalk);
-	Wagon* wag3 = new Wagon(tWalk);
-	Wagon* wag4 = new Wagon(tWalk);
-	AddObject(wag1);
-	AddObject(wag2);
-	AddObject(wag3);
-	AddObject(wag4);
-	Train* train = new Train({wag1, wag2, wag3, wag4}, m_trackManager);
-	AddObject(train);
 }
 
 void Engine::World::Update( float deltaTime )
@@ -72,6 +60,7 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Update(deltaTime);
 
 	//m_trackDebugger.Update(m_camera);
+	m_trainDebugger.Update(m_camera, *m_renderTarget);
 
 	// Render pass
 	m_grid.Render(m_camera, *m_renderTarget);
@@ -92,6 +81,7 @@ void Engine::World::Update( float deltaTime )
 void Engine::World::UI()
 {
 	//m_trackDebugger.UI();
+	m_trainDebugger.UI();
 
 	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
 	{

@@ -28,7 +28,7 @@ public:
 
 	void SetNavTarget( TrackSegmentID segment, float distanceOnSegment );
 
-
+	const std::vector<Wagon*> GetWagons() const { return m_wagons; }
 
 private:
 	/**
