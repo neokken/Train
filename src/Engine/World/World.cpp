@@ -90,7 +90,7 @@ void Engine::World::Update( float deltaTime )
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
 
-	m_trackDebugger.Render(m_camera, *m_renderTarget);
+	m_trackDebugger.Render(m_camera);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

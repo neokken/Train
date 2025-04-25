@@ -69,14 +69,14 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 	{
 		for (const auto& node : std::views::values(m_trackManager->GetNodeMap()))
 		{
-			Engine::Circle::RenderWorldPos(camera, targetSurface, node.nodePosition, .75f, GetColor(Color::TrackRail), 6);
-			Engine::Circle::RenderWorldPos(camera, targetSurface, node.nodePosition, .75f, GetColor(Color::TrackRail), 4);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 6);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 4);
 		}
 	}
 
 	if (m_renderConnectedSegments)
 	{
-		RenderConnectedSegments(camera, targetSurface);
+		RenderConnectedSegments(camera);
 	}
 
 	if (m_selectMode)
@@ -89,7 +89,7 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const Engine::CurveData data{.lStart = t.nodeA_Position, .lStartDir = t.nodeA_Direction, .lEnd = t.nodeB_Position, .lEndDir = t.nodeB_Direction};
 
-			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, color, .75f);
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, color, .75f);
 		}
 
 		if (m_selectedSegment != TrackSegmentID::Invalid)
@@ -100,7 +100,7 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const Engine::CurveData data{.lStart = t.nodeA_Position, .lStartDir = t.nodeA_Direction, .lEnd = t.nodeB_Position, .lEndDir = t.nodeB_Direction};
 
-			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, color, .75f);
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, color, .75f);
 		}
 
 		if (m_hoveredNode != TrackNodeID::Invalid)
@@ -109,8 +109,8 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const TrackNode& n = m_trackManager->GetTrackNode(m_hoveredNode);
 
-			Engine::Circle::RenderWorldPos(camera, targetSurface, n.nodePosition, .75f, color, 6);
-			Engine::Circle::RenderWorldPos(camera, targetSurface, n.nodePosition, .75f, color, 4);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
 		}
 
 		if (m_selectedNode != TrackNodeID::Invalid)
@@ -119,8 +119,8 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const TrackNode& n = m_trackManager->GetTrackNode(m_selectedNode);
 
-			Engine::Circle::RenderWorldPos(camera, targetSurface, n.nodePosition, .75f, color, 6);
-			Engine::Circle::RenderWorldPos(camera, targetSurface, n.nodePosition, .75f, color, 4);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
 		}
 	}
 }
@@ -529,7 +529,7 @@ void TrackDebugger::NodeInfo( const TrackNodeID nodeID )
 	}
 }
 
-void TrackDebugger::RenderConnectedSegments( const Engine::Camera& camera, Surface& targetSurface ) const
+void TrackDebugger::RenderConnectedSegments( const Engine::Camera& camera ) const
 {
 	auto ks = std::views::keys(m_trackManager->GetSegmentMap());
 	std::set<TrackSegmentID> allSegments{ks.begin(), ks.end()};
@@ -574,7 +574,7 @@ void TrackDebugger::RenderConnectedSegments( const Engine::Camera& camera, Surfa
 			}
 
 			Engine::CurveData data{tc.nodeA_Position, tc.nodeA_Direction, tc.nodeB_Position, tc.nodeB_Direction};
-			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, colors.at(colorIndex), 0.f);
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, colors.at(colorIndex), 0.f);
 		}
 	}
 }

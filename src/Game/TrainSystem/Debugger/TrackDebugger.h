@@ -32,7 +32,7 @@ public:
 	[[nodiscard]] bool GetVisibility() const;
 
 	void EnableSelectMode( bool value );
-	bool GetSelectMode() const;
+	[[nodiscard]] bool GetSelectMode() const;
 
 private:
 	void SetHoverNode( TrackNodeID id );
@@ -47,7 +47,7 @@ private:
 
 	void NodeInfo( TrackNodeID nodeID );
 
-	void RenderConnectedSegments( const Engine::Camera& camera, Surface& targetSurface ) const;
+	void RenderConnectedSegments( const Engine::Camera& camera ) const;
 
 	TrackManager* m_trackManager{nullptr};
 
