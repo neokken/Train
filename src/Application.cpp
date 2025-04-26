@@ -66,7 +66,7 @@ void Application::Tick( const float deltaTime )
 	Input::get().Update(deltaTime);
 }
 
-void Tmpl8::Application::UI()
+void Tmpl8::Application::UI( const float deltaTime )
 {
 	if (Engine::UIManager::BeginDebugWindow("pathfinder"))
 	{
@@ -86,5 +86,5 @@ void Tmpl8::Application::UI()
 	}
 	Engine::UIManager::EndDebugWindow();
 
-	m_world.UI();
+	m_world.UI(deltaTime);
 }

@@ -23,7 +23,7 @@ namespace Engine
 		// Life cycle functions
 		void Init( Surface* renderTarget );
 		void Update( float deltaTime );
-		void UI();
+		void UI( float deltaTime );
 
 		// World management functions
 		void AddObject( GameObject* obj );

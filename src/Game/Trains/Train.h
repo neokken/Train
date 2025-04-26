@@ -27,8 +27,16 @@ public:
 	void VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& world ) const;
 
 	void SetNavTarget( TrackSegmentID segment, float distanceOnSegment );
+	[[nodiscard]] float GetTargetDistanceRemaining() const { return m_targetDistance; }
+	std::vector<std::pair<TrackSegmentID, int>> GetCurrentPath() const { return m_currentPath; }
 
 	const std::vector<Wagon*> GetWagons() const { return m_wagons; }
+
+	[[nodiscard]] float2 GetEnginePower() const { return {m_maxAccelerationBackwards, m_maxAccelerationForward}; }
+	[[nodiscard]] float GetBrakePower() const { return m_maxBrakingForce; }
+	[[nodiscard]] float GetMass() const { return m_mass; }
+	[[nodiscard]] bool GetBraking() const { return m_braking; }
+	[[nodiscard]] float GetCurrentAcceleration() const { return m_acceleration; }
 
 	/**
 	 * Get the direction the train is facing on the track this equals the direction of the first wagon
@@ -36,19 +44,20 @@ public:
 	 */
 	[[nodiscard]] bool GetDirectionOnTrack() const;
 
-private:
 	/**
 	 * Returns the max distance the train will take to stop, the reality can be shorter due to environmental factors like track drag
 	 * @return Distance in track units
 	 */
-	float GetMaxStoppingDistance() const;
+	[[nodiscard]] float GetMaxStoppingDistance() const;
+
+private:
 
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
 	TrackManager& m_trackManager;
 	std::vector<Wagon*> m_wagons{};
 	TrackSegmentID m_targetSegment;
-	std::vector<int> m_currentPath;
+	std::vector<std::pair<TrackSegmentID, int>> m_currentPath;
 	float m_targetDistanceOnTargetSegment;
 	float m_wagonSpacing{4.5f}; // length of the link in between wagons
 	float m_targetVelocity{0.f};

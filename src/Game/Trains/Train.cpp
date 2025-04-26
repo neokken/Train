@@ -7,6 +7,8 @@
 #include "Renderables/LineSegment.h"
 #include "World/World.h"
 #include "Train.h"
+
+#include <algorithm>
 #include "Locomotive.h"
 
 Train::Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager )
@@ -177,6 +179,17 @@ void Train::Update( const float deltaTime )
 		{
 			m_velocity = newVelocity;
 		}
+
+		//Update path
+		if (m_targetDistance > 0)
+		{
+			auto iter = ranges::find_if(m_currentPath,
+			                            [this]( const std::pair<TrackSegmentID, int>& element ) { return element.first == m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(); });
+			if (iter != m_currentPath.end())
+			{
+				m_currentPath.erase(m_currentPath.begin(), iter);
+			}
+		}
 	}
 }
 
@@ -266,24 +279,26 @@ void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSe
 	m_targetDistanceOnTargetSegment = distanceOnSegment;
 	const bool towardsB = GetDirectionOnTrack();
 	TrackSegmentID curr = m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment();
-	m_currentPath = m_trackManager.CalculatePath(curr, towardsB, m_targetSegment);
+	std::vector<int> path = m_trackManager.CalculatePath(curr, towardsB, m_targetSegment);
 
 	//Get path distance (in the future this should be the distance until the first blocked signal)
 	TrackNodeID currentNode = towardsB ? m_trackManager.GetTrackSegment(curr).nodeB : m_trackManager.GetTrackSegment(curr).nodeA;
 	TrackSegmentID currentSegment = curr;
 	float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
 	float distance = m_trackManager.GetTrackSegment(curr).distance - currentDistance;
-	if (m_currentPath.empty())
+	if (path.empty())
 	{
 		distance *= distanceOnSegment;
 	}
 
-	for (int i = 0; i < m_currentPath.size(); ++i)
+	m_currentPath.clear();
+	for (int i = 0; i < path.size(); ++i)
 	{
-		m_trackManager.SetNodeLever(currentNode, currentSegment, m_currentPath[i]);
-		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[m_currentPath[i]];
+		m_trackManager.SetNodeLever(currentNode, currentSegment, path[i]);
+		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[path[i]];
+		m_currentPath.push_back(std::pair(currentSegment, path[i]));
 		const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
-		if (i == static_cast<int>(m_currentPath.size()) - 1)
+		if (i == static_cast<int>(path.size()) - 1)
 		{
 			if (currentNode == seg.nodeA) distance += seg.distance * distanceOnSegment;
 			else distance += seg.distance * (1.f - distanceOnSegment);

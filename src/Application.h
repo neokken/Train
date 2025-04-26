@@ -22,7 +22,7 @@ namespace Tmpl8
 		{
 		}
 
-		void UI() override;
+		void UI( float deltaTime ) override;
 
 		// input handling
 		void MouseUp( const int button ) override { Input::get().HandleMouseUp(button); }

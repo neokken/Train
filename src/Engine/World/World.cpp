@@ -73,15 +73,13 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
-
-	dynamic_cast<Train*>(m_objects[5])->VisualizeDebugInfo(GetCamera(), *this);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void Engine::World::UI()
+void Engine::World::UI( const float deltaTime )
 {
 	//m_trackDebugger.UI();
-	m_trainDebugger.UI();
+	m_trainDebugger.UI(deltaTime);
 
 	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
 	{
