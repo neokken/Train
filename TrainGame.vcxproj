@@ -150,6 +150,7 @@
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackRenderer.cpp" />
+    <ClCompile Include="src\Game\Trains\Locomotive.cpp" />
     <ClCompile Include="src\Game\Trains\Train.cpp" />
     <ClCompile Include="src\Game\Trains\Wagon.cpp" />
     <ClCompile Include="vendor\include\ImGui\imgui.cpp">
@@ -220,6 +221,7 @@
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackRenderer.h" />
+    <ClInclude Include="src\Game\Trains\Locomotive.h" />
     <ClInclude Include="src\Game\Trains\Train.h" />
     <ClInclude Include="src\Game\Trains\Wagon.h" />
     <ClInclude Include="vendor\template\common.h" />
@@ -230,6 +232,8 @@
     <ClInclude Include="vendor\template\tmpl8math.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Documentation.md" />
+
     <None Include="assets\shaders\line.frag" />
     <None Include="assets\shaders\line.vert" />
     <None Include="assets\shaders\rectangle.geom" />

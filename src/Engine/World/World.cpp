@@ -8,6 +8,7 @@
 // TODO: This is only testing code, this shouldn't ultimately be in engine code
 #include "Game/Trains/Wagon.h"
 #include "Game/Buildings/Building.h"
+#include "Game/Trains/Locomotive.h"
 #include "Game/Trains/Train.h"
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "UI/UIManager.h"
@@ -43,7 +44,7 @@ void Engine::World::Init( Surface* renderTarget )
 	TrackWalker tWalk;
 	tWalk.Init(&m_trackManager);
 	tWalk.SetCurrentTrackSegment(seg1, 37);
-	Wagon* wag1 = new Wagon(tWalk);
+	Wagon* wag1 = new Locomotive(Wagon(tWalk));
 	Wagon* wag2 = new Wagon(tWalk);
 	Wagon* wag3 = new Wagon(tWalk);
 	Wagon* wag4 = new Wagon(tWalk);

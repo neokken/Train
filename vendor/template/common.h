@@ -15,10 +15,18 @@ constexpr int SCRHEIGHT = 720;
 constexpr float ASPECT_RATIO = static_cast<float>(SCRWIDTH) / static_cast<float>(SCRHEIGHT);
 // #define FULLSCREEN
 
+//LOD in this context means amount of segments as part of a curve
 constexpr float BASE_TRACK_LOD = 0.35f; // Base (sub)segments per distance for tracks
 constexpr float BASE_SPOKE_LOD = 1.f; // Base (sub)segments per distance for track spokes, should be higher than track lod
 constexpr uint MIN_SPOKE_LOD = 7u; // If spokes get bellow this LOD they stop drawing should be > 0
 constexpr uint MAX_LOD = 100u;
+
+//Physics
+constexpr float WORLD_AIR_DENSITY = 0.01f; // Density of the air used for drag      | Should be a low value <0.1
+constexpr float WORLD_TRACK_ROUGHNESS = 5000.f; // Used for drag experienced from track bends     | Should be a high value around ~1000-1000
+
+//Visuals
+constexpr bool SHOW_DRAG_PARTICLES = true;
 
 // constants
 #define PI			3.14159265358979323846264f
