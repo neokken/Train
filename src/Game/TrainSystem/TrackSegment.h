@@ -79,7 +79,7 @@ struct TrackNode
 
 	void AddConnection( TrackSegmentID from, TrackSegmentID to );
 
-	void RemoveSegment( TrackSegmentID id );
+	void RemoveSegment( TrackSegmentID segmentID );
 };
 
 struct TrackSegment
@@ -96,5 +96,4 @@ struct TrackSegment
 	TrackNodeID nodeB{TrackNodeID::Invalid};
 
 	float distance{0.f};
-	// later stuff will be added like, distance, curvature etc...
 };

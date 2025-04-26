@@ -70,15 +70,15 @@ int2 Engine::UIManager::GetMainWindowCursorPos( const int2& mousePos )
 	return int2(static_cast<int>(cursorPos.x), static_cast<int>(cursorPos.y));
 }
 
-bool Engine::UIManager::BeginGameplayWindow( const char* name, ImGuiWindowFlags flags )
+bool Engine::UIManager::BeginGameplayWindow( const char* name, bool* p_open, ImGuiWindowFlags flags )
 {
-	return ImGui::Begin(name, nullptr, flags);
+	return ImGui::Begin(name, p_open, flags);
 }
 
-bool Engine::UIManager::BeginDebugWindow( const char* name, ImGuiWindowFlags flags )
+bool Engine::UIManager::BeginDebugWindow( const char* name, bool* p_open, ImGuiWindowFlags flags )
 {
 	if (!settings.debugMode) return false;
-	return ImGui::Begin(name, nullptr, flags);
+	return ImGui::Begin(name, p_open, flags);
 }
 
 void Engine::UIManager::EndGameplayWindow()

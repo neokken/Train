@@ -59,7 +59,7 @@ private:
 private:
 	void UpdateTempNode( const Engine::Camera& camera, bool isSecondNode );
 
-	void RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, uint colorConnectedSegment, bool onlyShowArrow ) const;
+	void RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, bool onlyShowArrow ) const;
 
 	static void RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, Color trackColor );
 };

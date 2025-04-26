@@ -253,17 +253,47 @@ bool TrackManager::IsValidTrackPart( const float2& nodeA_Position, TrackDirectio
 	return true;
 }
 
-TrackNodeID TrackManager::GetNodeByPosition( const float2& position, float maxDifferance ) const
+TrackNodeID TrackManager::GetNodeByPosition( const float2& position, const float maxDifference, float* outDistance ) const
 {
-	const float maxDiffSQ = maxDifferance * maxDifferance;
+	float minDiff = maxDifference * maxDifference;
+	TrackNodeID bestNode = TrackNodeID::Invalid;
 
 	for (const auto& node : std::views::values(m_nodes))
 	{
-		if (sqrLength(node.nodePosition - position) < maxDiffSQ)
-			return node.id;
+		const float distance = sqrLength(node.nodePosition - position);
+		if (distance < minDiff)
+		{
+			minDiff = distance;
+			bestNode = node.id;
+		}
+	}
+	if (outDistance)
+		*outDistance = std::sqrt(minDiff);
+
+	return bestNode;
+}
+
+TrackSegmentID TrackManager::GetSegmentByPosition( const float2& position, const float maxDifference, float* outDistance ) const
+{
+	float minDiff = maxDifference * maxDifference;
+	TrackSegmentID bestSegment = TrackSegmentID::Invalid;
+
+	for (const auto& segment : std::views::values(m_segments))
+	{
+		Engine::CurveData data{.lStart = segment.nodeA_Position, .lStartDir = segment.nodeA_Direction, .lEnd = segment.nodeB_Position, .lEndDir = segment.nodeB_Direction};
+
+		const float distance = sqrLength(Engine::CurvedSegment::GetClosestPoint(data, position) - position);
+		if (distance < minDiff)
+		{
+			minDiff = distance;
+			bestSegment = segment.id;
+		}
 	}
 
-	return TrackNodeID::Invalid;
+	if (outDistance)
+		*outDistance = std::sqrt(minDiff);
+
+	return bestSegment;
 }
 
 bool TrackManager::DoesNodeExists( const TrackNodeID id ) const
