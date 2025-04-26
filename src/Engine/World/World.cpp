@@ -34,7 +34,7 @@ void Engine::World::Init( Surface* renderTarget )
 	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
 	m_trackDebugger.Init(&m_trackManager);
-	m_trainDebugger.Init(m_trackManager, m_trainManager);
+	m_trainDebugger.Init(m_trackManager, m_trainManager, m_trackBuilder);
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
@@ -60,7 +60,7 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Update(deltaTime);
 
 	//m_trackDebugger.Update(m_camera);
-	m_trainDebugger.Update(m_camera, *m_renderTarget);
+	m_trainDebugger.Update(m_camera);
 
 	// Render pass
 	m_grid.Render(m_camera);

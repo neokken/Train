@@ -434,6 +434,38 @@ float2 Engine::CurvedSegment::GetClosestPoint( const CurveData& curve, const flo
 	return GetPositionOnCurvedSegment((left + right) / 2, curve);
 }
 
+float Engine::CurvedSegment::GetClosestDistance( const CurveData& curve, const float2& position, const int samples, const float tolerance )
+{
+	float left = 0.f;
+	float right = 1.f;
+
+	for (int i = 0; i < samples; i++)
+	{
+		const float diff = right - left;
+		if (diff < tolerance)
+		{
+			break;
+		}
+
+		const float rLeft = right - diff / golden_ratio;
+		const float rRight = left + diff / golden_ratio;
+
+		const float sqrLengthLeft = sqrLength(GetPositionOnCurvedSegment(rLeft, curve) - position);
+		const float sqrLengthRight = sqrLength(GetPositionOnCurvedSegment(rRight, curve) - position);
+
+		if (sqrLengthLeft < sqrLengthRight)
+		{
+			right = rRight;
+		}
+		else
+		{
+			left = rLeft;
+		}
+	}
+
+	return (left + right) / 2;
+}
+
 void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, const float hardness, float2& outStartMidPoint, float2& outEndMidPoint, const CurveSetupMode setupMode )
 {
 	assert(length(lStartDir) > 0);

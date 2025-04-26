@@ -101,6 +101,7 @@ namespace Engine
 		static float2 GetDirectionOnCurvedSegment( const float t, const CurveData& curve );
 
 		[[nodiscard]] static float2 GetClosestPoint( const CurveData& curve, const float2& position, int samples = 10, float tolerance = 1e-4f );
+		[[nodiscard]] static float GetClosestDistance( const CurveData& curve, const float2& position, int samples = 10, float tolerance = 1e-4f );
 
 		/**
 		 * Check if a curve is valid, i.e if it doesn't bend too much for its size

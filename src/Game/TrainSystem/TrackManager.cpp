@@ -320,6 +320,37 @@ const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b
 	return TrackSegmentID::Invalid;
 }
 
+const TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
+{
+	TrackSegmentID closest = TrackSegmentID::Invalid;
+	float closestDistance = INFINITY;
+	for (const auto& segment : std::views::values(m_segments))
+	{
+		float distance = SQRDistancePointToSegment(position, segment);
+		if (distance < sqrMaxDistance)
+		{
+			if (returnFirstFound) return segment.id;
+			if (distance < closestDistance)
+			{
+				closest = segment.id;
+				closestDistance = distance;
+			}
+		}
+	}
+	return closest;
+}
+
+float TrackManager::GetClosestDistanceOnTrackSegment( TrackSegmentID segmentID, float2 position ) const
+{
+	TrackSegment segment = GetTrackSegment(segmentID);
+	const float2 nodeA_pos = GetTrackNode(segment.nodeA).nodePosition;
+	const float2 nodeB_pos = GetTrackNode(segment.nodeB).nodePosition;
+
+	const Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
+
+	return Engine::CurvedSegment::GetClosestDistance(curveData, position);
+}
+
 TrackSegmentID TrackManager::GetNextSegmentPositive( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
@@ -382,6 +413,16 @@ TrackSegment& TrackManager::GetMutableTrackSegment( const TrackSegmentID id )
 		throw std::runtime_error("Invalid TrackSegment ID");
 	}
 	return it->second;
+}
+
+float TrackManager::SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const
+{
+	const float2 nodeA_pos = GetTrackNode(segment.nodeA).nodePosition;
+	const float2 nodeB_pos = GetTrackNode(segment.nodeB).nodePosition;
+
+	Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
+
+	return sqrLength(Engine::CurvedSegment::GetClosestPoint(curveData, position) - position);
 }
 
 #pragma region AStar

@@ -267,13 +267,24 @@ void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSe
 	TrackSegmentID currentSegment = curr;
 	float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
 	float distance = m_trackManager.GetTrackSegment(curr).distance - currentDistance;
+	if (m_currentPath.size() == 0)
+	{
+		distance *= distanceOnSegment;
+	}
 
 	for (int i = 0; i < m_currentPath.size(); ++i)
 	{
 		m_trackManager.SetNodeLever(currentNode, currentSegment, m_currentPath[i]);
 		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[m_currentPath[i]];
 		const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
-		distance += seg.distance;
+		if (i == m_currentPath.size() - 1)
+		{
+			distance += seg.distance * distanceOnSegment;
+		}
+		else
+		{
+			distance += seg.distance;
+		}
 		if (seg.nodeA == currentNode) currentNode = seg.nodeB;
 		else currentNode = seg.nodeA;
 	}

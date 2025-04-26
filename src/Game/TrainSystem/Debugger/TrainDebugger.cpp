@@ -4,16 +4,20 @@
 #include "Camera/Camera.h"
 #include "Game/Trains/Train.h"
 #include "Game/Trains/Wagon.h"
+#include "Game/TrainSystem/TrackBuilder.h"
+#include "Game/TrainSystem/TrackManager.h"
 #include "Renderables/Circle.h"
+#include "Renderables/CurvedSegment.h"
 #include "UI/UIManager.h"
 
-void TrainDebugger::Init( TrackManager& trackManager, TrainManager& trainManager )
+void TrainDebugger::Init( TrackManager& trackManager, TrainManager& trainManager, TrackBuilder& trackBuilder )
 {
 	m_trackManager = &trackManager;
 	m_trainManager = &trainManager;
+	m_trackBuilder = &trackBuilder;
 }
 
-void TrainDebugger::Update( Engine::Camera& camera, Surface& drawSurface )
+void TrainDebugger::Update( const Engine::Camera& camera )
 {
 	const Engine::InputManager& input = Input::get();
 
@@ -34,6 +38,28 @@ void TrainDebugger::Update( Engine::Camera& camera, Surface& drawSurface )
 			}
 		}
 	}
+
+	//Train manual control
+	if (m_selectedTrain != TrainID::Invalid
+		&& !m_trackBuilder->InBuildMode()
+		&& input.IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+	{
+		m_targetSegment = m_trackManager->GetClosestTrackSegment(worldPosMouse);
+		if (m_targetSegment != TrackSegmentID::Invalid)
+		{
+			m_targetDistance = m_trackManager->GetClosestDistanceOnTrackSegment(m_targetSegment, worldPosMouse);
+			const TrackSegment& segment = m_trackManager->GetTrackSegment(m_targetSegment);
+			Engine::CurveData curve = {segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
+			Engine::Circle::RenderWorldPos(camera, Engine::CurvedSegment::GetPositionOnCurvedSegment(m_targetDistance, curve), 1.f, 0xff00ff);
+			if (input.IsMouseClicked(0))
+			{
+				m_trainManager->SetTrainDestination(m_selectedTrain, m_targetSegment, m_targetDistance);
+			}
+		}
+	}
+
+
+
 }
 
 void TrainDebugger::UI()

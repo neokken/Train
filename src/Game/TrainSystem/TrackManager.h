@@ -34,6 +34,8 @@ public:
 	[[nodiscard]] const TrackSegment& GetTrackSegment( TrackSegmentID id ) const;
 	//Get a track segment from its connecting nodes
 	[[nodiscard]] const TrackSegmentID GetTrackSegment( TrackNodeID a, TrackNodeID b ) const;
+	[[nodiscard]] const TrackSegmentID GetClosestTrackSegment( float2 position, float sqrMaxDistance = 50.f, bool returnFirstFound = false ) const;
+	[[nodiscard]] float GetClosestDistanceOnTrackSegment( TrackSegmentID segmentID, float2 position ) const;
 
 	[[nodiscard]] TrackSegmentID GetNextSegmentPositive( TrackSegmentID id ) const;
 	[[nodiscard]] TrackSegmentID GetNextSegmentNegative( TrackSegmentID id ) const;
@@ -61,7 +63,7 @@ private:
 	[[nodiscard]] TrackNode& GetMutableTrackNode( TrackNodeID id );
 	[[nodiscard]] TrackSegment& GetMutableTrackSegment( TrackSegmentID id );
 
-
+	[[nodiscard]] float SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const;
 
 	//A*
 	//Estimated heuristic for a path ( h )
