@@ -229,13 +229,13 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 	{
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
 		tempWalker.Move(m_targetDistance);
-		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 	else if (m_targetDistance < 0)
 	{
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
 		tempWalker.Move(m_targetDistance);
-		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 
 	//Stopping distance
@@ -251,7 +251,7 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 		tempWalker.Move(-dist);
 	}
 
-	Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.f, 0xff0000);
+	Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.f, 0xff0000);
 }
 
 void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSegment )

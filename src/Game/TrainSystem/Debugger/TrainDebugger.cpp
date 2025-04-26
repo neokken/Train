@@ -26,7 +26,7 @@ void TrainDebugger::Update( Engine::Camera& camera, Surface& drawSurface )
 		{
 			if (length(wagon->GetTransform().position - worldPosMouse) < 3.f)
 			{
-				Engine::Circle::RenderWorldPos(camera, drawSurface, wagon->GetTransform().position, 2.f, 0x3030ff);
+				Engine::Circle::RenderWorldPos(camera, wagon->GetTransform().position, 2.f, 0x3030ff);
 				if (input.IsMouseClicked(0))
 				{
 					m_selectedTrain = train.first;

@@ -63,25 +63,6 @@ void Application::Tick( const float deltaTime )
 		Engine::UIManager::SetSettings(settings);
 	}
 
-	if (!path.empty())
-	{
-		TrackManager& tm = m_world.GetTrackManager();
-		TrackSegmentID seg = (TrackSegmentID)startID;
-		TrackNodeID node = towardsB ? tm.GetTrackSegment(seg).nodeB : tm.GetTrackSegment(seg).nodeA;
-		for (int i = 0; i < path.size(); ++i)
-		{
-			const TrackSegment& nod = tm.GetTrackSegment(seg);
-			Engine::Circle::RenderWorldPos(m_world.GetCamera(), *screen, nod.nodeA_Position, 0.6f, 0xff00);
-			Engine::Circle::RenderWorldPos(m_world.GetCamera(), *screen, nod.nodeB_Position, 0.5f, 0xff0000);
-			Engine::LineSegment::RenderWorldPos(m_world.GetCamera(), *screen, nod.nodeA_Position, nod.nodeB_Position, 0xff0000);
-			if (path[i] == -1) break;
-			seg = tm.GetTrackNode(node).validConnections.at(seg)[path[i]];
-			const TrackSegment& nextSeg = tm.GetTrackSegment(seg);
-			if (nextSeg.nodeA == node) node = nextSeg.nodeB;
-			else node = nextSeg.nodeA;
-		}
-	}
-
 	Input::get().Update(deltaTime);
 }
 
