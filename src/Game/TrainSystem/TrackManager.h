@@ -25,7 +25,8 @@ public:
 
 	[[nodiscard]] bool IsValidTrackPart( const float2& nodeA_Position, TrackDirection nodeA_direction, TrackSegmentID nodeA_connection, const float2& nodeB_Position, TrackDirection nodeB_direction, TrackSegmentID nodeB_connection );
 
-	[[nodiscard]] TrackNodeID GetNodeByPosition( const float2& position, float maxDifferance = .1f ) const;
+	[[nodiscard]] TrackNodeID GetNodeByPosition( const float2& position, float maxDifference = .1f, float* outDistance = nullptr ) const;
+	[[nodiscard]] TrackSegmentID GetSegmentByPosition( const float2& position, float maxDifference = .1f, float* outDistance = nullptr ) const;
 
 	[[nodiscard]] bool DoesNodeExists( TrackNodeID id ) const;
 	[[nodiscard]] bool DoesSegmentExists( TrackSegmentID id ) const;

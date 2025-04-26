@@ -36,6 +36,6 @@ namespace Tmpl8
 	private:
 		Engine::World m_world;
 
-		Timer m_frameTimer;
+		float m_averageMS = 10.f;
 	};
 } // namespace Tmpl8

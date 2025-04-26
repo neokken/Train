@@ -24,6 +24,11 @@ void TrackRenderer::SetTrackRenderer( const TrackRenderType type )
 	m_currentTrackRenderer = type;
 }
 
+TrackRenderType TrackRenderer::GetTrackRenderer() const
+{
+	return m_currentTrackRenderer;
+}
+
 void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegment& segment, const TrackRenderType type, const Color trackColor, const Color SpokeColor )
 {
 	const Engine::CurveData data{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};

@@ -236,6 +236,8 @@
     <ClInclude Include="vendor\template\tmpl8math.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Documentation.md" />
+
     <None Include="assets\shaders\line.frag" />
     <None Include="assets\shaders\line.vert" />
     <None Include="assets\shaders\rectangle.geom" />

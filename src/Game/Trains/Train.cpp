@@ -7,6 +7,7 @@
 #include "Renderables/LineSegment.h"
 #include "World/World.h"
 #include "Train.h"
+#include "Locomotive.h"
 
 #include <algorithm>
 #include "Locomotive.h"
@@ -14,6 +15,7 @@
 Train::Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager )
 	: GameObject()
 	  , m_trackManager(trackManager)
+
 {
 	for (auto wagon : wagons)
 	{
@@ -156,6 +158,7 @@ void Train::Update( const float deltaTime )
 			//Flip the direction of movement if back wagon isnt aligned with front wagon direction
 			const int flipDirection = (m_wagons[m_wagons.size() - 1]->GetDirectionOnTrack() != GetDirectionOnTrack()) ? -1 : 0;
 			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity * flipDirection, deltaTime);
+
 			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
 			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
 			for (int i = static_cast<int>(m_wagons.size()) - 2; i >= 0; --i)
@@ -226,12 +229,6 @@ void Train::ImGuiDebugViewer()
 	ImGui::Text(("Max Acceleration:" + std::to_string(static_cast<int>(m_maxAccelerationBackwards)) + " <-> " + std::to_string(static_cast<int>(m_maxAccelerationForward))).c_str());
 	ImGui::Text(("BrakeForce :" + std::to_string(static_cast<int>(m_maxBrakingForce))).c_str());
 	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
-	ImGui::NewLine();
-	ImGui::InputInt("Target Segment", &targetSegment);
-	if (ImGui::Button("Pathfind"))
-	{
-		SetNavTarget((TrackSegmentID)targetSegment, 0.f);
-	}
 }
 
 void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& world ) const
@@ -245,6 +242,7 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& wor
 		int flipDir = (GetDirectionOnTrack() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
 		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
+
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 	else if (m_targetDistance < 0)
@@ -252,6 +250,7 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& wor
 		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
 		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
+
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 
@@ -268,6 +267,7 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& wor
 		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
 		tempWalker.Move(dist * static_cast<float>(flipDir));
+
 	}
 
 	Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.f, 0xff0000);

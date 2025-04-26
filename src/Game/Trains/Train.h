@@ -15,6 +15,7 @@ public:
 	 */
 	explicit Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager );
 
+
 	void Update( float deltaTime ) override;
 
 	void Render( const Engine::Camera& camera ) override;
@@ -64,7 +65,6 @@ private:
 	float m_acceleration{0.f};
 	float m_velocity{0.f};
 	float m_targetDistance{0.f};
-
 	float m_maxAccelerationForward{0.f};
 	float m_maxAccelerationBackwards{0.f};
 	float m_mass{0.f};

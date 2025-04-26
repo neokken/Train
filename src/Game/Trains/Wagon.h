@@ -50,7 +50,6 @@ public:
 	 * @return true for pointing towards node B false for pointing to node A
 	 */
 	[[nodiscard]] bool GetDirectionOnTrack() const { return m_frontWalker.GetTrackDirection(); }
-
 protected:
 	TrackWalker m_frontWalker;
 	TrackWalker m_backWalker;

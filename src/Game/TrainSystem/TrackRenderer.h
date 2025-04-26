@@ -15,6 +15,17 @@ enum class TrackRenderType
 	Debug,
 };
 
+inline const char* to_string( TrackRenderType e )
+{
+	switch (e)
+	{
+	case TrackRenderType::Default: return "Default";
+	case TrackRenderType::RailsOnly: return "RailsOnly";
+	case TrackRenderType::Debug: return "Debug";
+	default: return "unknown";
+	}
+}
+
 class TrackRenderer
 {
 public:
@@ -25,6 +36,7 @@ public:
 	void Render( const Engine::Camera& camera, Surface& targetSurface ) const;
 
 	void SetTrackRenderer( TrackRenderType type );
+	[[nodiscard]] TrackRenderType GetTrackRenderer() const;
 
 	static void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegment& segment, TrackRenderType type, Color trackColor = Color::TrackRail, Color SpokeColor = Color::TrackSpokes );
 

@@ -33,8 +33,9 @@ void Engine::World::Init( Surface* renderTarget )
 
 	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
 	m_trackRenderer.Init(&m_trackManager);
-	m_trackDebugger.Init(&m_trackManager);
+	m_trackDebugger.Init(&m_trackManager, &m_trackRenderer);
 	m_trainDebugger.Init(m_trackManager, m_trainManager, m_trackBuilder);
+
 
 	Game::Building* building = new Game::Building(Engine::Transform{.position = float2(0.0f), .scale = float2(1.0f)});
 
@@ -42,6 +43,7 @@ void Engine::World::Init( Surface* renderTarget )
 
 	//Set up a track with a train on it for debugging
 	m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
+
 }
 
 void Engine::World::Update( float deltaTime )
@@ -61,6 +63,13 @@ void Engine::World::Update( float deltaTime )
 
 	//m_trackDebugger.Update(m_camera);
 	m_trainDebugger.Update(m_camera);
+	if (Input::get().IsKeyJustDown(GLFW_KEY_P))
+	{
+		m_trackDebugger.EnableSelectMode(!m_trackDebugger.GetSelectMode());
+		m_trackDebugger.SetVisible(true);
+	}
+
+	m_trackDebugger.Update(m_camera);
 
 	// Render pass
 	m_grid.Render(m_camera);
@@ -73,6 +82,8 @@ void Engine::World::Update( float deltaTime )
 	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
 	m_trackBuilder.Render(m_camera, *m_renderTarget);
+
+	m_trackDebugger.Render(m_camera);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -80,6 +91,7 @@ void Engine::World::UI( const float deltaTime )
 {
 	//m_trackDebugger.UI();
 	m_trainDebugger.UI(deltaTime);
+
 
 	if (Engine::UIManager::BeginDebugWindow("GameObjects Debugger"))
 	{
@@ -95,6 +107,11 @@ void Engine::World::UI( const float deltaTime )
 		}
 	}
 	Engine::UIManager::EndDebugWindow();
+}
+
+void Engine::World::ImGuiBar()
+{
+	if (ImGui::MenuItem("TrackDebugger")) m_trackDebugger.SetVisible(!m_trackDebugger.GetVisibility());
 }
 
 void Engine::World::AddObject( GameObject* obj )
