@@ -124,6 +124,7 @@
   <!-- END Custom section -->
   <ItemGroup>
     <ClCompile Include="src\Engine\Data\ParticleSystem.cpp" />
+    <ClCompile Include="src\Engine\Helpers\Renderer.cpp" />
     <ClCompile Include="src\Engine\Input\InputSingleton.cpp" />
     <ClCompile Include="src\Engine\Renderables\Arrow.cpp" />
     <ClCompile Include="src\Engine\Helpers\Helpers.cpp" />
@@ -195,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Data\ParticleSystem.h" />
+    <ClInclude Include="src\Engine\Helpers\Renderer.h" />
     <ClInclude Include="src\Engine\Input\InputSingleton.h" />
     <ClInclude Include="src\Engine\Renderables\Arrow.h" />
     <ClInclude Include="src\Engine\Helpers\IDGenerator.h" />
@@ -234,7 +236,9 @@
     <ClInclude Include="vendor\template\tmpl8math.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Documentation.md" />
+    <None Include="assets\shaders\line.frag" />
+    <None Include="assets\shaders\line.vert" />
+    <None Include="assets\shaders\rectangle.geom" />
     <None Include="README.md" />
     <None Include="vendor\template\LICENSE" />
   </ItemGroup>

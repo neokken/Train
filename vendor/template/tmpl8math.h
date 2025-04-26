@@ -271,6 +271,10 @@ namespace Tmpl8
 		{
 		}
 
+		float3( const float2 a, const float b ) : x(a.x), y(a.y), z(b)
+		{
+		}
+
 		float3( const float a ) : x(a), y(a), z(a)
 		{
 		}
@@ -1475,6 +1479,8 @@ public:
 		M.cell[12] = T.cell[3], M.cell[13] = T.cell[7], M.cell[14] = T.cell[11], M.cell[15] = T.cell[15];
 		return M;
 	}
+
+	static mat4 Orthographic( float2 pos, float width, float height, const float nearZ, const float farZ );
 
 	constexpr static mat4 Identity() { return mat4{}; }
 

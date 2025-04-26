@@ -173,6 +173,38 @@ uint4::uint4( const uint3& a, const uint d )
 	w = d;
 }
 
+mat4 mat4::Orthographic( const float2 pos, const float width, const float height, const float nearZ, const float farZ )
+{
+	float right = pos.x + width;
+	float left = pos.x;
+	float top = pos.y + height;
+	float bottom = pos.y;
+
+	float out[16];
+
+	out[0] = 2.0f / (right - left);
+	out[1] = 0.0f;
+	out[2] = 0.0f;
+	out[3] = 0.0f;
+
+	out[4] = 0.0f;
+	out[5] = 2.0f / (top - bottom);
+	out[6] = 0.0f;
+	out[7] = 0.0f;
+
+	out[8] = 0.0f;
+	out[9] = 0.0f;
+	out[10] = -2.0f / (farZ - nearZ);
+	out[11] = 0.0f;
+
+	out[12] = -(right + left) / (right - left);
+	out[13] = -(top + bottom) / (top - bottom);
+	out[14] = -(farZ + nearZ) / (farZ - nearZ);
+	out[15] = 1.0f;
+
+	return *reinterpret_cast<mat4*>(&out);
+}
+
 mat4 operator*( const mat4& a, const mat4& b )
 {
 	mat4 r;

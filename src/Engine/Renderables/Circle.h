@@ -9,8 +9,8 @@ namespace Engine
 		Circle() = default;
 		Circle( const float2& center, float size, uint color, int segmentCount = 12 );
 
-		void Render( const Camera& camera, Surface& drawSurface ) override;
-		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& center, float size, uint color, int segmentCount = 12 );
+		void Render( const Camera& camera ) override;
+		static void RenderWorldPos( const Camera& camera, const float2& center, float size, uint color, int segmentCount = 12 );
 
 	private:
 		float2 m_center;

@@ -41,14 +41,14 @@ void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& t
 		break;
 	case TrackRenderType::RailsOnly:
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .75f);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, GetColor(trackColor), .75f);
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .65f);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, GetColor(trackColor), .65f);
 
 		break;
 	case TrackRenderType::Debug:
 
-		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, targetSurface, data, GetColor(trackColor), .75f);
+		Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, GetColor(trackColor), .75f);
 		break;
 	}
 }

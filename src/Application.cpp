@@ -5,6 +5,8 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "Helpers/Renderer.h"
+#include "Renderables/LineSegment.h"
 #include "Game/Trains/Locomotive.h"
 #include "Game/Trains/Train.h"
 #include "Game/Trains/Wagon.h"

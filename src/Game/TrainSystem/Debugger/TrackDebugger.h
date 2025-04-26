@@ -40,11 +40,11 @@ public:
 
 	void Update( const Engine::Camera& camera );
 
-	void Render( const Engine::Camera& camera, Surface& targetSurface ) const;
+	void Render( const Engine::Camera& camera ) const;
 
 	void UI() const;
 
-	void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, TrackSegmentID trackID, int segmentCount, uint color ) const;
+	void RenderTrackSegment( const Engine::Camera& camera, TrackSegmentID trackID, int segmentCount, uint color ) const;
 
 private:
 	// helper functions

@@ -16,7 +16,7 @@ namespace Engine
 
 		virtual void Init( World* world );
 		virtual void Update( float deltaTime ) = 0;
-		virtual void Render( const Camera& camera, Surface& target ) = 0;
+		virtual void Render( const Camera& camera ) = 0;
 
 		void Destroy();
 		[[nodiscard]] bool MarkedForDestroy() const;

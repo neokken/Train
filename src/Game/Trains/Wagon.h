@@ -22,7 +22,7 @@ public:
 	 * @return 
 	 */
 	WagonMovementInfo Move( float distance, float deltaTime );
-	void Render( const Engine::Camera& camera, Surface& target ) override;
+	void Render( const Engine::Camera& camera ) override;
 
 	virtual void Derail();
 
