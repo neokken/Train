@@ -14,10 +14,6 @@
 #include "Renderables/LineSegment.h"
 #include "UI/UIManager.h"
 
-int startID, endID;
-bool towardsB;
-std::vector<int> path;
-
 // -----------------------------------------------------------
 // Initialize the application
 // -----------------------------------------------------------
@@ -68,18 +64,6 @@ void Application::Tick( const float deltaTime )
 
 void Tmpl8::Application::UI( const float deltaTime )
 {
-	if (Engine::UIManager::BeginDebugWindow("pathfinder"))
-	{
-		ImGui::InputInt("StartSeg ID", &startID);
-		ImGui::Checkbox("Towards B", &towardsB);
-		ImGui::InputInt("EndSeg ID", &endID);
-		if (ImGui::Button("Calculate path"))
-		{
-			path = m_world.GetTrackManager().CalculatePath((TrackSegmentID)startID, towardsB, (TrackSegmentID)endID);
-		}
-	}
-	Engine::UIManager::EndDebugWindow();
-
 	if (Engine::UIManager::BeginDebugWindow("Window"))
 	{
 		ImGui::Text("Frametime: %fms", m_frameTimer.elapsed() * 1000);
