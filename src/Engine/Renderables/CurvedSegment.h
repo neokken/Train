@@ -53,7 +53,7 @@ namespace Engine
 		* Render a track made of arrows statically
 		* @return the length of the drawn track
 		*/
-		static float RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width );
+		static float RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width, float2 range = {0.f, 1.f} );
 
 		/**
 		* Render a full track

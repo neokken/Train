@@ -84,7 +84,7 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, CurveData curv
 	}
 }
 
-float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width )
+float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width, float2 range )
 {
 	float2 startMidPoint, endMidPoint;
 	CalculateMidPoints(curve.lStart, curve.lStartDir, curve.lEnd, curve.lEndDir, curve.hardness, startMidPoint, endMidPoint, curve.setupMode);
@@ -95,6 +95,8 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 	float segmentLength = 0;
 	for (uint i = 0; i < curve.baseSegments; ++i)
 	{
+		if (t > range.y) return segmentLength;
+
 		const float2 cubic = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, t);
 
 		float2 offset = cubic - lastPoint;
@@ -102,11 +104,13 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 		segmentLength += l;
 		float2 dir = offset / max(l, 0.0001f);
 
-		float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
-
-		Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
-		lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
-		Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+		if (t >= range.x)
+		{
+			float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
+			Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+			lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
+			Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+		}
 		lastPoint = cubic;
 		lastDir = dir;
 		t += 1.f / static_cast<float>(curve.baseSegments);
