@@ -51,15 +51,10 @@ enum class Color : std::uint8_t
 	TrackSelectedInvalid,
 
 	TrackNodeInfo,
-};
 
-template <>
-struct std::hash<Color>
-{
-	std::size_t operator()( Color c ) const noexcept
-	{
-		return static_cast<std::size_t>(c);
-	}
+	TrackHover_DEBUG,
+	TrackSelect_DEBUG,
+	TrackHoverSelect_DEBUG,
 };
 
 inline std::unordered_map<Color, uint> s_colorMap
@@ -74,6 +69,10 @@ inline std::unordered_map<Color, uint> s_colorMap
 	{Color::TrackSelected, 0x8CBA80},
 	{Color::TrackSelectedInvalid, 0xDB504A},
 	{Color::TrackNodeInfo, 0x0582CA},
+
+	{Color::TrackHover_DEBUG, 0xFFD500},
+	{Color::TrackSelect_DEBUG, 0xFF8C42},
+	{Color::TrackHoverSelect_DEBUG, 0x00E5FF},
 
 };
 

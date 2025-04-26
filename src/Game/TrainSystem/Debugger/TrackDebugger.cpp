@@ -4,341 +4,577 @@
 #include "Input/InputManager.h"
 #include "UI/UIManager.h"
 #include "Camera/Camera.h"
+#include "Game/TrainSystem/TrackRenderer.h"
 #include "Renderables/Circle.h"
 #include "Renderables/CurvedSegment.h"
-#include "Renderables/LineSegment.h"
 
-void TrackDebugger::Init( TrackManager* trackManager )
+void TrackDebugger::Init( TrackManager* trackManager, TrackRenderer* trackRenderer )
 {
 	m_trackManager = trackManager;
+	m_trackRenderer = trackRenderer;
 }
 
 void TrackDebugger::Update( const Engine::Camera& camera )
 {
-	const Engine::InputManager& input = Input::get();
-
-	const float2 worldPosMouse = camera.GetWorldPosition(input.GetMousePos());
-
-	for (const auto& node : std::views::values(m_trackManager->m_nodes))
+	if (!m_visible)
 	{
-		float2 diff = node.nodePosition - worldPosMouse;
+		return;
+	}
 
-		if (sqrLength(diff) < NODE_SELECTION_DIST_SQ)
+	if (m_selectMode)
+	{
+		if (m_hoverSafety)
 		{
-			m_hoveredTrackNode = node.id;
-			if (input.IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
-			{
-				if (m_selectedTrackNode != node.id)
-				{
-					m_selectedTrackNode = node.id;
-					m_linkedTrackSegments = CalculateLinkedTrackSegments(node.id);
-				}
-				else
-				{
-					m_selectedTrackNode = TrackNodeID::Invalid;
-				}
-
-				m_selectedTrackSegment = TrackSegmentID::Invalid;
-			}
-
-			m_hoveredTrackSegment = TrackSegmentID::Invalid;
+			m_hoverSafety = false;
 			return;
 		}
-	}
-	m_hoveredTrackNode = TrackNodeID::Invalid;
 
-	for (const auto& segment : std::views::values(m_trackManager->m_segments))
-	{
-		if (SQRDistancePointToSegment(worldPosMouse, segment) < SEGMENT_SELECTION_DIST_SQ)
+		float distanceNode;
+		float distanceSegment;
+
+		const float2 worldMousePosition = camera.GetWorldPosition(Input::get().GetMousePos());
+
+		m_hoveredNode = m_trackManager->GetNodeByPosition(worldMousePosition, NODE_SELECTION_DIST, &distanceNode);
+		m_hoveredSegment = m_trackManager->GetSegmentByPosition(worldMousePosition, SEGMENT_SELECTION_DIST, &distanceSegment);
+
+		if (distanceNode < distanceSegment + .25f) // we add .25f since now we give nodes a bit more priority otherwise they are hard to select
 		{
-			m_hoveredTrackSegment = segment.id;
-			if (input.IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
-			{
-				if (m_selectedTrackSegment != segment.id)
-				{
-					m_selectedTrackSegment = segment.id;
-					m_linkedTrackSegments = CalculateLinkedTrackSegments(segment.id);
-				}
-				else
-				{
-					m_selectedTrackSegment = TrackSegmentID::Invalid;
-				}
+			m_hoveredSegment = TrackSegmentID::Invalid;
+		}
+		else
+		{
+			m_hoveredNode = TrackNodeID::Invalid;
+		}
 
-				m_selectedTrackNode = TrackNodeID::Invalid;
+		if (Input::get().IsMouseJustDown(GLFW_MOUSE_BUTTON_LEFT))
+		{
+			if (m_hoveredNode != TrackNodeID::Invalid)
+			{
+				m_selectedNode = m_selectedNode == m_hoveredNode ? TrackNodeID::Invalid : m_hoveredNode;
+				m_selectedSegment = TrackSegmentID::Invalid;
 			}
 
-			m_hoveredTrackNode = TrackNodeID::Invalid;
-			return;
+			if (m_hoveredSegment != TrackSegmentID::Invalid)
+			{
+				m_selectedSegment = m_selectedSegment == m_hoveredSegment ? TrackSegmentID::Invalid : m_hoveredSegment;
+				m_selectedNode = TrackNodeID::Invalid;
+			}
 		}
 	}
-	m_hoveredTrackSegment = TrackSegmentID::Invalid;
 }
 
 void TrackDebugger::Render( const Engine::Camera& camera ) const
 {
-	const Engine::InputManager& input = Input::get();
-
-	if (!m_trackManager)
+	if (m_trackRenderer->GetTrackRenderer() == TrackRenderType::Debug || m_selectMode)
 	{
-		Engine::Logger::Warn("Invalid TrackNode ID");
-	}
-
-	for (const auto& node : std::views::values(m_trackManager->m_nodes))
-	{
-		uint color = NODE_COLOR_DEFAULT;
-		if (node.id == m_hoveredTrackNode) color = NODE_COLOR_HOVER;
-		if (node.id == m_selectedTrackNode) color = NODE_COLOR_SELECT;
-		if (node.id == m_selectedTrackNode && node.id == m_hoveredTrackNode) color = NODE_COLOR_SELECT_HOVER;
-
-		Engine::Circle::RenderWorldPos(camera, node.nodePosition, NODE_DISPLAY_SIZE, color);
-	}
-
-	for (const auto& segment : std::views::values(m_trackManager->m_segments))
-	{
-		uint color = SEGMENT_COLOR_DEFAULT;
-		if (segment.id == m_hoveredTrackSegment) color = SEGMENT_COLOR_HOVER;
-		if (segment.id == m_selectedTrackSegment) color = SEGMENT_COLOR_SELECT;
-		if (segment.id == m_hoveredTrackSegment && segment.id == m_selectedTrackSegment)
-			color = SEGMENT_COLOR_SELECT_HOVER;
-
-		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) && (m_selectedTrackSegment != TrackSegmentID::Invalid || m_selectedTrackNode != TrackNodeID::Invalid) && ranges::find(m_linkedTrackSegments, segment.id) != m_linkedTrackSegments.end())
+		for (const auto& node : std::views::values(m_trackManager->GetNodeMap()))
 		{
-			color = SEGMENT_COLOR_LINKED;
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 6);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 4);
+		}
+	}
+
+	if (m_renderConnectedSegments)
+	{
+		RenderConnectedSegments(camera);
+	}
+
+	if (m_selectMode)
+	{
+		if (m_hoveredSegment != TrackSegmentID::Invalid)
+		{
+			const uint color = GetColor(Color::TrackHover_DEBUG);
+
+			const TrackSegment& t = m_trackManager->GetTrackSegment(m_hoveredSegment);
+
+			const Engine::CurveData data{.lStart = t.nodeA_Position, .lStartDir = t.nodeA_Direction, .lEnd = t.nodeB_Position, .lEndDir = t.nodeB_Direction};
+
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, color, .75f);
 		}
 
-		const TrackNode& a = m_trackManager->GetTrackNode(segment.nodeA);
-		const TrackNode& b = m_trackManager->GetTrackNode(segment.nodeB);
+		if (m_selectedSegment != TrackSegmentID::Invalid)
+		{
+			const uint color = GetColor(m_selectedSegment == m_hoveredSegment ? Color::TrackHoverSelect_DEBUG : Color::TrackSelect_DEBUG);
 
-		//RenderSegment(camera, targetSurface, a.nodePosition, segment.nodeA_Direction, b.nodePosition, segment.nodeB_Direction, 10, color);
+			const TrackSegment& t = m_trackManager->GetTrackSegment(m_selectedSegment);
 
-		Engine::LineSegment::RenderWorldPos(camera, a.nodePosition, a.nodePosition + segment.nodeA_Direction * 2.f, 0xffffff);
-		Engine::LineSegment::RenderWorldPos(camera, b.nodePosition, b.nodePosition + segment.nodeB_Direction * 2.f, 0xffffff);
+			const Engine::CurveData data{.lStart = t.nodeA_Position, .lStartDir = t.nodeA_Direction, .lEnd = t.nodeB_Position, .lEndDir = t.nodeB_Direction};
+
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, color, .75f);
+		}
+
+		if (m_hoveredNode != TrackNodeID::Invalid)
+		{
+			const uint color = GetColor(Color::TrackHover_DEBUG);
+
+			const TrackNode& n = m_trackManager->GetTrackNode(m_hoveredNode);
+
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
+		}
+
+		if (m_selectedNode != TrackNodeID::Invalid)
+		{
+			const uint color = GetColor(m_selectedNode == m_hoveredNode ? Color::TrackHoverSelect_DEBUG : Color::TrackSelect_DEBUG);
+
+			const TrackNode& n = m_trackManager->GetTrackNode(m_selectedNode);
+
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
+		}
 	}
 }
 
-void TrackDebugger::UI() const
+void TrackDebugger::UI()
 {
-	if (Engine::UIManager::BeginDebugWindow("Track Debugger"))
+	if (!m_visible) return;
+
+	if (Engine::UIManager::BeginDebugWindow("TrackDebugger", &m_visible))
 	{
-		// active
-		if (ImGui::CollapsingHeader("Selected Nodes", ImGuiTreeNodeFlags_DefaultOpen))
+		ImGui::Checkbox("Render connectedSegments", &m_renderConnectedSegments);
+
+		if (ImGui::Checkbox("SelectMode", &m_selectMode))
 		{
-			if (m_selectedTrackNode == TrackNodeID::Invalid && m_selectedTrackSegment == TrackSegmentID::Invalid)
+			if (m_selectMode)
 			{
-				// ** no selected stuff **
-				ImGui::Text("No node or segment selected");
-				ImGui::Text("Left click on them to select them.");
-			}
-			else if (m_trackManager->DoesNodeExists(m_selectedTrackNode))
-			{
-				// ** selected node **
-				ImGui::Text("Selected Node: %d", static_cast<int>(m_selectedTrackNode));
-
-				ImGui::Separator();
-
-				const auto& node = m_trackManager->m_nodes.at(m_selectedTrackNode);
-				ImGui::Text("Position: (%.2f, %.2f)", node.nodePosition.x, node.nodePosition.y);
-				ImGui::Text("Connections:");
-
-				for (const auto& [segmentID, validConnections] : node.validConnections)
-				{
-					if (node.connectionLever.at(segmentID) == -1)
-					{
-						ImGui::Text("Segment %d -> end", segmentID);
-						continue;
-					}
-
-					const int activeConnection = node.connectionLever.contains(segmentID) ? node.connectionLever.at(segmentID) : -1;
-
-					ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
-
-					ImGui::SameLine();
-					for (size_t i = 0; i < validConnections.size(); ++i)
-					{
-						ImGui::Text("%d", validConnections[i]);
-						if (i < validConnections.size() - 1)
-						{
-							ImGui::SameLine();
-							ImGui::Text("|");
-							ImGui::SameLine();
-						}
-					}
-				}
-
-				if (node.validConnections.empty())
-				{
-					ImGui::Text("No in or outgoing connections.");
-				}
+				m_trackRenderer->SetTrackRenderer(TrackRenderType::Debug);
 			}
 			else
 			{
-				// ** selected segment **
-				ImGui::Text("Selected Segment: %d", static_cast<int>(m_selectedTrackSegment));
-				ImGui::Separator();
-
-				const TrackSegment& segment = m_trackManager->m_segments.at(m_selectedTrackSegment);
-
-				TrackNode nodeA = m_trackManager->GetTrackNode(segment.nodeA);
-				TrackNode nodeB = m_trackManager->GetTrackNode(segment.nodeB);
-
-				ImGui::Text("NodeA id: %d (%.2f, %.2f)", static_cast<int>(nodeA.id), nodeA.nodePosition.x, nodeA.nodePosition.y);
-				ImGui::Text("NodeB id: %d (%.2f, %.2f)", static_cast<int>(nodeB.id), nodeB.nodePosition.x, nodeB.nodePosition.y);
-				ImGui::Text("Segment length: %.2f", segment.distance);
-				ImGui::Text("Connections:");
-
-				if (m_linkedTrackSegments.empty())
-				{
-					ImGui::Text("No outgoing connections.");
-				}
-				else
-				{
-					for (const auto& connectedSeg : m_linkedTrackSegments)
-					{
-						ImGui::Text("SegmentID: %d", static_cast<int>(connectedSeg));
-					}
-				}
+				m_trackRenderer->SetTrackRenderer(TrackRenderType::Default);
 			}
 		}
 
-		// **Nodes List**
-		if (ImGui::CollapsingHeader("Track Nodes"))
+		if (ImGui::CollapsingHeader("Segment/Node data", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable("NodesTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+			if (m_selectedSegment != TrackSegmentID::Invalid)
 			{
-				// Change to 2 columns
-				ImGui::TableSetupColumn("ID");
-				ImGui::TableSetupColumn("Position");
-				ImGui::TableHeadersRow();
-
-				for (const auto& [id, node] : m_trackManager->m_nodes)
+				if (ImGui::TreeNodeEx("Selected Segment", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%d", static_cast<int>(id));
-
-					ImGui::TableSetColumnIndex(1);
-					ImGui::Text("(%.2f, %.2f)", node.nodePosition.x, node.nodePosition.y);
-					// Display position in one column
+					SegmentInfo(m_selectedSegment);
+					ImGui::TreePop();
 				}
-				ImGui::EndTable();
 			}
-		}
 
-		// **Segments List**
-		if (ImGui::CollapsingHeader("Track Segments"))
-		{
-			if (ImGui::BeginTable("SegmentsTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+			if (m_selectedNode != TrackNodeID::Invalid)
 			{
-				ImGui::TableSetupColumn("ID");
-				ImGui::TableSetupColumn("Node A");
-				ImGui::TableSetupColumn("Node B");
-				ImGui::TableSetupColumn("Distance");
-				ImGui::TableHeadersRow();
-
-				for (const auto& [id, segment] : m_trackManager->m_segments)
+				if (ImGui::TreeNodeEx("Selected Node", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%d", static_cast<int>(id));
-
-					ImGui::TableSetColumnIndex(1);
-					ImGui::Text("%d", static_cast<int>(segment.nodeA));
-
-					ImGui::TableSetColumnIndex(2);
-					ImGui::Text("%d", static_cast<int>(segment.nodeB));
-
-					ImGui::TableSetColumnIndex(3);
-					ImGui::Text("%d", static_cast<int>(segment.distance));
+					NodeInfo(m_selectedNode);
+					ImGui::TreePop();
 				}
-				ImGui::EndTable();
 			}
-		}
 
-		// **Node Inspector**
-		static int selectedNodeID = 0;
-		ImGui::Separator();
-		ImGui::Text("Inspect Node:");
-		ImGui::InputInt("Node ID", &selectedNodeID);
-
-		if (m_trackManager->m_nodes.contains(static_cast<TrackNodeID>(selectedNodeID)))
-		{
-			const auto& node = m_trackManager->m_nodes.at(static_cast<TrackNodeID>(selectedNodeID));
-			ImGui::Text("Position: (%.2f, %.2f)", node.nodePosition.x, node.nodePosition.y);
-			ImGui::Text("Connections:");
-			for (const auto& [segmentID, validConnections] : node.validConnections)
+			if (m_hoveredSegment != TrackSegmentID::Invalid && m_hoveredSegment != m_selectedSegment)
 			{
-				const int activeConnection = node.connectionLever.contains(segmentID) ? node.connectionLever.at(segmentID) : -1;
-
-				ImGui::Text("Segment %d -> Segment: %d (selector: %d) >", static_cast<int>(segmentID), static_cast<int>(validConnections.at(activeConnection)), activeConnection);
-
-				ImGui::SameLine();
-				for (size_t i = 0; i < validConnections.size(); ++i)
+				if (ImGui::TreeNodeEx("Hovered Segment", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::Text("%d", validConnections[i]);
-					if (i < validConnections.size() - 1)
-					{
-						ImGui::SameLine();
-						ImGui::Text("|");
-						ImGui::SameLine();
-					}
+					SegmentInfo(m_hoveredSegment);
+					ImGui::TreePop();
 				}
 			}
-		}
-		else
-		{
-			ImGui::Text("Invalid Node ID");
+
+			if (m_hoveredNode != TrackNodeID::Invalid && m_hoveredNode != m_selectedNode)
+			{
+				if (ImGui::TreeNodeEx("Hovered Node", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					NodeInfo(m_hoveredNode);
+					ImGui::TreePop();
+				}
+			}
 		}
 	}
 	Engine::UIManager::EndDebugWindow();
 }
 
-void TrackDebugger::RenderTrackSegment( const Engine::Camera& camera, const TrackSegmentID trackID, const int segmentCount, const uint color ) const
+void TrackDebugger::SetVisible( const bool value )
 {
-	const TrackSegment& segment = m_trackManager->GetTrackSegment(trackID);
-
-	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
-	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
-
-	//RenderSegment(camera, targetSurface, nodeA.nodePosition, segment.nodeA_Direction, nodeB.nodePosition, segment.nodeB_Direction, segmentCount, color);
+	m_visible = value;
 }
 
-float TrackDebugger::SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const
+bool TrackDebugger::GetVisibility() const
 {
-	const float2 nodeA_pos = m_trackManager->GetTrackNode(segment.nodeA).nodePosition;
-	const float2 nodeB_pos = m_trackManager->GetTrackNode(segment.nodeB).nodePosition;
-
-	Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
-
-	return sqrLength(Engine::CurvedSegment::GetClosestPoint(curveData, position) - position);
+	return m_visible;
 }
 
-std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const TrackSegmentID segmentID ) const
+void TrackDebugger::EnableSelectMode( const bool value )
 {
-	std::vector<TrackSegmentID> result;
+	m_selectMode = value;
 
+	if (m_selectMode)
+	{
+		m_trackRenderer->SetTrackRenderer(TrackRenderType::Debug);
+	}
+	else
+	{
+		m_trackRenderer->SetTrackRenderer(TrackRenderType::Default);
+	}
+}
+
+bool TrackDebugger::GetSelectMode() const
+{
+	return m_selectMode;
+}
+
+void TrackDebugger::SetHoverNode( const TrackNodeID id )
+{
+	m_hoveredNode = id;
+	m_hoveredSegment = TrackSegmentID::Invalid;
+	m_hoverSafety = true;
+}
+
+void TrackDebugger::SetHoverSegment( const TrackSegmentID id )
+{
+	m_hoveredSegment = id;
+	m_hoveredNode = TrackNodeID::Invalid;
+	m_hoverSafety = true;
+}
+
+void TrackDebugger::SetSelectNode( const TrackNodeID id )
+{
+	m_selectedNode = id;
+	m_selectedSegment = TrackSegmentID::Invalid;
+	m_hoverSafety = true;
+}
+
+void TrackDebugger::SetSelectSegment( const TrackSegmentID id )
+{
+	m_selectedSegment = id;
+	m_selectedNode = TrackNodeID::Invalid;
+	m_hoverSafety = true;
+}
+
+void TrackDebugger::SegmentInfo( const TrackSegmentID segmentID )
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	if (!m_trackManager->DoesSegmentExists(segmentID)) return;
 	const TrackSegment& segment = m_trackManager->GetTrackSegment(segmentID);
 
-	const TrackNode& nodeA = m_trackManager->GetTrackNode(segment.nodeA);
-	const TrackNode& nodeB = m_trackManager->GetTrackNode(segment.nodeB);
+	ImGui::Text("ID: ");
+	ImGui::SameLine();
 
-	const std::vector<TrackSegmentID> nodeALinkedSegments = nodeA.validConnections.contains(segmentID) ? nodeA.validConnections.at(segmentID) : std::vector<TrackSegmentID>();
-	const std::vector<TrackSegmentID> nodeBLinkedSegments = nodeB.validConnections.contains(segmentID) ? nodeB.validConnections.at(segmentID) : std::vector<TrackSegmentID>();;
+	const ImVec2 cursor = ImGui::GetCursorScreenPos();
 
-	result.insert(result.end(), nodeALinkedSegments.begin(), nodeALinkedSegments.end());
-	result.insert(result.end(), nodeBLinkedSegments.begin(), nodeBLinkedSegments.end());
+	const std::string nodeText = std::to_string(static_cast<int>(segmentID));
+	const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
 
-	return result;
+	ImGui::InvisibleButton(("##segment_" + std::to_string(static_cast<int>(segmentID))).c_str(), nodeTextSize);
+	if (ImGui::IsItemHovered())
+	{
+		SetHoverSegment(segmentID);
+		drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+		ImGui::SetTooltip("SegmentID %d", static_cast<int>(segmentID));
+	}
+	if (ImGui::IsItemClicked())
+	{
+		SetSelectSegment(segmentID);
+	}
+	drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+	ImGui::Text("Segment length: %.2f", segment.distance);
+
+	if (ImGui::TreeNodeEx("Node A", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		NodeSegmentInfo(segmentID, true);
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNodeEx("Node B", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		NodeSegmentInfo(segmentID, false);
+
+		ImGui::TreePop();
+	}
 }
 
-std::vector<TrackSegmentID> TrackDebugger::CalculateLinkedTrackSegments( const TrackNodeID nodeID ) const
+void TrackDebugger::NodeSegmentInfo( const TrackSegmentID segmentID, const bool nodeA )
 {
-	std::vector<TrackSegmentID> result;
+	const TrackSegment& segment = m_trackManager->GetTrackSegment(segmentID);
+
+	const TrackNodeID nodeID = nodeA ? segment.nodeA : segment.nodeB;
+	const TrackNode& node = m_trackManager->GetTrackNode(nodeID);
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	// NODE ID
+
+	ImGui::Text("ID: ");
+	ImGui::SameLine();
+
+	ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+	std::string nodeText = std::to_string(static_cast<int>(nodeID));
+	ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+	ImGui::InvisibleButton(("##node_" + std::to_string(static_cast<int>(nodeID))).c_str(), nodeTextSize);
+	if (ImGui::IsItemHovered())
+	{
+		SetHoverNode(nodeID);
+		drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+		ImGui::SetTooltip("NodeID %d", static_cast<int>(nodeID));
+	}
+	if (ImGui::IsItemClicked())
+	{
+		SetSelectNode(nodeID);
+	}
+	drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+	const float2 nodePos = nodeA ? segment.nodeA_Position : segment.nodeB_Position;
+	const float2 nodeDir = nodeA ? segment.nodeA_Direction : segment.nodeB_Direction;
+
+	ImGui::Text("Position: (%.2f, %.2f)", nodePos.x, nodePos.y);
+	ImGui::Text("Segment node direction: (%.2f, %.2f)", nodeDir.x, nodeDir.y);
+
+	ImGui::Text("Connections From %d: ", static_cast<int>(segmentID));
+
+	auto& outs = node.validConnections.at(segmentID);
+
+	int lever = -1;
+	const auto it = node.connectionLever.find(segmentID);
+	if (it != node.connectionLever.end()) lever = it->second;
+
+	cursor = ImGui::GetCursorScreenPos();
+
+	// --- Clickable nodeID ---
+	nodeText = std::to_string(static_cast<int>(segmentID));
+	nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+	ImGui::InvisibleButton(("##segment_" + std::to_string(static_cast<int>(segmentID))).c_str(), nodeTextSize);
+	if (ImGui::IsItemHovered())
+	{
+		SetHoverSegment(segmentID);
+		drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y),IM_COL32(100, 100, 100, 50));
+		ImGui::SetTooltip("SegmentID %d", static_cast<int>(segmentID));
+	}
+	if (ImGui::IsItemClicked())
+	{
+		SetSelectSegment(segmentID);
+	}
+	drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+	ImGui::SameLine(0, 0);
+	ImGui::TextUnformatted(" -> ");
+	ImGui::SameLine(0, 0);
+
+	if (outs.empty())
+	{
+		ImGui::Text("No outgoing connections (%d)", lever);
+		return;
+	}
+
+	for (size_t i = 0; i < outs.size(); ++i)
+	{
+		if (i > 0)
+		{
+			ImGui::TextUnformatted(",");
+			ImGui::SameLine(0, 0);
+		}
+
+		std::string text = std::to_string(static_cast<int>(outs[i]));
+		ImVec2 size = ImGui::CalcTextSize(text.c_str());
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+
+		std::string id = "##seg_" + std::to_string(static_cast<int>(segmentID)) + "_" + std::to_string(i);
+		ImGui::InvisibleButton(id.c_str(), size);
+
+		const bool isHovered = ImGui::IsItemHovered();
+		const bool isClicked = ImGui::IsItemClicked();
+		const bool isActive = (static_cast<int>(i) == lever);
+		bool isSelected = (m_selectedSegment == outs[i]);
+
+		if (isHovered || isActive || isSelected)
+		{
+			ImU32 bgColor = isSelected ? IM_COL32(100, 200, 255, 100) : isActive ? IM_COL32(255, 255, 0, 60) : IM_COL32(255, 255, 255, 30);
+			drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bgColor);
+		}
+
+		if (isHovered)
+		{
+			drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+			ImGui::SetTooltip("SegmentID %d", static_cast<int>(outs[i]));
+			SetHoverSegment(outs[i]);
+		}
+
+		if (isClicked)
+		{
+			SetSelectSegment(outs[i]);
+		}
+
+		drawList->AddText(pos, IM_COL32(255, 255, 255, 255), text.c_str());
+
+		ImGui::SameLine(0, 0);
+	}
+
+	ImGui::SameLine(0, 10);
+	ImGui::Text("(%d)", lever);
+}
+
+void TrackDebugger::NodeInfo( const TrackNodeID nodeID )
+{
+	if (!m_trackManager->DoesNodeExists(nodeID)) return;
+
 	const TrackNode& node = m_trackManager->GetTrackNode(nodeID);
 
-	for (const auto& segmentList : std::views::values(node.validConnections))
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	ImGui::Text("ID: ");
+	ImGui::SameLine();
+
+	ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+	std::string nodeText = std::to_string(static_cast<int>(nodeID));
+	ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+	ImGui::InvisibleButton(("##node_" + std::to_string(static_cast<int>(nodeID))).c_str(), nodeTextSize);
+	if (ImGui::IsItemHovered())
 	{
-		result.insert(result.end(), segmentList.begin(), segmentList.end());
+		SetHoverNode(nodeID);
+		drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+		ImGui::SetTooltip("NodeID %d", static_cast<int>(nodeID));
 	}
-	return result;
+	if (ImGui::IsItemClicked())
+	{
+		SetSelectNode(nodeID);
+	}
+	drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+	ImGui::Text("Position: (%.2f, %.2f)", node.nodePosition.x, node.nodePosition.y);
+
+	ImGui::Text("Connections: ");
+
+	for (auto& kv : node.validConnections)
+	{
+		const TrackSegmentID segmentID = kv.first;
+		auto& outs = kv.second;
+
+		int lever = -1;
+		auto it = node.connectionLever.find(segmentID);
+		if (it != node.connectionLever.end())
+			lever = it->second;
+
+		cursor = ImGui::GetCursorScreenPos();
+
+		// --- Clickable nodeID ---
+		nodeText = std::to_string(static_cast<int>(segmentID));
+		nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+		ImGui::InvisibleButton(("##segment_" + std::to_string(static_cast<int>(segmentID))).c_str(), nodeTextSize);
+		if (ImGui::IsItemHovered())
+		{
+			SetHoverSegment(segmentID);
+			drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+			ImGui::SetTooltip("SegmentID %d", static_cast<int>(segmentID));
+		}
+		if (ImGui::IsItemClicked())
+		{
+			SetSelectSegment(segmentID);
+		}
+		drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+		ImGui::SameLine(0, 0);
+		ImGui::TextUnformatted(" -> ");
+		ImGui::SameLine(0, 0);
+
+		if (outs.empty())
+		{
+			ImGui::Text("No outgoing connections (%d)", lever);
+			continue;
+		}
+
+		for (size_t i = 0; i < outs.size(); ++i)
+		{
+			if (i > 0)
+			{
+				ImGui::TextUnformatted(",");
+				ImGui::SameLine(0, 0);
+			}
+
+			std::string text = std::to_string(static_cast<int>(outs[i]));
+			ImVec2 size = ImGui::CalcTextSize(text.c_str());
+			ImVec2 pos = ImGui::GetCursorScreenPos();
+
+			std::string id = "##seg_" + std::to_string(static_cast<int>(segmentID)) + "_" + std::to_string(i);
+			ImGui::InvisibleButton(id.c_str(), size);
+
+			const bool isHovered = ImGui::IsItemHovered();
+			const bool isClicked = ImGui::IsItemClicked();
+			const bool isActive = (static_cast<int>(i) == lever);
+			bool isSelected = (m_selectedSegment == outs[i]);
+
+			if (isHovered || isActive || isSelected)
+			{
+				ImU32 bgColor = isSelected ? IM_COL32(100, 200, 255, 100) : isActive ? IM_COL32(255, 255, 0, 60) : IM_COL32(255, 255, 255, 30);
+				drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bgColor);
+			}
+
+			if (isHovered)
+			{
+				drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+				ImGui::SetTooltip("SegmentID %d", static_cast<int>(outs[i]));
+				SetHoverSegment(outs[i]);
+			}
+
+			if (isClicked)
+			{
+				SetSelectSegment(outs[i]);
+			}
+
+			drawList->AddText(pos, IM_COL32(255, 255, 255, 255), text.c_str());
+
+			ImGui::SameLine(0, 0);
+		}
+
+		ImGui::SameLine(0, 10);
+		ImGui::Text("(%d)", lever);
+	}
+}
+
+void TrackDebugger::RenderConnectedSegments( const Engine::Camera& camera ) const
+{
+	auto ks = std::views::keys(m_trackManager->GetSegmentMap());
+	std::set<TrackSegmentID> allSegments{ks.begin(), ks.end()};
+
+	const std::vector<uint> colors = {0x6388b4, 0xffae34, 0xef6f6a, 0x8cc2ca, 0x55ad89, 0xc3bc3f, 0xbb7683, 0xbaa094};
+	int colorIndex = -1;
+
+	std::queue<TrackSegmentID> openList;
+
+	while (!allSegments.empty())
+	{
+		openList.push(*allSegments.begin());
+		allSegments.erase(allSegments.begin());
+		colorIndex++;
+		colorIndex %= static_cast<int>(colors.size());
+
+		while (!openList.empty())
+		{
+			TrackSegmentID c = openList.front();
+			openList.pop();
+
+			const TrackSegment& tc = m_trackManager->GetTrackSegment(c);
+
+			const TrackNode& nodeA = m_trackManager->GetTrackNode(tc.nodeA);
+			const TrackNode& nodeB = m_trackManager->GetTrackNode(tc.nodeB);
+
+			for (const auto& a : nodeA.validConnections.at(c))
+			{
+				if (allSegments.contains(a))
+				{
+					allSegments.erase(a);
+					openList.push(a);
+				}
+			}
+			for (const auto& a : nodeB.validConnections.at(c))
+			{
+				if (allSegments.contains(a))
+				{
+					allSegments.erase(a);
+					openList.push(a);
+				}
+			}
+
+			Engine::CurveData data{tc.nodeA_Position, tc.nodeA_Direction, tc.nodeB_Position, tc.nodeB_Direction};
+			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, colors.at(colorIndex), 0.f);
+		}
+	}
 }
