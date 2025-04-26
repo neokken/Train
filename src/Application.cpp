@@ -5,6 +5,8 @@
 #include "precomp.h"
 #include "Application.h"
 
+#include "Helpers/Renderer.h"
+#include "Renderables/LineSegment.h"
 #include "UI/UIManager.h"
 
 // -----------------------------------------------------------
@@ -27,6 +29,7 @@ void Application::Tick( const float deltaTime )
 
 	// Update logic
 	m_world.Update(deltaTime);
+
 	//DEBUG BEHAVIOUR
 	if (Input::get().IsKeyJustDown(GLFW_KEY_F1))
 	{

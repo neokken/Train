@@ -22,7 +22,7 @@ namespace Engine
 	public:
 		Grid() = default;
 
-		void Render( const Camera& camera, Surface& drawSurface ) override;
+		void Render( const Camera& camera ) override;
 
 		void AddGrid( uint color, int pixelDistance, float minZoomLevel = 0.f, float maxZoomLevel = 1e10f );
 

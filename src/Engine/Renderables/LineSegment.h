@@ -9,8 +9,8 @@ namespace Engine
 		LineSegment() = default;
 		LineSegment( const float2& lStart, const float2& lEnd, const uint color );
 
-		void Render( const Camera& camera, Surface& drawSurface ) override;
-		static void RenderWorldPos( const Camera& camera, Surface& drawSurface, const float2& lStart, const float2& lEnd, uint lColor );
+		void Render( const Camera& camera ) override;
+		static void RenderWorldPos( const Camera& camera, const float2& lStart, const float2& lEnd, uint lColor, int height = HeightLayer::Default, float width = 0.0f );
 		static void RenderLocalPos( Surface& drawSurface, const float2& lStart, const float2& lEnd, uint lColor );
 
 	private:

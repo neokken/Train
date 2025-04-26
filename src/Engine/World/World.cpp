@@ -74,12 +74,12 @@ void Engine::World::Update( float deltaTime )
 	//m_trackDebugger.Update(m_camera);
 
 	// Render pass
-	m_grid.Render(m_camera, *m_renderTarget);
+	m_grid.Render(m_camera);
 
 	m_trackRenderer.Render(m_camera, *m_renderTarget);
 	for (const auto& obj : m_objects)
 	{
-		obj->Render(m_camera, *m_renderTarget);
+		obj->Render(m_camera);
 	}
 	m_particles.Render(m_camera, *m_renderTarget);
 	//m_trackDebugger.Render(m_camera, *m_renderTarget);
