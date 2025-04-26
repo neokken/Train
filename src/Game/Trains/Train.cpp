@@ -221,7 +221,7 @@ void Train::ImGuiDebugViewer()
 	}
 }
 
-void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const
+void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& world ) const
 {
 	TrackWalker tempWalker;
 	tempWalker.Init(&world.GetTrackManager());
@@ -231,14 +231,14 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 	{
 		int flipDir = (GetDirectionOnTrack() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
-		tempWalker.Move(m_targetDistance * flipDir);
+		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 	else if (m_targetDistance < 0)
 	{
 		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
-		tempWalker.Move(m_targetDistance * flipDir);
+		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 
@@ -248,13 +248,13 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 	{
 		int flipDir = (GetDirectionOnTrack() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
-		tempWalker.Move(dist * flipDir);
+		tempWalker.Move(dist * static_cast<float>(flipDir));
 	}
 	else
 	{
 		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
-		tempWalker.Move(dist * flipDir);
+		tempWalker.Move(dist * static_cast<float>(flipDir));
 	}
 
 	Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.f, 0xff0000);

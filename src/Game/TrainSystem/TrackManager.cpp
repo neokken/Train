@@ -547,7 +547,7 @@ std::vector<int> TrackManager::ReconstructPath( const AStarNode& finalNode )
 		current = current->parent;
 	}
 	std::vector<int> path;
-	for (int i = rpath.size() - 2; i >= 0; --i)
+	for (int i = static_cast<int>(rpath.size()) - 2; i >= 0; --i)
 	{
 		path.push_back(rpath[i]);
 	}
