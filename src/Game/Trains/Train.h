@@ -24,7 +24,7 @@ public:
 
 	void ImGuiDebugViewer() override;
 
-	void VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const;
+	void VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& world ) const;
 
 private:
 	/**

@@ -213,7 +213,7 @@ void Train::ImGuiDebugViewer()
 	ImGui::Text(("Current mass:" + std::to_string(m_mass)).c_str());
 }
 
-void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, Engine::World& world ) const
+void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& world ) const
 {
 	TrackWalker tempWalker;
 	tempWalker.Init(&world.GetTrackManager());
@@ -223,13 +223,13 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 	{
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
 		tempWalker.Move(m_targetDistance);
-		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 	else if (m_targetDistance < 0)
 	{
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
 		tempWalker.Move(m_targetDistance);
-		Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.2f, 0xff00ff);
+		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 
 	//Stopping distance
@@ -245,7 +245,7 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Surface& screen, E
 		tempWalker.Move(-dist);
 	}
 
-	Engine::Circle::RenderWorldPos(camera, screen, tempWalker.GetPosition(), 1.f, 0xff0000);
+	Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.f, 0xff0000);
 }
 
 float Train::GetMaxStoppingDistance() const

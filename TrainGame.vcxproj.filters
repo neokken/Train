@@ -103,10 +103,6 @@
       <Filter>Game\Trains</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Input\InputSingleton.cpp" />
-    </ClCompile>
-    <ClCompile Include="src\Game\Trains\Locomotive.cpp">
-      <Filter>Game\Trains</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Helpers\Renderer.cpp">
       <Filter>Engine\Helpers</Filter>
     </ClCompile>
@@ -199,11 +195,6 @@
       <Filter>Game\Trains</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Input\InputSingleton.h" />
-    </ClInclude>
-    <ClInclude Include="src\Game\Trains\Locomotive.h">
-      <Filter>Game\Trains</Filter>
-    </ClInclude>
-
     <ClInclude Include="src\Engine\Helpers\Renderer.h">
       <Filter>Engine\Helpers</Filter>
     </ClInclude>
@@ -215,8 +206,6 @@
     <None Include="vendor\template\LICENSE">
       <Filter>template</Filter>
     </None>
-    <None Include="Documentation.md" />
-        </None>
     <None Include="assets\shaders\line.frag">
       <Filter>Engine\Shaders</Filter>
     </None>
@@ -272,9 +261,6 @@
     </Filter>
     <Filter Include="Game\Trains">
       <UniqueIdentifier>{9c5e1122-ebce-45fd-92ab-c13bb9706a7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Trains\Wagons">
-      <UniqueIdentifier>{e563f41b-f0ad-4143-9ccf-cd3b0c8d2891}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Shaders">
       <UniqueIdentifier>{a4ed1eae-69cf-4f7f-8023-09703973f07c}</UniqueIdentifier>
