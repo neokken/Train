@@ -212,7 +212,7 @@ void TrainDebugger::UI( const float deltaTime )
 	if (m_selectedTrain != TrainID::Invalid && m_hasSelectedTrain)
 	{
 		bool open = true;
-		Engine::UIManager::BeginGameplayWindow(("Train: " + std::to_string(static_cast<int>(m_selectedTrain))).c_str(), open);
+		Engine::UIManager::BeginGameplayWindow(("Train: " + std::to_string(static_cast<int>(m_selectedTrain))).c_str(), &open);
 		ImGui::Text("Train");
 		const Train& train = m_trainManager->GetTrain(m_selectedTrain);
 		if (ImGui::TreeNode("Statistics"))
