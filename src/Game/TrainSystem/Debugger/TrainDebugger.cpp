@@ -54,15 +54,27 @@ void TrainDebugger::Update( const Engine::Camera& camera )
 
 			//Show path
 			TrackSegmentID currentSegment = m_trainManager->GetTrain(m_selectedTrain).GetWagons()[0]->GetFrontWalker().GetCurrentTrackSegment();
-			std::vector<int> path = m_trackManager->CalculatePath(currentSegment, true, m_targetSegment);
-			TrackNodeID currentNode = m_trackManager->GetTrackSegment(currentSegment).nodeB;
+			bool towardsB = m_trainManager->GetTrain(m_selectedTrain).GetDirectionOnTrack();
+			std::vector<int> path = m_trackManager->CalculatePath(currentSegment, towardsB, m_targetSegment);
+			TrackNodeID currentNode = towardsB ? m_trackManager->GetTrackSegment(currentSegment).nodeB : m_trackManager->GetTrackSegment(currentSegment).nodeA;
 
 			TrackSegment currentSeg = m_trackManager->GetTrackSegment(currentSegment);
-			curve = {currentSeg.nodeA_Position, currentSeg.nodeA_Direction, currentSeg.nodeB_Position, currentSeg.nodeB_Direction};
-			curve.baseSegments = static_cast<uint>(currentSeg.distance * 2.f);
-			float2 range = float2(m_trainManager->GetTrain(m_selectedTrain).GetWagons()[0]->GetFrontWalker().GetDistance() / currentSeg.distance, 1.f);
-			if (path.empty()) range.y = m_targetDistance;
-			Engine::CurvedSegment::RenderArrowsWorldPos(camera, curve, 0xff0000, 0.7f, range);
+			if (towardsB)
+			{
+				curve = {currentSeg.nodeA_Position, currentSeg.nodeA_Direction, currentSeg.nodeB_Position, currentSeg.nodeB_Direction};
+				curve.baseSegments = static_cast<uint>(currentSeg.distance * 2.f);
+				float2 range = float2(m_trainManager->GetTrain(m_selectedTrain).GetWagons()[0]->GetFrontWalker().GetDistance() / currentSeg.distance, 1.f);
+				if (path.empty()) range.y = m_targetDistance;
+				Engine::CurvedSegment::RenderArrowsWorldPos(camera, curve, 0xff0000, 0.7f, range);
+			}
+			else
+			{
+				curve = {currentSeg.nodeB_Position, currentSeg.nodeB_Direction, currentSeg.nodeA_Position, currentSeg.nodeA_Direction};
+				curve.baseSegments = static_cast<uint>(currentSeg.distance * 2.f);
+				float2 range = float2(1.f - m_trainManager->GetTrain(m_selectedTrain).GetWagons()[0]->GetFrontWalker().GetDistance() / currentSeg.distance, 1.f);
+				if (path.empty()) range.y = 1.f - m_targetDistance;
+				Engine::CurvedSegment::RenderArrowsWorldPos(camera, curve, 0xff0000, 0.7f, range);
+			}
 
 			for (int i = 0; i < static_cast<int>(path.size()); ++i)
 			{
@@ -72,16 +84,15 @@ void TrainDebugger::Update( const Engine::Camera& camera )
 				{
 					currentNode = currentSeg.nodeB;
 					curve = {currentSeg.nodeA_Position, currentSeg.nodeA_Direction, currentSeg.nodeB_Position, currentSeg.nodeB_Direction};
-					curve.baseSegments = static_cast<uint>(currentSeg.distance * 2.f);
+					curve.baseSegments = static_cast<uint>(round(currentSeg.distance * 2.f));
 					float2 range = (i == static_cast<int>(path.size()) - 1) ? float2(0.f, m_targetDistance) : float2(0.f, 1.f);
 					Engine::CurvedSegment::RenderArrowsWorldPos(camera, curve, 0xff0000, 0.7f, range);
 				}
 				else
 				{
 					currentNode = currentSeg.nodeA;
-					currentNode = currentSeg.nodeB;
 					curve = {currentSeg.nodeB_Position, currentSeg.nodeB_Direction, currentSeg.nodeA_Position, currentSeg.nodeA_Direction};
-					curve.baseSegments = static_cast<uint>(currentSeg.distance * 2.f);
+					curve.baseSegments = static_cast<uint>(round(currentSeg.distance * 2.f));
 					float2 range = (i == static_cast<int>(path.size()) - 1) ? float2(0.f, 1.f - m_targetDistance) : float2(0.f, 1.f);
 					Engine::CurvedSegment::RenderArrowsWorldPos(camera, curve, 0xff0000, 0.7f, range);
 				}

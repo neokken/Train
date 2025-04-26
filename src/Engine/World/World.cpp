@@ -41,7 +41,7 @@ void Engine::World::Init( Surface* renderTarget )
 	AddObject(building);
 
 	//Set up a track with a train on it for debugging
-	TrackSegmentID seg1 = m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
+	m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
 }
 
 void Engine::World::Update( float deltaTime )

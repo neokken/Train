@@ -30,6 +30,12 @@ public:
 
 	const std::vector<Wagon*> GetWagons() const { return m_wagons; }
 
+	/**
+	 * Get the direction the train is facing on the track this equals the direction of the first wagon
+	 * @return true for pointing towards node B false for pointing to node A
+	 */
+	[[nodiscard]] bool GetDirectionOnTrack() const;
+
 private:
 	/**
 	 * Returns the max distance the train will take to stop, the reality can be shorter due to environmental factors like track drag

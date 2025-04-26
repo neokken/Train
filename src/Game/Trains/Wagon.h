@@ -45,6 +45,12 @@ public:
 	[[nodiscard]] float GetBrakingForce() const { return m_maxBrakingForce; }
 	[[nodiscard]] float GetMass() const { return m_mass; }
 
+	/**
+	 * Get the direction the wagon is facing on the track
+	 * @return true for pointing towards node B false for pointing to node A
+	 */
+	[[nodiscard]] bool GetDirectionOnTrack() const { return m_frontWalker.GetTrackDirection(); }
+
 protected:
 	TrackWalker m_frontWalker;
 	TrackWalker m_backWalker;
