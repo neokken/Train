@@ -61,7 +61,6 @@ void Engine::World::Update( float deltaTime )
 
 	m_particles.Update(deltaTime);
 
-	//m_trackDebugger.Update(m_camera);
 	m_trainDebugger.Update(m_camera);
 	if (Input::get().IsKeyJustDown(GLFW_KEY_P))
 	{
@@ -89,7 +88,7 @@ void Engine::World::Update( float deltaTime )
 // ReSharper disable once CppMemberFunctionMayBeConst
 void Engine::World::UI( const float deltaTime )
 {
-	//m_trackDebugger.UI();
+	m_trackDebugger.UI();
 	m_trainDebugger.UI(deltaTime);
 
 

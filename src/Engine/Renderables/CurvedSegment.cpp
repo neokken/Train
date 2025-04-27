@@ -93,10 +93,8 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 	float2 lastDir = curve.lStartDir;
 	float t = 1.f / static_cast<float>(curve.baseSegments);
 	float segmentLength = 0;
-	for (uint i = 0; i < curve.baseSegments; ++i)
+	for (uint i = 0; i <= curve.baseSegments; ++i)
 	{
-		if (t > range.y) return segmentLength;
-
 		const float2 cubic = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, t);
 
 		float2 offset = cubic - lastPoint;
@@ -114,6 +112,10 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 		lastPoint = cubic;
 		lastDir = dir;
 		t += 1.f / static_cast<float>(curve.baseSegments);
+		if (t > range.y)
+		{
+			return segmentLength;
+		}
 	}
 	return segmentLength;
 }
