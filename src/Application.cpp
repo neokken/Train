@@ -7,6 +7,11 @@
 
 #include "Helpers/Renderer.h"
 #include "Renderables/LineSegment.h"
+#include "Game/Trains/Locomotive.h"
+#include "Game/Trains/Train.h"
+#include "Game/Trains/Wagon.h"
+#include "Renderables/Circle.h"
+#include "Renderables/LineSegment.h"
 #include "UI/UIManager.h"
 
 // -----------------------------------------------------------
@@ -17,6 +22,23 @@ void Application::Init()
 	Engine::Logger::Init();
 	Engine::UIManager::Init();
 	m_world.Init(screen);
+
+	TrackWalker tWalk;
+	tWalk.Init(&m_world.GetTrackManager());
+	tWalk.SetCurrentTrackSegment((TrackSegmentID)1, 37);
+	Wagon* wag1 = new Locomotive(Wagon(tWalk));
+	Wagon* wag2 = new Wagon(tWalk);
+	Wagon* wag3 = new Wagon(tWalk);
+	Wagon* wag4 = new Wagon(tWalk);
+	m_world.AddObject(wag1);
+	m_world.AddObject(wag2);
+	m_world.AddObject(wag3);
+	m_world.AddObject(wag4);
+	Train* train = new Train({wag1, wag2, wag3, wag4}, m_world.GetTrackManager());
+	m_world.AddObject(train);
+	m_world.GetTrainManager().AddTrain(*train);
+
+
 }
 
 // -----------------------------------------------------------
@@ -44,7 +66,7 @@ void Application::Tick( const float deltaTime )
 	m_averageMS = (1.f - alpha) * m_averageMS + alpha * t.elapsed() * 1000.f;
 }
 
-void Tmpl8::Application::UI()
+void Tmpl8::Application::UI( const float deltaTime )
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -60,5 +82,5 @@ void Tmpl8::Application::UI()
 
 	ImGui::EndMainMenuBar();
 
-	m_world.UI();
+	m_world.UI(deltaTime);
 }
