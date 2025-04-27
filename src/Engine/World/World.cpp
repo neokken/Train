@@ -31,8 +31,9 @@ void Engine::World::Init( Surface* renderTarget )
 
 	m_renderTarget = renderTarget;
 
-	m_trackBuilder.Init(&m_trackManager, &m_trackRenderer);
-	m_trackRenderer.Init(&m_trackManager);
+	m_signalManager.Init(m_trackManager);
+	m_trackBuilder.Init(m_trackManager, m_trackRenderer, m_signalManager);
+	m_trackRenderer.Init(m_trackManager, m_signalManager);
 	m_trackDebugger.Init(&m_trackManager, &m_trackRenderer);
 	m_trainDebugger.Init(m_trackManager, m_trainManager, m_trackBuilder);
 
@@ -43,7 +44,6 @@ void Engine::World::Init( Surface* renderTarget )
 
 	//Set up a track with a train on it for debugging
 	m_trackManager.BuildTrackPart(float2(0, 0), TrackDirection::S, TrackSegmentID::Invalid, float2(0, 50), TrackDirection::S, TrackSegmentID::Invalid);
-
 }
 
 void Engine::World::Update( float deltaTime )

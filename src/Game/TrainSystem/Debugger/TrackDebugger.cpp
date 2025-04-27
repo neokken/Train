@@ -69,8 +69,8 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 	{
 		for (const auto& node : std::views::values(m_trackManager->GetNodeMap()))
 		{
-			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 6);
-			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 4);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 0.f, 6);
+			Engine::Circle::RenderWorldPos(camera, node.nodePosition, .75f, GetColor(Color::TrackRail), 0.f, 4);
 		}
 	}
 
@@ -109,8 +109,8 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const TrackNode& n = m_trackManager->GetTrackNode(m_hoveredNode);
 
-			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
-			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 4);
 		}
 
 		if (m_selectedNode != TrackNodeID::Invalid)
@@ -119,8 +119,8 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 
 			const TrackNode& n = m_trackManager->GetTrackNode(m_selectedNode);
 
-			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 6);
-			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 4);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 6);
+			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 4);
 		}
 	}
 }

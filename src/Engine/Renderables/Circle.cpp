@@ -9,10 +9,10 @@ Engine::Circle::Circle( const float2& center, float size, uint color, int segmen
 
 void Engine::Circle::Render( const Camera& camera )
 {
-	RenderWorldPos(camera, m_center, m_size, m_color, m_segmentCount);
+	RenderWorldPos(camera, m_center, m_size, m_color, 0.f, m_segmentCount);
 }
 
-void Engine::Circle::RenderWorldPos( const Camera& camera, const float2& center, float size, uint color, int segmentCount )
+void Engine::Circle::RenderWorldPos( const Camera& camera, const float2& center, float size, uint color, float width, int segmentCount )
 {
 	const float segmentCountF = static_cast<float>(segmentCount);
 
@@ -25,7 +25,7 @@ void Engine::Circle::RenderWorldPos( const Camera& camera, const float2& center,
 
 		float2 p1 = center + float2{size * cos(angle1), size * sin(angle1)};
 		float2 p2 = center + float2{size * cos(angle2), size * sin(angle2)};
-
-		Engine::LineSegment::RenderWorldPos(camera, p1, p2, color);
+		float2 dir = normalize(p1 - p2);
+		Engine::LineSegment::RenderWorldPos(camera, p1 + dir * width * 0.145f, p2 - dir * width * 0.145f, color, HeightLayer::Default, width);
 	}
 }

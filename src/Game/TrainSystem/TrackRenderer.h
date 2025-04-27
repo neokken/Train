@@ -1,5 +1,8 @@
 #pragma once
 
+struct Signal;
+class SignalManager;
+
 namespace Engine
 {
 	class Camera;
@@ -31,7 +34,7 @@ class TrackRenderer
 public:
 	TrackRenderer() = default;
 
-	void Init( TrackManager* trackManager );
+	void Init( TrackManager& trackManager, SignalManager& signalManager );
 
 	void Render( const Engine::Camera& camera ) const;
 
@@ -39,9 +42,11 @@ public:
 	[[nodiscard]] TrackRenderType GetTrackRenderer() const;
 
 	static void RenderTrackSegment( const Engine::Camera& camera, const TrackSegment& segment, TrackRenderType type, Color trackColor = Color::TrackRail, Color SpokeColor = Color::TrackSpokes );
+	void RenderTrackSignal( const Engine::Camera& camera, const Signal& signal ) const;
 
 private:
 	TrackManager* m_trackManager{nullptr};
+	SignalManager* m_signalManager{nullptr};
 
 	TrackRenderType m_currentTrackRenderer{TrackRenderType::Default};
 };

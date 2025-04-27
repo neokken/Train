@@ -4,6 +4,7 @@
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
 #include "Data/ParticleSystem.h"
+#include "Game/TrainSystem/SignalManager.h"
 #include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackRenderer.h"
 #include "Game/TrainSystem/Debugger/TrainDebugger.h"
@@ -48,6 +49,7 @@ namespace Engine
 		TrainManager m_trainManager;
 		TrackBuilder m_trackBuilder;
 		TrackRenderer m_trackRenderer;
+		SignalManager m_signalManager;
 
 		TrackDebugger m_trackDebugger;
 		TrainDebugger m_trainDebugger;
