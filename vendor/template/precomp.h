@@ -402,7 +402,7 @@ public:
 	virtual ~TheApp() = default;
 	virtual void Init() = 0;
 	virtual void Tick( float deltaTime ) = 0;
-	virtual void UI() = 0;
+	virtual void UI( float deltaTime ) = 0;
 	virtual void Shutdown() = 0;
 	virtual void MouseUp( int button ) = 0;
 	virtual void MouseDown( int button ) = 0;

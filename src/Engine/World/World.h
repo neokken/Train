@@ -5,8 +5,8 @@
 #include "Camera/Camera.h"
 #include "Data/ParticleSystem.h"
 #include "Game/TrainSystem/TrackBuilder.h"
-#include "Game/TrainSystem/TrackManager.h"
 #include "Game/TrainSystem/TrackRenderer.h"
+#include "Game/TrainSystem/Debugger/TrainDebugger.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
 
 namespace Engine
@@ -23,7 +23,7 @@ namespace Engine
 		// Life cycle functions
 		void Init( Surface* renderTarget );
 		void Update( float deltaTime );
-		void UI();
+		void UI( float deltaTime );
 
 		void ImGuiBar();
 
@@ -36,6 +36,8 @@ namespace Engine
 
 		ParticleSystem& GetParticleSystem() { return m_particles; }
 		TrackManager& GetTrackManager() { return m_trackManager; }
+		TrainManager& GetTrainManager() { return m_trainManager; }
+
 	private:
 		std::vector<GameObject*> m_objects;
 
@@ -43,10 +45,12 @@ namespace Engine
 		Camera m_camera{int2(0, 0)};
 
 		TrackManager m_trackManager;
+		TrainManager m_trainManager;
 		TrackBuilder m_trackBuilder;
 		TrackRenderer m_trackRenderer;
 
 		TrackDebugger m_trackDebugger;
+		TrainDebugger m_trainDebugger;
 
 		ParticleSystem m_particles = {10000};
 

@@ -383,8 +383,7 @@ int main()
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			Engine::UIManager::DrawMainWindow(Engine::Renderer::GetRenderer().GetRenderTexture().ID);
 
-
-			app->UI();
+			app->UI(deltaTime);
 			Engine::UIManager::Render();
 
 			glfwSwapBuffers(window);

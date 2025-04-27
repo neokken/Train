@@ -26,6 +26,8 @@ public:
 
 	void Render( const Engine::Camera& camera, Surface& renderTarget ) const;
 
+	[[nodiscard]] bool InBuildMode() const { return (m_currentProgress != BuildProgress::NoBuild); }
+
 private:
 	TrackManager* m_trackManager{nullptr};
 	TrackRenderer* m_trackRenderer{nullptr};

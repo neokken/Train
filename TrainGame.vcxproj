@@ -141,11 +141,13 @@
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
     <ClCompile Include="src\Game\Buildings\Building.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\Debugger\TrainDebugger.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackSegment.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrackDebugger.cpp" />
     <ClCompile Include="src\Engine\UI\UIManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Serialization\TrackSerializer.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrainManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrainWalker\TrackWalker.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackBuilder.cpp" />
@@ -212,11 +214,13 @@
     <ClInclude Include="src\Engine\Renderables\Renderable.h" />
     <ClInclude Include="src\Engine\World\World.h" />
     <ClInclude Include="src\Game\Buildings\Building.h" />
+    <ClInclude Include="src\Game\TrainSystem\Debugger\TrainDebugger.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackSegment.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrackDebugger.h" />
     <ClInclude Include="src\Engine\UI\UIManager.h" />
     <ClInclude Include="src\Game\TrainSystem\Serialization\TrackSerializer.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrainManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrainWalker\TrackWalker.h" />
     <ClInclude Include="src\Game\TrainSystem\Partials\TrackWalkerVisualizer.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackBuilder.h" />

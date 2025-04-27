@@ -9,8 +9,13 @@
 #include "Train.h"
 #include "Locomotive.h"
 
-Train::Train( const std::vector<Wagon*>& wagons )
+#include <algorithm>
+#include "Locomotive.h"
+
+Train::Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager )
 	: GameObject()
+	  , m_trackManager(trackManager)
+
 {
 	for (auto wagon : wagons)
 	{
@@ -68,7 +73,6 @@ void Train::Update( const float deltaTime )
 			m_targetVelocity = -1000000.f; // TODO: implement max speed track rules or something
 		}
 	}
-
 
 	//Set acceleration
 	m_braking = false;
@@ -151,7 +155,10 @@ void Train::Update( const float deltaTime )
 		}
 		else if (m_velocity < 0)
 		{
-			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity, deltaTime);
+			//Flip the direction of movement if back wagon isnt aligned with front wagon direction
+			const int flipDirection = (m_wagons[m_wagons.size() - 1]->GetDirectionOnTrack() != GetDirectionOnTrack()) ? -1 : 0;
+			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity * flipDirection, deltaTime);
+
 			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
 			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
 			for (int i = static_cast<int>(m_wagons.size()) - 2; i >= 0; --i)
@@ -174,6 +181,17 @@ void Train::Update( const float deltaTime )
 		else
 		{
 			m_velocity = newVelocity;
+		}
+
+		//Update path
+		if (m_targetDistance > 0)
+		{
+			auto iter = ranges::find_if(m_currentPath,
+			                            [this]( const std::pair<TrackSegmentID, int>& element ) { return element.first == m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(); });
+			if (iter != m_currentPath.end())
+			{
+				m_currentPath.erase(m_currentPath.begin(), iter);
+			}
 		}
 	}
 }
@@ -221,14 +239,18 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& wor
 	//Target
 	if (m_targetDistance > 0)
 	{
+		int flipDir = (GetDirectionOnTrack() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
-		tempWalker.Move(m_targetDistance);
+		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
+
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 	else if (m_targetDistance < 0)
 	{
+		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
-		tempWalker.Move(m_targetDistance);
+		tempWalker.Move(m_targetDistance * static_cast<float>(flipDir));
+
 		Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.2f, 0xff00ff);
 	}
 
@@ -236,16 +258,64 @@ void Train::VisualizeDebugInfo( const Engine::Camera& camera, Engine::World& wor
 	float dist = GetMaxStoppingDistance();
 	if (m_velocity >= 0)
 	{
+		int flipDir = (GetDirectionOnTrack() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(), m_wagons[0]->GetFrontWalker().GetDistance());
-		tempWalker.Move(dist);
+		tempWalker.Move(dist * static_cast<float>(flipDir));
 	}
 	else
 	{
+		int flipDir = (m_wagons[m_wagons.size() - 1]->GetBackWalker().GetTrackDirection() != tempWalker.GetTrackDirection()) ? -1 : 1;
 		tempWalker.SetCurrentTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment(), m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance());
-		tempWalker.Move(-dist);
+		tempWalker.Move(dist * static_cast<float>(flipDir));
+
 	}
 
 	Engine::Circle::RenderWorldPos(camera, tempWalker.GetPosition(), 1.f, 0xff0000);
+}
+
+void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSegment )
+{
+	m_targetSegment = segment;
+	m_targetDistanceOnTargetSegment = distanceOnSegment;
+	const bool towardsB = GetDirectionOnTrack();
+	TrackSegmentID curr = m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment();
+	std::vector<int> path = m_trackManager.CalculatePath(curr, towardsB, m_targetSegment);
+
+	//Get path distance (in the future this should be the distance until the first blocked signal)
+	TrackNodeID currentNode = towardsB ? m_trackManager.GetTrackSegment(curr).nodeB : m_trackManager.GetTrackSegment(curr).nodeA;
+	TrackSegmentID currentSegment = curr;
+	float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
+	float distance = m_trackManager.GetTrackSegment(curr).distance - currentDistance;
+	if (path.empty())
+	{
+		distance *= distanceOnSegment;
+	}
+
+	m_currentPath.clear();
+	for (int i = 0; i < path.size(); ++i)
+	{
+		m_trackManager.SetNodeLever(currentNode, currentSegment, path[i]);
+		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[path[i]];
+		m_currentPath.push_back(std::pair(currentSegment, path[i]));
+		const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
+		if (i == static_cast<int>(path.size()) - 1)
+		{
+			if (currentNode == seg.nodeA) distance += seg.distance * distanceOnSegment;
+			else distance += seg.distance * (1.f - distanceOnSegment);
+		}
+		else
+		{
+			distance += seg.distance;
+		}
+		if (seg.nodeA == currentNode) currentNode = seg.nodeB;
+		else currentNode = seg.nodeA;
+	}
+	m_targetDistance = distance;
+}
+
+bool Train::GetDirectionOnTrack() const
+{
+	return m_wagons[0]->GetDirectionOnTrack();
 }
 
 float Train::GetMaxStoppingDistance() const
