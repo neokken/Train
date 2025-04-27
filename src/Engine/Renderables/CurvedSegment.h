@@ -59,7 +59,7 @@ namespace Engine
 		* Render a full track
 		* @return the length of the drawn track
 		*/
-		static float RenderTrackWorldPos( const Camera& camera, Surface& drawSurface, const CurveData& curve, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth = 2.f, float spokeWidth = 2.f, float spokeDistance = 20, float wobblyness = 0.2f );
+		static float RenderTrackWorldPos( const Camera& camera, const CurveData& curve, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth = 2.f, float spokeWidth = 2.f, float spokeDistance = 20, float wobblyness = 0.2f );
 
 		/**
 		* Render 2 lines following a curve statically 
@@ -73,7 +73,7 @@ namespace Engine
 		* @param spokesDistance amount of spokes rendered should probably be based on length returned from rendertrack
 		* @param segments base amount of segments to use setting this too low can cause wrong length calculation
 		*/
-		static void RenderTrackSpokesWorldPos( const Camera& camera, Surface& drawSurface, CurveData curve, uint color, float spokeLength, float spokeWidth, float spokesDistance, float wobblyness = 5.f );
+		static void RenderTrackSpokesWorldPos( const Camera& camera, CurveData curve, uint color, float spokeLength, float spokeWidth, float spokesDistance, float wobblyness = 5.f );
 
 		/**
 		 * Get the total real length of a curved segment

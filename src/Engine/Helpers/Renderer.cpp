@@ -97,6 +97,22 @@ namespace Engine
 		m_queuedLines.push_back({posA, posB, color, width});
 	}
 
+	void Renderer::DrawLineRectangle( float3 pos, float2 dir, float2 size, float3 color )
+	{
+		float2 right = {-dir.y, dir.x};
+		float halfW = size.x * 0.5f;
+		float halfH = size.y * 0.5f;
+		float3 corners[4];
+		corners[0] = pos + float3(dir, 0.f) * halfH - float3(right, 0.f) * halfW; // Top-left
+		corners[1] = pos + float3(dir, 0.f) * halfH + float3(right, 0.f) * halfW; // Top-right
+		corners[2] = pos - float3(dir, 0.f) * halfH + float3(right, 0.f) * halfW; // Bottom-right
+		corners[3] = pos - float3(dir, 0.f) * halfH - float3(right, 0.f) * halfW; // Bottom-left
+		DrawLine({corners[0], corners[1], color});
+		DrawLine({corners[1], corners[2], color});
+		DrawLine({corners[2], corners[3], color});
+		DrawLine({corners[3], corners[0], color});
+	}
+
 	// ReSharper disable once CppMemberFunctionMayBeConst
 	GLTexture& Renderer::GetRenderTexture()
 	{

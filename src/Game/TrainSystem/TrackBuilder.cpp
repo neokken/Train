@@ -135,7 +135,7 @@ void TrackBuilder::Update( Engine::Camera& camera, [[maybe_unused]] float deltaT
 	}
 }
 
-void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget ) const
+void TrackBuilder::Render( const Engine::Camera& camera ) const
 {
 	if (m_currentProgress != BuildProgress::NoBuild)
 	{
@@ -150,12 +150,12 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 	if (m_hoveredSegment != TrackSegmentID::Invalid)
 	{
-		TrackRenderer::RenderTrackSegment(camera, renderTarget, m_trackManager->GetTrackSegment(m_hoveredSegment), TrackRenderType::RailsOnly, Color::TrackNodeInfo);
+		TrackRenderer::RenderTrackSegment(camera, m_trackManager->GetTrackSegment(m_hoveredSegment), TrackRenderType::RailsOnly, Color::TrackNodeInfo);
 	}
 
 	if (m_currentProgress == BuildProgress::Start)
 	{
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, false);
+		RenderNode(camera, m_tempNode, DEFAULT_COLOR, false);
 	}
 
 	if (m_currentProgress == BuildProgress::FirstNodeFinished)
@@ -164,15 +164,15 @@ void TrackBuilder::Render( const Engine::Camera& camera, Surface& renderTarget )
 
 		if (bool valid_curve = Engine::CurvedSegment::CheckCurveValidity(data, m_buildStrictness)) //, &camera, &renderTarget))
 		{
-			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackRail);
+			RenderSegment(camera, m_nodeA, m_tempNode, Color::TrackRail);
 		}
 		else
 		{
-			RenderSegment(camera, renderTarget, m_nodeA, m_tempNode, Color::TrackSelectedInvalid);
+			RenderSegment(camera, m_nodeA, m_tempNode, Color::TrackSelectedInvalid);
 		}
 
-		RenderNode(camera, renderTarget, m_nodeA, DEFAULT_COLOR, true);
-		RenderNode(camera, renderTarget, m_tempNode, DEFAULT_COLOR, false);
+		RenderNode(camera, m_nodeA, DEFAULT_COLOR, true);
+		RenderNode(camera, m_tempNode, DEFAULT_COLOR, false);
 	}
 }
 
@@ -288,7 +288,7 @@ void TrackBuilder::UpdateTempNode( const Engine::Camera& camera, const bool isSe
 	}
 }
 
-void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, const bool onlyShowArrow ) const
+void TrackBuilder::RenderNode( const Engine::Camera& camera, const TrackBuildData& data, uint colorNode, const bool onlyShowArrow ) const
 {
 	const float2 dir = data.directionFloat2;
 
@@ -311,11 +311,11 @@ void TrackBuilder::RenderNode( const Engine::Camera& camera, Surface& renderTarg
 
 	if (data.trackSegmentId != TrackSegmentID::Invalid)
 	{
-		TrackRenderer::RenderTrackSegment(camera, renderTarget, m_trackManager->GetTrackSegment(data.trackSegmentId), TrackRenderType::RailsOnly, Color::TrackSelected);
+		TrackRenderer::RenderTrackSegment(camera, m_trackManager->GetTrackSegment(data.trackSegmentId), TrackRenderType::RailsOnly, Color::TrackSelected);
 	}
 }
 
-void TrackBuilder::RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, const Color trackColor )
+void TrackBuilder::RenderSegment( const Engine::Camera& camera, const TrackBuildData& nodeA, const TrackBuildData& nodeB, const Color trackColor )
 {
 	const TrackSegment seg(nodeA.trackNodePosition, nodeB.trackNodePosition, nodeA.directionFloat2, -nodeB.directionFloat2);
 
@@ -323,5 +323,5 @@ void TrackBuilder::RenderSegment( const Engine::Camera& camera, Surface& renderT
 		abs(nodeA.directionFloat2.x - nodeB.directionFloat2.x) < .01f && abs(nodeA.directionFloat2.y - nodeB.directionFloat2.y) < .01f)
 		return;
 
-	TrackRenderer::RenderTrackSegment(camera, renderTarget, seg, TrackRenderType::RailsOnly, trackColor);
+	TrackRenderer::RenderTrackSegment(camera, seg, TrackRenderType::RailsOnly, trackColor);
 }

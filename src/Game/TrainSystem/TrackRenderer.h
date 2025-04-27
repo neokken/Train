@@ -33,12 +33,12 @@ public:
 
 	void Init( TrackManager* trackManager );
 
-	void Render( const Engine::Camera& camera, Surface& targetSurface ) const;
+	void Render( const Engine::Camera& camera ) const;
 
 	void SetTrackRenderer( TrackRenderType type );
 	[[nodiscard]] TrackRenderType GetTrackRenderer() const;
 
-	static void RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegment& segment, TrackRenderType type, Color trackColor = Color::TrackRail, Color SpokeColor = Color::TrackSpokes );
+	static void RenderTrackSegment( const Engine::Camera& camera, const TrackSegment& segment, TrackRenderType type, Color trackColor = Color::TrackRail, Color SpokeColor = Color::TrackSpokes );
 
 private:
 	TrackManager* m_trackManager{nullptr};
