@@ -24,6 +24,12 @@ public:
 
 	void ImGuiDebugViewer();
 
+	/**
+	 * Get the direction the walker is facing on the track
+	 * @return true for pointing towards node B false for pointing to node A
+	 */
+	[[nodiscard]] bool GetTrackDirection() const { return !m_flipMoveDir; }
+
 private:
 	const TrackManager* m_trackManager{nullptr};
 

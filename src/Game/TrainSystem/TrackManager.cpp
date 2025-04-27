@@ -1,6 +1,9 @@
 ﻿#include "precomp.h"
 #include "TrackManager.h"
 
+#include <queue>
+#include <unordered_set>
+
 #include "Renderables/CurvedSegment.h"
 #include "Serialization/TrackSerializer.h"
 
@@ -329,6 +332,55 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 	return it->second;
 }
 
+const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b ) const
+{
+	const TrackNode& nodeA = GetTrackNode(a);
+	for (auto connectionList : nodeA.validConnections)
+	{
+		for (auto connection : connectionList.second)
+		{
+			const TrackSegment& segment = GetTrackSegment(connection);
+			if (segment.nodeA == b
+				|| segment.nodeB == b)
+			{
+				return connection;
+			}
+		}
+	}
+	return TrackSegmentID::Invalid;
+}
+
+const TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
+{
+	TrackSegmentID closest = TrackSegmentID::Invalid;
+	float closestDistance = INFINITY;
+	for (const auto& segment : std::views::values(m_segments))
+	{
+		float distance = SQRDistancePointToSegment(position, segment);
+		if (distance < sqrMaxDistance)
+		{
+			if (returnFirstFound) return segment.id;
+			if (distance < closestDistance)
+			{
+				closest = segment.id;
+				closestDistance = distance;
+			}
+		}
+	}
+	return closest;
+}
+
+float TrackManager::GetClosestDistanceOnTrackSegment( TrackSegmentID segmentID, float2 position ) const
+{
+	TrackSegment segment = GetTrackSegment(segmentID);
+	const float2 nodeA_pos = GetTrackNode(segment.nodeA).nodePosition;
+	const float2 nodeB_pos = GetTrackNode(segment.nodeB).nodePosition;
+
+	const Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
+
+	return Engine::CurvedSegment::GetClosestDistance(curveData, position);
+}
+
 TrackSegmentID TrackManager::GetNextSegmentPositive( const TrackSegmentID id ) const
 {
 	const TrackSegment segment = GetTrackSegment(id);
@@ -392,3 +444,144 @@ TrackSegment& TrackManager::GetMutableTrackSegment( const TrackSegmentID id )
 	}
 	return it->second;
 }
+
+float TrackManager::SQRDistancePointToSegment( const float2& position, const TrackSegment& segment ) const
+{
+	const float2 nodeA_pos = GetTrackNode(segment.nodeA).nodePosition;
+	const float2 nodeB_pos = GetTrackNode(segment.nodeB).nodePosition;
+
+	Engine::CurveData curveData{nodeA_pos, segment.nodeA_Direction, nodeB_pos, segment.nodeB_Direction};
+
+	return sqrLength(Engine::CurvedSegment::GetClosestPoint(curveData, position) - position);
+}
+
+#pragma region AStar
+
+std::vector<int> TrackManager::CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const
+{
+	if (!DoesSegmentExists(startID) || !DoesSegmentExists(targetID)) return {};
+
+	std::vector<std::unique_ptr<AStarNode>> allNodes;
+
+	struct CompareNodes
+	{
+		bool operator()( const AStarNode* a, const AStarNode* b ) const
+		{
+			return a->f() > b->f();
+		}
+	};
+
+	std::priority_queue<AStarNode*, std::vector<AStarNode*>, CompareNodes> open; // Priority queue is automatically sorted
+	unordered_map<TrackSegmentID, AStarNode*> openMap;
+	std::vector<AStarNode*> closed;
+
+	allNodes.push_back(std::make_unique<AStarNode>(startID, 0.f, PathHeuristic(GetTrackSegment(startID).nodeA, GetTrackSegment(targetID).nodeA), nullptr));
+	AStarNode* startNode = allNodes.back().get();
+	open.push(startNode);
+	openMap.insert(std::pair(startID, startNode));
+
+	while (!open.empty())
+	{
+		AStarNode* current = open.top();
+
+		if (current->segment == targetID) return ReconstructPath(*current);
+
+		open.pop();
+		openMap.erase(current->segment);
+		closed.push_back(current);
+
+		const TrackSegment& currentSeg = GetTrackSegment(current->segment);
+		TrackNodeID currentTNode;
+
+		//Find next node in the correct direction
+		if (current->parent != nullptr)
+		{
+			const TrackSegment& parentSeg = GetTrackSegment(current->parent->segment);
+			if (parentSeg.nodeA == currentSeg.nodeA || parentSeg.nodeB == currentSeg.nodeA) currentTNode = currentSeg.nodeB;
+			else currentTNode = currentSeg.nodeA;
+		}
+		else if (startDirectionTowardsB) currentTNode = currentSeg.nodeB;
+		else currentTNode = currentSeg.nodeA;
+
+		const std::vector<TrackSegmentID> neighbors = GetTrackNode(currentTNode).validConnections.at(current->segment);
+		for (int i = 0; i < static_cast<int>(neighbors.size()); ++i)
+		{
+			TrackSegment connectingSegment = GetTrackSegment(neighbors[i]);
+
+			bool nodeIsClosed = false;
+			for (auto aStarNode : closed)
+			{
+				if (aStarNode->segment == neighbors[i]) // Node already visited
+				{
+					nodeIsClosed = true;
+				}
+			}
+			if (nodeIsClosed) continue;
+			float tentativeG = current->g + PathDistance(connectingSegment);
+
+			AStarNode* neighborAStar;
+			if (openMap.contains(neighbors[i]))
+			{
+				neighborAStar = openMap.at(neighbors[i]);
+				if (tentativeG >= neighborAStar->g)
+				{
+					continue;
+				}
+				else
+				{
+					neighborAStar->parent = current;
+					neighborAStar->parentLever = i;
+					neighborAStar->g = tentativeG;
+					TrackNodeID neighborNode = (currentSeg.nodeA == connectingSegment.nodeA || currentSeg.nodeB == connectingSegment.nodeA) ? connectingSegment.nodeB : connectingSegment.nodeA;
+					neighborAStar->h = PathHeuristic(neighborNode, GetTrackSegment(targetID).nodeA);
+					openMap.erase(neighbors[i]);
+					openMap.insert(std::pair(neighbors[i], neighborAStar));
+				}
+			}
+			else
+			{
+				TrackNodeID neighborNode = (currentSeg.nodeA == connectingSegment.nodeA || currentSeg.nodeB == connectingSegment.nodeA) ? connectingSegment.nodeB : connectingSegment.nodeA;
+				allNodes.push_back(std::make_unique<AStarNode>(neighbors[i], tentativeG, PathHeuristic(neighborNode, GetTrackSegment(targetID).nodeA), current, i));
+				neighborAStar = allNodes.back().get();
+				open.push(neighborAStar);
+				openMap.insert(std::pair(neighbors[i], neighborAStar));
+			}
+		}
+	}
+	return {}; // No path exists
+}
+
+void TrackManager::SetNodeLever( const TrackNodeID node, const TrackSegmentID segment, const int leverValue )
+{
+	GetMutableTrackNode(node).connectionLever.at(segment) = leverValue;
+}
+
+float TrackManager::PathHeuristic( const TrackNodeID a, const TrackNodeID b ) const
+{
+	return length(GetTrackNode(a).nodePosition - GetTrackNode(b).nodePosition);
+}
+
+float TrackManager::PathDistance( const TrackSegment& segment )
+{
+	//If we have more data of other trains etc we can add more here to incentivise different paths
+	return segment.distance;
+}
+
+std::vector<int> TrackManager::ReconstructPath( const AStarNode& finalNode )
+{
+	std::vector<int> rpath;
+	const AStarNode* current = &finalNode;
+	while (current != nullptr)
+	{
+		rpath.push_back(current->parentLever);
+		current = current->parent;
+	}
+	std::vector<int> path;
+	for (int i = static_cast<int>(rpath.size()) - 2; i >= 0; --i)
+	{
+		path.push_back(rpath[i]);
+	}
+	return path;
+}
+
+#pragma endregion

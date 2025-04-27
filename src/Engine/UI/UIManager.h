@@ -17,6 +17,7 @@ namespace Engine
 		static void DrawMainWindow( uint texture );
 		static int2 GetMainWindowCursorPos( const int2& mousePos );
 
+
 		static bool BeginGameplayWindow( const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0 );
 		static bool BeginDebugWindow( const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0 );
 

@@ -117,7 +117,8 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(distance);
 
-		frontDirChange = 1.f - dot(oldFrontDir, m_frontWalker.GetDirection());
+		frontDirChange = 1.f - abs(dot(oldFrontDir, m_frontWalker.GetDirection()));
+
 			frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
@@ -126,7 +127,8 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(walkerDistance - m_wagonLength);
 		backPosChange = length(oldBackPos - m_backWalker.GetPosition());
-		backDirChange = 1.f - dot(oldBackDir, m_backWalker.GetDirection());
+		backDirChange = 1.f - abs(dot(oldBackDir, m_backWalker.GetDirection()));
+
 
 		float tensionForce = abs(frontPosChange - backPosChange);
 		if (tensionForce > m_maxTensionForce * deltaTime) Derail();
@@ -137,7 +139,8 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 
 		float2 oldBackPos = m_backWalker.GetPosition();
 		m_backWalker.Move(distance);
-		backDirChange = 1.f - dot(oldBackDir, m_backWalker.GetDirection());
+		backDirChange = 1.f - abs(dot(oldBackDir, m_backWalker.GetDirection()));
+
 		backPosChange = length(oldBackPos - m_backWalker.GetPosition());
 
 		float walkerDistance = length(m_frontWalker.GetPosition() - m_backWalker.GetPosition());
@@ -146,7 +149,8 @@ WagonMovementInfo Wagon::Move( const float distance, float deltaTime )
 		float2 oldFrontPos = m_frontWalker.GetPosition();
 		m_frontWalker.Move(m_wagonLength - walkerDistance);
 
-		frontDirChange = 1.f - dot(oldFrontDir, m_frontWalker.GetDirection());
+		frontDirChange = 1.f - abs(dot(oldFrontDir, m_frontWalker.GetDirection()));
+
 			frontPosChange = length(oldFrontPos - m_frontWalker.GetPosition());
 
 		float tensionForce = abs(frontPosChange - backPosChange);

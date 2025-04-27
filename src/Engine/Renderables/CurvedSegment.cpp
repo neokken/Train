@@ -85,7 +85,7 @@ void Engine::CurvedSegment::RenderWorldPos( const Camera& camera, CurveData curv
 	}
 }
 
-float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width )
+float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const CurveData& curve, uint color, float width, float2 range )
 {
 	float2 startMidPoint, endMidPoint;
 	CalculateMidPoints(curve.lStart, curve.lStartDir, curve.lEnd, curve.lEndDir, curve.hardness, startMidPoint, endMidPoint, curve.setupMode);
@@ -94,7 +94,7 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 	float2 lastDir = curve.lStartDir;
 	float t = 1.f / static_cast<float>(curve.baseSegments);
 	float segmentLength = 0;
-	for (uint i = 0; i < curve.baseSegments; ++i)
+	for (uint i = 0; i <= curve.baseSegments; ++i)
 	{
 		const float2 cubic = CubicBezier(curve.lStart, startMidPoint, endMidPoint, curve.lEnd, t);
 
@@ -103,14 +103,20 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 		segmentLength += l;
 		float2 dir = offset / max(l, 0.0001f);
 
-		float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
-
-		Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
-		lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
-		Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+		if (t >= range.x)
+		{
+			float2 lastP = lastPoint + float2(lastDir.y, -lastDir.x) * width;
+			Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+			lastP = lastPoint + float2(-lastDir.y, lastDir.x) * width;
+			Engine::LineSegment::RenderWorldPos(camera, lastP, cubic, color);
+		}
 		lastPoint = cubic;
 		lastDir = dir;
 		t += 1.f / static_cast<float>(curve.baseSegments);
+		if (t > range.y)
+		{
+			return segmentLength;
+		}
 	}
 	return segmentLength;
 }
@@ -433,6 +439,38 @@ float2 Engine::CurvedSegment::GetClosestPoint( const CurveData& curve, const flo
 	}
 
 	return GetPositionOnCurvedSegment((left + right) / 2, curve);
+}
+
+float Engine::CurvedSegment::GetClosestDistance( const CurveData& curve, const float2& position, const int samples, const float tolerance )
+{
+	float left = 0.f;
+	float right = 1.f;
+
+	for (int i = 0; i < samples; i++)
+	{
+		const float diff = right - left;
+		if (diff < tolerance)
+		{
+			break;
+		}
+
+		const float rLeft = right - diff / golden_ratio;
+		const float rRight = left + diff / golden_ratio;
+
+		const float sqrLengthLeft = sqrLength(GetPositionOnCurvedSegment(rLeft, curve) - position);
+		const float sqrLengthRight = sqrLength(GetPositionOnCurvedSegment(rRight, curve) - position);
+
+		if (sqrLengthLeft < sqrLengthRight)
+		{
+			right = rRight;
+		}
+		else
+		{
+			left = rLeft;
+		}
+	}
+
+	return (left + right) / 2;
 }
 
 void Engine::CurvedSegment::CalculateMidPoints( const float2& lStart, const float2& lStartDir, const float2& lEnd, const float2& lEndDir, const float hardness, float2& outStartMidPoint, float2& outEndMidPoint, const CurveSetupMode setupMode )
