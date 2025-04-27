@@ -9,13 +9,13 @@ void TrackRenderer::Init( TrackManager* trackManager )
 	m_trackManager = trackManager;
 }
 
-void TrackRenderer::Render( const Engine::Camera& camera, Surface& targetSurface ) const
+void TrackRenderer::Render( const Engine::Camera& camera ) const
 {
 	const std::unordered_map<TrackSegmentID, TrackSegment>& segments = m_trackManager->GetSegmentMap();
 
 	for (const auto& segment : std::views::values(segments))
 	{
-		RenderTrackSegment(camera, targetSurface, segment, m_currentTrackRenderer);
+		RenderTrackSegment(camera, segment, m_currentTrackRenderer);
 	}
 }
 
@@ -29,7 +29,7 @@ TrackRenderType TrackRenderer::GetTrackRenderer() const
 	return m_currentTrackRenderer;
 }
 
-void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& targetSurface, const TrackSegment& segment, const TrackRenderType type, const Color trackColor, const Color SpokeColor )
+void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, const TrackSegment& segment, const TrackRenderType type, const Color trackColor, const Color SpokeColor )
 {
 	const Engine::CurveData data{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
 
@@ -37,7 +37,7 @@ void TrackRenderer::RenderTrackSegment( const Engine::Camera& camera, Surface& t
 	{
 	case TrackRenderType::Default:
 
-		Engine::CurvedSegment::RenderTrackWorldPos(camera, targetSurface, data, GetColor(trackColor), GetColor(SpokeColor), .75f, .875f, .1f, .2f, 1.f, .2f);
+		Engine::CurvedSegment::RenderTrackWorldPos(camera, data, GetColor(trackColor), GetColor(SpokeColor), .75f, .875f, .1f, .2f, 1.f, .1f);
 	//{
 	//	Engine::CurvedSegment a(segment.nodeA_Position, segment.nodeB_Position, segment.nodeA_Direction, .segment.nodeB_Direction, .5f, 0, 10);
 	//	a.RenderBezierPoints(camera, targetSurface);

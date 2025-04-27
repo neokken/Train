@@ -4,6 +4,7 @@
 #include "Circle.h"
 #include "LineSegment.h"
 #include "Camera/Camera.h"
+#include "Helpers/Renderer.h"
 
 Engine::CurvedSegment::CurvedSegment( const float2& lStart, const float2& lEnd, const float2& lStartDir,
                                       const float2& lEndDir, const float hardness, const uint color,
@@ -114,9 +115,9 @@ float Engine::CurvedSegment::RenderArrowsWorldPos( const Camera& camera, const C
 	return segmentLength;
 }
 
-float Engine::CurvedSegment::RenderTrackWorldPos( const Camera& camera, Surface& drawSurface, const CurveData& curve, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth, float spokeWidth, float spokeDistance, float wobblyness )
+float Engine::CurvedSegment::RenderTrackWorldPos( const Camera& camera, const CurveData& curve, uint trackColor, uint spokeColor, float trackSize, float spokeSize, float trackWidth, float spokeWidth, float spokeDistance, float wobblyness )
 {
-	RenderTrackSpokesWorldPos(camera, drawSurface, curve, spokeColor, spokeSize, spokeWidth, spokeDistance, wobblyness);
+	RenderTrackSpokesWorldPos(camera, curve, spokeColor, spokeSize, spokeWidth, spokeDistance, wobblyness);
 	RenderTrackLinesWorldPos(camera, curve, trackColor, trackSize);
 	return RenderTrackLinesWorldPos(camera, curve, trackColor, trackSize - trackWidth);
 }
@@ -171,7 +172,7 @@ float Engine::CurvedSegment::RenderTrackLinesWorldPos( const Camera& camera, Cur
 	return segmentLength;
 }
 
-void Engine::CurvedSegment::RenderTrackSpokesWorldPos( const Camera& camera, Surface& drawSurface, CurveData curve, uint color, float spokeLength, float spokeWidth, float spokesDistance, float wobblyness )
+void Engine::CurvedSegment::RenderTrackSpokesWorldPos( const Camera& camera, CurveData curve, uint color, float spokeLength, float spokeWidth, float spokesDistance, float wobblyness )
 {
 	float2 startMidPoint, endMidPoint;
 	CalculateMidPoints(curve.lStart, curve.lStartDir, curve.lEnd, curve.lEndDir, curve.hardness, startMidPoint, endMidPoint, curve.setupMode);
@@ -218,7 +219,7 @@ void Engine::CurvedSegment::RenderTrackSpokesWorldPos( const Camera& camera, Sur
 						{
 							d = normalize(dir + float2((RandomFloat(seed) - 0.5f) * 2.f * wobblyness, (RandomFloat(seed) - 0.5f) * 2.f * wobblyness));
 						}
-						drawSurface.LineRectangle(camera.GetCameraPosition(subPoint), d, float2(spokeLength * 2, spokeWidth * 2) * camera.GetZoomLevel(), color);
+						Renderer::GetRenderer().DrawLineRectangle(float3(camera.GetCameraPosition(subPoint), HeightLayer::Tracks - 1), d, float2(spokeLength * 2, spokeWidth * 2) * camera.GetZoomLevel(), RGB8ToRGB32(color));
 					}
 				}
 				lastPoint = subPoint;

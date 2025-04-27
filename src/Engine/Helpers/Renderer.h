@@ -20,6 +20,8 @@ namespace Engine
 		 * @param size halfSize, y is aligned with direction
 		 */
 		void DrawRectangle( const float3& position, float2 direction, float2 halfSize, float3 color );
+
+		void DrawLineRectangle( float3 pos, float2 dir, float2 size, float3 color );
 		GLTexture& GetRenderTexture();
 	private:
 		Renderer();

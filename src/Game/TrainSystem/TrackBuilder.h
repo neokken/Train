@@ -24,7 +24,7 @@ public:
 
 	void Update( Engine::Camera& camera, float deltaTime );
 
-	void Render( const Engine::Camera& camera, Surface& renderTarget ) const;
+	void Render( const Engine::Camera& camera ) const;
 
 private:
 	TrackManager* m_trackManager{nullptr};
@@ -59,7 +59,7 @@ private:
 private:
 	void UpdateTempNode( const Engine::Camera& camera, bool isSecondNode );
 
-	void RenderNode( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& data, uint colorNode, bool onlyShowArrow ) const;
+	void RenderNode( const Engine::Camera& camera, const TrackBuildData& data, uint colorNode, bool onlyShowArrow ) const;
 
-	static void RenderSegment( const Engine::Camera& camera, Surface& renderTarget, const TrackBuildData& nodeA, const TrackBuildData& nodeB, Color trackColor );
+	static void RenderSegment( const Engine::Camera& camera, const TrackBuildData& nodeA, const TrackBuildData& nodeB, Color trackColor );
 };
