@@ -148,10 +148,33 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> backwardsSignals = FindConnectedSignals(placedSignal.segment, !placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	//find old blocks on this segment
-	std::vector<SignalBlockID> oldblock;
+	std::vector<SignalBlockID> oldBlocks;
 	if (!forwardSignals.first.empty() && !backwardsSignals.first.empty())
 	{
-		oldblock = GetBlocksFromConnections(forwardSignals.first, backwardsSignals.first);
+		oldBlocks = GetBlocksFromConnections(forwardSignals.first, backwardsSignals.first);
+	}
+	if (placedSignal.oppositeSignal != SignalID::Invalid)
+	{
+		for (const auto& block : std::views::values(m_blocks))
+		{
+			for (const auto& connection : block.connections)
+			{
+				if (connection.first == placedSignal.oppositeSignal)
+				{
+					oldBlocks.push_back(block.id);
+				}
+				else
+				{
+					for (auto connected : connection.second)
+					{
+						if (connected == placedSignal.oppositeSignal)
+						{
+							oldBlocks.push_back(block.id);
+						}
+					}
+				}
+			}
+		}
 	}
 	//Create new blocks
 	if (!forwardSignals.first.empty())
@@ -241,7 +264,7 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	}
 
 	//Clean up old blocks
-	for (auto block : oldblock)
+	for (auto block : oldBlocks)
 	{
 		if (IsValidBlock(block))
 			RemoveBlock(block);

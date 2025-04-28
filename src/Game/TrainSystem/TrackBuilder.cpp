@@ -170,7 +170,7 @@ void TrackBuilder::Update( Engine::Camera& camera, [[maybe_unused]] float deltaT
 		if (input.IsMouseClicked(GLFW_MOUSE_BUTTON_LEFT) && m_hoveredSignal == SignalID::Invalid)
 		{
 			if (m_tempSignal.connectedSegment != TrackSegmentID::Invalid)
-				m_signalManager->BuildSignal(m_tempSignal.connectedSegment, m_tempSignal.segmentDistance, m_tempSignal.directionTowardsNodeB, m_tempSignal.signalType);
+				m_signalManager->BuildSignal(m_tempSignal.connectedSegment, m_tempSignal.segmentDistance, m_tempSignal.directionTowardsNodeB, m_tempSignal.signalType, m_tempSignal.connectedSignal);
 		}
 	}
 }

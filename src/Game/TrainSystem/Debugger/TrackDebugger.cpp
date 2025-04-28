@@ -88,7 +88,7 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 		RenderConnectedSegments(camera);
 	}
 
-	if (m_selectedSignal != SignalID::Invalid)
+	if (m_selectMode && m_selectedSignal != SignalID::Invalid)
 	{
 		RenderSignal(camera, m_selectedSignal);
 	}
@@ -168,9 +168,6 @@ void TrackDebugger::UI()
 {
 	if (!m_visible) return;
 
-	ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-
 	if (Engine::UIManager::BeginDebugWindow("TrackDebugger", &m_visible))
 	{
 		ImGui::Checkbox("Render connectedSegments", &m_renderConnectedSegments);
@@ -230,6 +227,7 @@ void TrackDebugger::UI()
 
 	if (Engine::UIManager::BeginDebugWindow("BlockDebugger", &m_visible))
 	{
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		if (m_selectedSignal != SignalID::Invalid)
 		{
 			const Signal& selected = m_signalManager->GetSignal(m_selectedSignal);
