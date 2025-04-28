@@ -81,6 +81,11 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 		RenderConnectedSegments(camera);
 	}
 
+	if (m_selectedSignal != SignalID::Invalid)
+	{
+		RenderSignal(camera, m_selectedSignal);
+	}
+
 	if (m_selectMode)
 	{
 		if (m_hoveredSegment != TrackSegmentID::Invalid)
@@ -215,6 +220,9 @@ void TrackDebugger::UI()
 
 	if (Engine::UIManager::BeginDebugWindow("BlockDebugger", &m_visible))
 	{
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		m_selectedSignal = SignalID::Invalid;
+
 		const auto& blocks = m_signalManager->GetBlockMap();
 		for (const auto& block : std::views::values(blocks))
 		{
@@ -233,11 +241,40 @@ void TrackDebugger::UI()
 				for (const auto& connections : block.connections)
 				{
 					ImGui::SetCursorPosX(15.f);
-					ImGui::Text((std::to_string(static_cast<uint>(connections.first)) + " > ").c_str());
+
+					const ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+					const std::string nodeText = std::to_string(static_cast<int>(connections.first)) + " ";
+					const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+					ImGui::InvisibleButton(("##signal_" + std::to_string(static_cast<int>(connections.first))).c_str(), nodeTextSize);
+					if (ImGui::IsItemHovered())
+					{
+						m_selectedSignal = connections.first;
+						drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+						ImGui::SetTooltip("Signal");
+					}
+					drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+
+					ImGui::SameLine();
+					ImGui::Text(("> "));
+
 					for (auto signal : connections.second)
 					{
 						ImGui::SameLine();
-						ImGui::Text((std::to_string(static_cast<uint>(signal)) + " ").c_str());
+						const ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+						const std::string nodeText = std::to_string(static_cast<int>(signal)) + " ";
+						const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+						ImGui::InvisibleButton(("##signal_" + std::to_string(static_cast<int>(signal))).c_str(), nodeTextSize);
+						if (ImGui::IsItemHovered())
+						{
+							m_selectedSignal = signal;
+							drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+							ImGui::SetTooltip("Signal");
+						}
+						drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
 					}
 				}
 			}
@@ -638,4 +675,17 @@ void TrackDebugger::RenderConnectedSegments( const Engine::Camera& camera ) cons
 			Engine::CurvedSegment::RenderTrackLinesWorldPos(camera, data, colors.at(colorIndex), 0.f);
 		}
 	}
+}
+
+void TrackDebugger::RenderSignal( const Engine::Camera& camera, const SignalID signalID ) const
+{
+	const Signal& signal = m_signalManager->GetSignal(signalID);
+	const TrackSegment& segment = m_trackManager->GetTrackSegment(signal.segment);
+	Engine::CurveData curve{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
+	float2 pos = Engine::CurvedSegment::GetPositionOnCurvedSegment(signal.distanceOnSegment, curve);
+
+	float2 dir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(signal.distanceOnSegment, curve);
+	float2 placeDir = signal.directionTowardsNodeB ? float2(-dir.y, dir.x) : float2(dir.y, -dir.x);
+	pos += placeDir * 1.75f;
+	Engine::Circle::RenderWorldPos(camera, pos, 0.5f, GetColor(Color::TrackSelect_DEBUG), 0.1f);
 }

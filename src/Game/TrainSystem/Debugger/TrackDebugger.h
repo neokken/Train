@@ -49,6 +49,7 @@ private:
 	void NodeInfo( TrackNodeID nodeID );
 
 	void RenderConnectedSegments( const Engine::Camera& camera ) const;
+	void RenderSignal( const Engine::Camera& camera, SignalID signalID ) const;
 
 	TrackManager* m_trackManager{nullptr};
 
@@ -70,4 +71,5 @@ private:
 	TrackSegmentID m_selectedSegment{TrackSegmentID::Invalid};
 
 	SignalBlockID m_selectedBlock{SignalBlockID::Invalid};
+	SignalID m_selectedSignal{SignalID::Invalid};
 };
