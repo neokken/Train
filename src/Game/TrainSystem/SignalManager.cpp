@@ -11,10 +11,10 @@ void SignalManager::Init( TrackManager& trackManager )
 	m_trackManager = &trackManager;
 }
 
-SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float distanceOnSegment, const bool directionTowardsNodeB, const SignalType type )
+SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float distanceOnSegment, const bool directionTowardsNodeB, const SignalType type, const SignalID connectedSignal )
 {
 	SignalID id = m_signalIDGenerator.GenerateID();
-	m_signals.insert(std::pair(id, Signal(id, segment, distanceOnSegment, directionTowardsNodeB, type)));
+	m_signals.insert(std::pair(id, Signal(id, segment, distanceOnSegment, directionTowardsNodeB, type, connectedSignal)));
 	m_trackManager->AddSignal(segment, id);
 	UpdateBlock(GetSignal(id));
 	return id;

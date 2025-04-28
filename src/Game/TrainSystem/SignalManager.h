@@ -43,7 +43,7 @@ class SignalManager
 public:
 	SignalManager() = default;
 	void Init( TrackManager& trackManager );
-	SignalID BuildSignal( TrackSegmentID segment, float distanceOnSegment, bool directionTowardsNodeB, SignalType type );
+	SignalID BuildSignal( TrackSegmentID segment, float distanceOnSegment, bool directionTowardsNodeB, SignalType type, SignalID connectedSignal = SignalID::Invalid );
 	void RemoveSignal( SignalID signal );
 	void RemoveSegmentSignals( TrackSegmentID trackId );
 	const Signal& GetSignal( SignalID signalID ) const;

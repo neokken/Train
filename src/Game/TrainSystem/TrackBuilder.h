@@ -50,6 +50,7 @@ private:
 	{
 		float2 basePosition;
 		TrackSegmentID connectedSegment{TrackSegmentID::Invalid};
+		SignalID connectedSignal{SignalID::Invalid};
 		float segmentDistance{0.f};
 		bool directionTowardsNodeB;
 		SignalType signalType{SignalType::Default};

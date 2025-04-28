@@ -194,7 +194,7 @@ void TrackBuilder::Render( const Engine::Camera& camera ) const
 		if (m_hoveredSignal != SignalID::Invalid)
 		{
 			const Signal& signal = m_signalManager->GetSignal(m_hoveredSignal);
-			RenderSignal(camera, {float2(0, 0), signal.segment, signal.distanceOnSegment, signal.directionTowardsNodeB, signal.type}, GetColor(Color::TrackNodeInfo));
+			RenderSignal(camera, {float2(0, 0), signal.segment, SignalID::Invalid, signal.distanceOnSegment, signal.directionTowardsNodeB, signal.type}, GetColor(Color::TrackNodeInfo));
 			
 		}
 		if (m_currentProgress == BuildProgress::StartNode)
@@ -221,6 +221,11 @@ void TrackBuilder::Render( const Engine::Camera& camera ) const
 		{
 			const Color color = (m_tempSignal.connectedSegment != TrackSegmentID::Invalid) ? Color::SignalSelected : Color::SignalInvalid;
 			RenderSignal(camera, m_tempSignal, GetColor(color));
+			if (m_tempSignal.connectedSignal != SignalID::Invalid)
+			{
+				const Signal& signal = m_signalManager->GetSignal(m_tempSignal.connectedSignal);
+				RenderSignal(camera, {float2(0.f), signal.segment, SignalID::Invalid, signal.distanceOnSegment, signal.directionTowardsNodeB, signal.type}, 0x95F6EC);
+			}
 		}
 	}
 }
@@ -377,27 +382,59 @@ void TrackBuilder::UpdateTempSignal( const Engine::Camera& camera )
 	{
 		const TrackSegment& hoverSeg = m_trackManager->GetTrackSegment(hoverSegment);
 		float distance = m_trackManager->GetClosestDistanceOnTrackSegment(hoverSegment, worldMousePosition);
-		if (!input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
-		{
-			distance *= hoverSeg.distance;
-			distance = round(distance / SIGNAL_SNAPPING) * SIGNAL_SNAPPING;
-			distance /= hoverSeg.distance;
-		}
 
+		bool spotOccupied = false;
+		for (auto signal : hoverSeg.signals)
+		{
+			const Signal& sig = m_signalManager->GetSignal(signal);
+			if (abs(sig.distanceOnSegment - distance) < SIGNAL_SNAPPING * 2.f / hoverSeg.distance)
+			{
+				//2nd dir placing
+				Engine::CurveData curve = {hoverSeg.nodeA_Position, hoverSeg.nodeA_Direction, hoverSeg.nodeB_Position, hoverSeg.nodeB_Direction};
+				float2 trackPos = Engine::CurvedSegment::GetPositionOnCurvedSegment(distance, curve);
+				float2 trackDir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(distance, curve);
+				float2 trackDirRight = float2(-trackDir.y, trackDir.x);
+				float2 mouseDir = normalize(worldMousePosition - trackPos);
+				spotOccupied = true;
+				if ((dot(mouseDir, trackDirRight) > 0) != sig.directionTowardsNodeB)
+				{
+					m_tempSignal.segmentDistance = sig.distanceOnSegment;
+					m_tempSignal.directionTowardsNodeB = !sig.directionTowardsNodeB;
+					m_tempSignal.connectedSignal = sig.id;
+				}
+				else
+				{
+					m_tempSignal.connectedSignal = SignalID::Invalid;
+					m_tempSignal.connectedSegment = TrackSegmentID::Invalid;
+					m_tempSignal.basePosition = worldMousePosition;
+				}
 
-		m_tempSignal.segmentDistance = distance;
-		Engine::CurveData curve = {hoverSeg.nodeA_Position, hoverSeg.nodeA_Direction, hoverSeg.nodeB_Position, hoverSeg.nodeB_Direction};
-		float2 trackPos = Engine::CurvedSegment::GetPositionOnCurvedSegment(distance, curve);
-		float2 trackDir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(distance, curve);
-		float2 trackDirRight = float2(-trackDir.y, trackDir.x);
-		float2 mouseDir = normalize(worldMousePosition - trackPos);
-		if (dot(mouseDir, trackDirRight) > 0)
-		{
-			m_tempSignal.directionTowardsNodeB = true;
+			}
 		}
-		else
+		if (!spotOccupied)
 		{
-			m_tempSignal.directionTowardsNodeB = false;
+			m_tempSignal.connectedSignal = SignalID::Invalid;
+			if (!input.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+			{
+				distance *= hoverSeg.distance;
+				distance = round(distance / SIGNAL_SNAPPING) * SIGNAL_SNAPPING;
+				distance /= hoverSeg.distance;
+			}
+
+			m_tempSignal.segmentDistance = distance;
+			Engine::CurveData curve = {hoverSeg.nodeA_Position, hoverSeg.nodeA_Direction, hoverSeg.nodeB_Position, hoverSeg.nodeB_Direction};
+			float2 trackPos = Engine::CurvedSegment::GetPositionOnCurvedSegment(distance, curve);
+			float2 trackDir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(distance, curve);
+			float2 trackDirRight = float2(-trackDir.y, trackDir.x);
+			float2 mouseDir = normalize(worldMousePosition - trackPos);
+			if (dot(mouseDir, trackDirRight) > 0)
+			{
+				m_tempSignal.directionTowardsNodeB = true;
+			}
+			else
+			{
+				m_tempSignal.directionTowardsNodeB = false;
+			}
 		}
 	}
 	else
