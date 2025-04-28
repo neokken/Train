@@ -137,8 +137,8 @@ SignalBlock& SignalManager::GetMutableSignalBlock( const SignalBlockID block )
 
 void SignalManager::UpdateBlock( const Signal& placedSignal )
 {
-	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment, placedSignal.directionTowardsNodeB);
-	std::pair<std::vector<SignalID>, std::vector<SignalID>> backwardsSignals = FindConnectedSignals(placedSignal.segment, !placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment, placedSignal.directionTowardsNodeB);
+	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
+	std::pair<std::vector<SignalID>, std::vector<SignalID>> backwardsSignals = FindConnectedSignals(placedSignal.segment, !placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	//find old blocks on this segment
 	std::vector<SignalBlockID> oldblock;
 	if (!forwardSignals.first.empty() && !backwardsSignals.first.empty())
@@ -186,6 +186,7 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 		indirectBlocks.insert(indirectBlocks.end(), indirectBlocks2.begin(), indirectBlocks2.end());
 		for (auto mergeBlockID : indirectBlocks)
 		{
+			if (!IsValidBlock(mergeBlockID)) continue;
 			SignalBlock mergeBlock = GetBlock(mergeBlockID);
 			//Merge and make sure we clamp connections beyond this signal
 			for (const auto& connection : mergeBlock.connections)
@@ -218,7 +219,6 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 	const TrackSegmentID segment,
 	const bool directionTowardsB,
 	const float distance,
-	const bool signalDirectionTowardsB,
 	std::unordered_set<TrackSegmentID> visitedSegments )
 {
 	if (visitedSegments.contains(segment))
@@ -238,7 +238,7 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 			const Signal& signal = GetSignal(signalID);
 			if (directionTowardsB)
 			{
-				if (signal.directionTowardsNodeB == signalDirectionTowardsB && signal.distanceOnSegment > distance && signal.distanceOnSegment < closestDist)
+				if (signal.distanceOnSegment > distance && signal.distanceOnSegment < closestDist)
 				{
 					closest = signalID;
 					closestDist = signal.distanceOnSegment;
@@ -246,7 +246,7 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 			}
 			else
 			{
-				if (signal.directionTowardsNodeB == signalDirectionTowardsB && signal.distanceOnSegment < distance && signal.distanceOnSegment > closestDist)
+				if (signal.distanceOnSegment < distance && signal.distanceOnSegment > closestDist)
 				{
 					closest = signalID;
 					closestDist = signal.distanceOnSegment;
@@ -272,7 +272,7 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 					bool connectedAtA = (connectedSegment.nodeA == nextNodeID);
 					bool connectedAtB = (connectedSegment.nodeB == nextNodeID);
 					bool direction = directionTowardsB ? connectedAtA : !connectedAtB;
-					auto found = FindConnectedSignals(segmentID, direction, direction ? -0.001f : 1.001f, signalDirectionTowardsB == (direction == directionTowardsB), visitedSegments);
+					auto found = FindConnectedSignals(segmentID, direction, direction ? -0.001f : 1.001f, visitedSegments);
 
 					directSignals.insert(directSignals.end(), found.first.begin(), found.first.end());
 					indirectSignals.insert(indirectSignals.end(), found.second.begin(), found.second.end());
@@ -280,9 +280,10 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 				else if (segmentID != segment)
 				{
 					const TrackSegment& connectedSegment = m_trackManager->GetTrackSegment(segmentID);
+					bool connectedAtA = (connectedSegment.nodeA == nextNodeID);
 					bool connectedAtB = (connectedSegment.nodeB == nextNodeID);
-					bool direction = connectedAtB == directionTowardsB;
-					auto found = FindConnectedSignals(segmentID, direction, direction ? -0.001f : 1.001f, signalDirectionTowardsB == direction, visitedSegments);
+					bool direction = directionTowardsB ? connectedAtA : !connectedAtB;
+					auto found = FindConnectedSignals(segmentID, direction, direction ? -0.001f : 1.001f, visitedSegments);
 
 					indirectSignals.insert(indirectSignals.end(), found.first.begin(), found.first.end());
 					indirectSignals.insert(indirectSignals.end(), found.second.begin(), found.second.end());

@@ -18,7 +18,7 @@ void BlockRenderer::Render( Engine::Camera& camera )
 	auto blocks = m_signalManager->GetBlockMap();
 	for (const auto& block : blocks)
 	{
-		uint seed = static_cast<uint>(block.first) * 17;
+		uint seed = static_cast<uint>(block.first);
 		uint8_t r = 128 + RandomUInt(seed) % 128;
 		uint8_t g = 128 + RandomUInt(seed) % 128;
 		uint8_t b = 128 + RandomUInt(seed) % 128;

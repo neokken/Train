@@ -64,15 +64,13 @@ private:
 	 * Find all signals that are in this direction on the track
 	 * @param segment segment to start from
 	 * @param directionTowardsB 
-	 * @param distance distance to start from
-	 * @param signalDirectionTowardsB 
+	 * @param distance distance to start from 
 	 * @return first: directly connected signals \n
 	 * second: indirectly connected signals
 	 */
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> FindConnectedSignals( const TrackSegmentID segment,
 	                                                                              const bool directionTowardsB,
 	                                                                              const float distance,
-	                                                                              const bool signalDirectionTowardsB,
 	                                                                              std::unordered_set<TrackSegmentID> visitedSegments = {} );
 	std::unordered_map<SignalBlockID, SignalBlock> m_blocks;
 	std::unordered_map<SignalID, Signal> m_signals;
