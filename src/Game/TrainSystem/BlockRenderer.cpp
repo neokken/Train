@@ -31,15 +31,20 @@ void BlockRenderer::Render( Engine::Camera& camera )
 			float2 lStart = Engine::CurvedSegment::GetPositionOnCurvedSegment(startSig.distanceOnSegment, curve);
 			float2 startDir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(startSig.distanceOnSegment, curve);
 			float2 startDirRight = float2(startDir.y, -startDir.x);
-			if (!startSig.directionTowardsNodeB) startDir *= -1, startDirRight *= -1;
+			if (startSig.directionTowardsNodeB) startDir *= -1, startDirRight *= -1;
 			for (const auto& signal : connectionList.second)
 			{
 				const Signal& sig = m_signalManager->GetSignal(signal);
 				const TrackSegment& segment = m_trackManager->GetTrackSegment(sig.segment);
 				Engine::CurveData curve2{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
 				float2 lEnd = Engine::CurvedSegment::GetPositionOnCurvedSegment(sig.distanceOnSegment, curve2);
+				float2 endDir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(sig.distanceOnSegment, curve2);
+				float2 endDirRight = float2(endDir.y, -endDir.x);
+				if (sig.directionTowardsNodeB) endDir *= -1, endDirRight *= -1;
 				Engine::LineSegment::RenderWorldPos(camera, (lStart + startDir * 0.3f) + startDirRight * 0.1f, (lStart) + startDirRight * 0.4f, color, HeightLayer::Debug, 0.05f);
 				Engine::LineSegment::RenderWorldPos(camera, (lStart) + startDirRight * 0.4f, (lStart + startDir * 0.3f) + startDirRight * .7f, color, HeightLayer::Debug, 0.05f);
+				Engine::LineSegment::RenderWorldPos(camera, (lEnd + endDir * 0.3f) + endDirRight * 0.1f, (lEnd) + endDirRight * 0.4f, color, HeightLayer::Debug, 0.05f);
+				Engine::LineSegment::RenderWorldPos(camera, (lEnd) + endDirRight * 0.4f, (lEnd + endDir * 0.3f) + endDirRight * .7f, color, HeightLayer::Debug, 0.05f);
 				Engine::LineSegment::RenderWorldPos(camera, lStart, lEnd, color, HeightLayer::Debug);
 			}
 		}

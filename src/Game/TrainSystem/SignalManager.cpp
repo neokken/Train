@@ -190,9 +190,10 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 		for (auto backwardsSignal : backwardsSignals.first)
 		{
 			if (GetSignal(backwardsSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
-				backwardsConnections.push_back(backwardsSignal);
+			{
+				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(backwardsSignal, {placedSignal.id}));
+			}
 		}
-		block.connections.insert(std::pair(placedSignal.id, backwardsConnections));
 		//Merge blocks that are half connected i.e a cross intersection
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(backwardsSignals.second, backwardsSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(backwardsSignals.first, backwardsSignals.second);
