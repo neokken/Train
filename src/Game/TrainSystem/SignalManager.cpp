@@ -17,7 +17,7 @@ SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float d
 	m_signals.insert(std::pair(id, Signal(id, segment, distanceOnSegment, directionTowardsNodeB, type, connectedSignal)));
 	if (connectedSignal != SignalID::Invalid) GetMutableSignal(connectedSignal).oppositeSignal = id;
 	m_trackManager->AddSignal(segment, id);
-	UpdateBlock(GetSignal(id));
+	UpdateBlock(GetMutableSignal(id));
 	return id;
 }
 
@@ -143,7 +143,7 @@ Signal& SignalManager::GetMutableSignal( SignalID signal )
 	return m_signals.at(signal);
 }
 
-void SignalManager::UpdateBlock( const Signal& placedSignal )
+void SignalManager::UpdateBlock( Signal& placedSignal )
 {
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> backwardsSignals = FindConnectedSignals(placedSignal.segment, !placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
@@ -182,14 +182,44 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	if (!forwardSignals.first.empty())
 	{
 		const SignalBlockID blockID = CreateBlock();
+		placedSignal.blockInFront = blockID;
+		if (placedSignal.oppositeSignal != SignalID::Invalid) GetMutableSignal(placedSignal.oppositeSignal).blockBehind = blockID;
+
 		SignalBlock& block = GetMutableSignalBlock(blockID);
 		std::vector<SignalID> forwardConnections;
 		for (auto forwardSignal : forwardSignals.first)
 		{
 			if (GetSignal(forwardSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+			{
+				auto& sig = GetMutableSignal(forwardSignal);
+				sig.blockBehind = blockID;
+				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				{
+					sig.blockBehind = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+				}
+				else
+				{
+					sig.blockInFront = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+				}
+				if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+
 				forwardConnections.push_back(forwardSignal);
+			}
 			else if (placedSignal.oppositeSignal != SignalID::Invalid)
 			{
+				auto& sig = GetMutableSignal(forwardSignal);
+				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				{
+					sig.blockBehind = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+				}
+				else
+				{
+					sig.blockInFront = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+				}
 				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(forwardSignal, {placedSignal.oppositeSignal}));
 			}
 		}
@@ -215,7 +245,11 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 					auto iterator = std::find(backwardsSignals.first.begin(), backwardsSignals.first.end(), connected);
 					if (iterator != backwardsSignals.first.end()) to = placedSignal.id;
 					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
+					{
+						GetMutableSignal(from).blockInFront = blockID;
+						GetMutableSignal(to).blockBehind = blockID;
 						block.connections[from].push_back(to);
+					}
 				}
 			}
 			RemoveBlock(mergeBlockID);
@@ -224,16 +258,42 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	if (!backwardsSignals.first.empty())
 	{
 		SignalBlockID blockID = CreateBlock();
+		placedSignal.blockBehind = blockID;
+		if (placedSignal.oppositeSignal != SignalID::Invalid) GetMutableSignal(placedSignal.oppositeSignal).blockInFront = blockID;
+
 		SignalBlock& block = GetMutableSignalBlock(blockID);
 		std::vector<SignalID> backwardsConnections;
 		for (auto backwardsSignal : backwardsSignals.first)
 		{
 			if (GetSignal(backwardsSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
 			{
+				auto& sig = GetMutableSignal(backwardsSignal);
+				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				{
+					sig.blockInFront = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+				}
+				else
+				{
+					sig.blockBehind = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+				}
+				if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
 				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(backwardsSignal, {placedSignal.id}));
 			}
 			else if (placedSignal.oppositeSignal != SignalID::Invalid)
 			{
+				auto& sig = GetMutableSignal(backwardsSignal);
+				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				{
+					sig.blockInFront = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+				}
+				else
+				{
+					sig.blockBehind = blockID;
+					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+				}
 				backwardsConnections.push_back(backwardsSignal);
 			}
 		}
@@ -259,7 +319,11 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 					auto iterator = std::find(forwardSignals.first.begin(), forwardSignals.first.end(), connected);
 					if (iterator != forwardSignals.first.end()) to = placedSignal.id;
 					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
+					{
+						GetMutableSignal(from).blockInFront = blockID;
+						GetMutableSignal(to).blockBehind = blockID;
 						block.connections[from].push_back(to);
+					}
 				}
 			}
 

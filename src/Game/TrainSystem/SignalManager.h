@@ -36,6 +36,8 @@ struct Signal
 	bool directionTowardsNodeB;
 	SignalType type;
 	SignalID oppositeSignal = SignalID::Invalid;
+	SignalBlockID blockInFront = SignalBlockID::Invalid;
+	SignalBlockID blockBehind = SignalBlockID::Invalid;
 };
 
 class SignalManager
@@ -60,7 +62,7 @@ private:
 	std::vector<SignalBlockID> GetBlocksFromConnections( const std::vector<SignalID>& outGoingSignal, const std::vector<SignalID>& incomingSignals ) const;
 	SignalBlock& GetMutableSignalBlock( SignalBlockID block );
 	Signal& GetMutableSignal( SignalID signal );
-	void UpdateBlock( const Signal& placedSignal );
+	void UpdateBlock( Signal& placedSignal );
 	/**
 	 * Find all signals that are in this direction on the track
 	 * @param segment segment to start from

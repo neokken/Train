@@ -253,6 +253,38 @@ void TrackDebugger::UI()
 				}
 				drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
 			}
+
+			ImGui::Text("Connected blocks: ");
+			if (selected.blockInFront != SignalBlockID::Invalid)
+			{
+				const ImVec2 cursor = ImGui::GetCursorScreenPos();
+				const std::string nodeText = "  Front: " + std::to_string(static_cast<int>(selected.blockInFront));
+				const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+				ImGui::InvisibleButton(("##fronBlock_" + std::to_string(static_cast<int>(selected.blockInFront))).c_str(), nodeTextSize);
+				if (ImGui::IsItemHovered())
+				{
+					drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+					ImGui::SetTooltip("Block");
+					m_selectedBlock = selected.blockInFront;
+				}
+				drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+			}
+			if (selected.blockBehind != SignalBlockID::Invalid)
+			{
+				const ImVec2 cursor = ImGui::GetCursorScreenPos();
+				const std::string nodeText = "  Back: " + std::to_string(static_cast<int>(selected.blockBehind));
+				const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+				ImGui::InvisibleButton(("##backBlock_" + std::to_string(static_cast<int>(selected.blockBehind))).c_str(), nodeTextSize);
+				if (ImGui::IsItemHovered())
+				{
+					drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+					ImGui::SetTooltip("Block");
+					m_selectedBlock = selected.blockBehind;
+				}
+				drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+			}
 		}
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 1.f);
 
