@@ -153,6 +153,7 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	{
 		oldBlocks = GetBlocksFromConnections(forwardSignals.first, backwardsSignals.first);
 	}
+	std::vector<SignalBlockID> oneWayBlocks;
 	if (placedSignal.oppositeSignal != SignalID::Invalid)
 	{
 		for (const auto& block : std::views::values(m_blocks))
@@ -176,6 +177,7 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 			}
 		}
 	}
+
 	//Create new blocks
 	if (!forwardSignals.first.empty())
 	{
@@ -212,7 +214,8 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 					SignalID to = connected;
 					auto iterator = std::find(backwardsSignals.first.begin(), backwardsSignals.first.end(), connected);
 					if (iterator != backwardsSignals.first.end()) to = placedSignal.id;
-					block.connections[from].push_back(to);
+					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
+						block.connections[from].push_back(to);
 				}
 			}
 			RemoveBlock(mergeBlockID);
@@ -255,7 +258,8 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 					SignalID to = connected;
 					auto iterator = std::find(forwardSignals.first.begin(), forwardSignals.first.end(), connected);
 					if (iterator != forwardSignals.first.end()) to = placedSignal.id;
-					block.connections[from].push_back(to);
+					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
+						block.connections[from].push_back(to);
 				}
 			}
 
