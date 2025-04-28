@@ -7,11 +7,13 @@
 #include "Game/TrainSystem/TrackRenderer.h"
 #include "Renderables/Circle.h"
 #include "Renderables/CurvedSegment.h"
+#include "Renderables/LineSegment.h"
 
-void TrackDebugger::Init( TrackManager* trackManager, TrackRenderer* trackRenderer )
+void TrackDebugger::Init( TrackManager& trackManager, TrackRenderer& trackRenderer, SignalManager& signalManager )
 {
-	m_trackManager = trackManager;
-	m_trackRenderer = trackRenderer;
+	m_trackManager = &trackManager;
+	m_trackRenderer = &trackRenderer;
+	m_signalManager = &signalManager;
 }
 
 void TrackDebugger::Update( const Engine::Camera& camera )
@@ -122,6 +124,31 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 6);
 			Engine::Circle::RenderWorldPos(camera, n.nodePosition, .75f, color, 0.f, 4);
 		}
+
+		if (m_signalManager->IsValidBlock(m_selectedBlock))
+		{
+			uint seed = static_cast<uint>(m_selectedBlock) * 17;
+			uint8_t r = 128 + RandomUInt(seed) % 128;
+			uint8_t g = 128 + RandomUInt(seed) % 128;
+			uint8_t b = 128 + RandomUInt(seed) % 128;
+			uint color = (r << 16) | (g << 8) | b;
+			const SignalBlock& block = m_signalManager->GetBlock(m_selectedBlock);
+			for (const auto& connectionList : block.connections)
+			{
+				const Signal& startSig = m_signalManager->GetSignal(connectionList.first);
+				const TrackSegment& startSegment = m_trackManager->GetTrackSegment(startSig.segment);
+				Engine::CurveData curve{startSegment.nodeA_Position, startSegment.nodeA_Direction, startSegment.nodeB_Position, startSegment.nodeB_Direction};
+				float2 lStart = Engine::CurvedSegment::GetPositionOnCurvedSegment(startSig.distanceOnSegment, curve);
+				for (const auto& signal : connectionList.second)
+				{
+					const Signal& sig = m_signalManager->GetSignal(signal);
+					const TrackSegment& segment = m_trackManager->GetTrackSegment(sig.segment);
+					Engine::CurveData curve2{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
+					float2 lEnd = Engine::CurvedSegment::GetPositionOnCurvedSegment(sig.distanceOnSegment, curve2);
+					Engine::LineSegment::RenderWorldPos(camera, lStart, lEnd, color, HeightLayer::Debug, 0.5f);
+				}
+			}
+		}
 	}
 }
 
@@ -185,6 +212,40 @@ void TrackDebugger::UI()
 		}
 	}
 	Engine::UIManager::EndDebugWindow();
+
+	if (Engine::UIManager::BeginDebugWindow("BlockDebugger", &m_visible))
+	{
+		const auto& blocks = m_signalManager->GetBlockMap();
+		for (const auto& block : std::views::values(blocks))
+		{
+			bool selected = m_selectedBlock == block.id;
+			if (ImGui::Selectable(std::to_string(static_cast<uint>(block.id)).c_str(), &selected))
+			{
+				if (selected)
+				{
+					m_selectedBlock = block.id;
+				}
+			}
+			if (selected)
+			{
+				ImGui::SetCursorPosX(10.f);
+				ImGui::Text("Connected Signals: ");
+				for (const auto& connections : block.connections)
+				{
+					ImGui::SetCursorPosX(15.f);
+					ImGui::Text((std::to_string(static_cast<uint>(connections.first)) + " > ").c_str());
+					for (auto signal : connections.second)
+					{
+						ImGui::SameLine();
+						ImGui::Text((std::to_string(static_cast<uint>(signal)) + " ").c_str());
+					}
+				}
+			}
+		}
+	}
+	Engine::UIManager::EndDebugWindow();
+
+
 }
 
 void TrackDebugger::SetVisible( const bool value )

@@ -141,6 +141,7 @@
     <ClCompile Include="src\Engine\Renderables\Renderable.cpp" />
     <ClCompile Include="src\Engine\World\World.cpp" />
     <ClCompile Include="src\Game\Buildings\Building.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\BlockRenderer.cpp" />
     <ClCompile Include="src\Game\TrainSystem\Debugger\TrainDebugger.cpp" />
     <ClCompile Include="src\Game\TrainSystem\SignalManager.cpp" />
     <ClCompile Include="src\Game\TrainSystem\TrackManager.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="src\Engine\Renderables\Renderable.h" />
     <ClInclude Include="src\Engine\World\World.h" />
     <ClInclude Include="src\Game\Buildings\Building.h" />
+    <ClInclude Include="src\Game\TrainSystem\BlockRenderer.h" />
     <ClInclude Include="src\Game\TrainSystem\Debugger\TrainDebugger.h" />
     <ClInclude Include="src\Game\TrainSystem\SignalManager.h" />
     <ClInclude Include="src\Game\TrainSystem\TrackManager.h" />

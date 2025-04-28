@@ -41,6 +41,9 @@ public:
 	[[nodiscard]] TrackSegmentID GetNextSegmentPositive( TrackSegmentID id ) const;
 	[[nodiscard]] TrackSegmentID GetNextSegmentNegative( TrackSegmentID id ) const;
 
+	void AddSignal( TrackSegmentID segment, SignalID signal );
+	void RemoveSignal( TrackSegmentID segment, SignalID signal );
+
 	// saving & loading data
 	[[nodiscard]] nlohmann::json SerializeData() const;
 	void LoadData( const nlohmann::json& data );

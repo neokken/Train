@@ -4,11 +4,14 @@
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
 #include "Data/ParticleSystem.h"
+#include "Game/TrainSystem/BlockRenderer.h"
 #include "Game/TrainSystem/SignalManager.h"
 #include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackRenderer.h"
 #include "Game/TrainSystem/Debugger/TrainDebugger.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
+
+class BlockRenderer;
 
 namespace Engine
 {
@@ -50,6 +53,7 @@ namespace Engine
 		TrackBuilder m_trackBuilder;
 		TrackRenderer m_trackRenderer;
 		SignalManager m_signalManager;
+		BlockRenderer m_blockRenderer;
 
 		TrackDebugger m_trackDebugger;
 		TrainDebugger m_trainDebugger;

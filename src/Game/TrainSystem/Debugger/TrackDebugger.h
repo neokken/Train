@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/TrainSystem/SignalManager.h"
 #include "Game/TrainSystem/TrackManager.h"
 
 class TrackRenderer;
@@ -20,7 +21,7 @@ class TrackDebugger
 public:
 	TrackDebugger() = default;
 
-	void Init( TrackManager* trackManager, TrackRenderer* trackRenderer );
+	void Init( TrackManager& trackManager, TrackRenderer& trackRenderer, SignalManager& signalManager );
 
 	void Update( const Engine::Camera& camera );
 
@@ -52,6 +53,7 @@ private:
 	TrackManager* m_trackManager{nullptr};
 
 	TrackRenderer* m_trackRenderer{nullptr};
+	SignalManager* m_signalManager{nullptr};
 
 	bool m_visible{false};
 
@@ -66,4 +68,6 @@ private:
 
 	TrackNodeID m_selectedNode{TrackNodeID::Invalid};
 	TrackSegmentID m_selectedSegment{TrackSegmentID::Invalid};
+
+	SignalBlockID m_selectedBlock{SignalBlockID::Invalid};
 };

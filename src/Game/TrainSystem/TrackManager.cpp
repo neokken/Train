@@ -403,6 +403,25 @@ TrackSegmentID TrackManager::GetNextSegmentNegative( const TrackSegmentID id ) c
 	return node.validConnections.at(id).at(connectionDir);
 }
 
+void TrackManager::AddSignal( const TrackSegmentID segment, const SignalID signal )
+{
+	GetMutableTrackSegment(segment).signals.push_back(signal);
+}
+
+void TrackManager::RemoveSignal( TrackSegmentID segment, SignalID signal )
+{
+	std::vector<SignalID>& signals = GetMutableTrackSegment(segment).signals;
+	auto iter = std::find(signals.begin(), signals.end(), signal);
+	if (iter == signals.end())
+	{
+		Engine::Logger::Critical("Tried to remove signal {} from segment {} but it did not exist there", static_cast<int>(signal), static_cast<int>(segment));
+	}
+	else
+	{
+		signals.erase(iter);
+	}
+}
+
 nlohmann::json TrackManager::SerializeData() const
 {
 	nlohmann::json j;

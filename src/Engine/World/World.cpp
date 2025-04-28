@@ -30,11 +30,11 @@ void Engine::World::Init( Surface* renderTarget )
 	m_grid.AddGrid(GetColor(Color::BackGroundGrid2), 10 /*, .33f*/);
 
 	m_renderTarget = renderTarget;
-
+	m_blockRenderer.Init(m_signalManager, m_trackManager);
 	m_signalManager.Init(m_trackManager);
 	m_trackBuilder.Init(m_trackManager, m_trackRenderer, m_signalManager);
 	m_trackRenderer.Init(m_trackManager, m_signalManager);
-	m_trackDebugger.Init(&m_trackManager, &m_trackRenderer);
+	m_trackDebugger.Init(m_trackManager, m_trackRenderer, m_signalManager);
 	m_trainDebugger.Init(m_trackManager, m_trainManager, m_trackBuilder);
 
 
@@ -74,6 +74,8 @@ void Engine::World::Update( float deltaTime )
 	m_grid.Render(m_camera);
 
 	m_trackRenderer.Render(m_camera);
+	m_blockRenderer.Render(m_camera);
+
 	for (const auto& obj : m_objects)
 	{
 		obj->Render(m_camera);
