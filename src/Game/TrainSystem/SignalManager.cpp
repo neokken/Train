@@ -150,13 +150,20 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	{
 		const SignalBlockID blockID = CreateBlock();
 		SignalBlock& block = GetMutableSignalBlock(blockID);
-		block.connections.insert(std::pair(placedSignal.id, forwardSignals.first));
+		std::vector<SignalID> forwardConnections;
+		for (auto forwardSignal : forwardSignals.first)
+		{
+			if (GetSignal(forwardSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				forwardConnections.push_back(forwardSignal);
+		}
+		block.connections.insert(std::pair(placedSignal.id, forwardConnections));
 		//Merge blocks that are half connected i.e a cross intersection
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(forwardSignals.second, forwardSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(forwardSignals.first, forwardSignals.second);
 		indirectBlocks.insert(indirectBlocks.end(), indirectBlocks2.begin(), indirectBlocks2.end());
 		for (auto mergeBlockID : indirectBlocks)
 		{
+			if (!IsValidBlock(mergeBlockID)) continue;
 			SignalBlock mergeBlock = GetBlock(mergeBlockID);
 			//Merge and make sure we clamp connections beyond this signal
 			for (const auto& connection : mergeBlock.connections)
@@ -179,7 +186,13 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 	{
 		SignalBlockID blockID = CreateBlock();
 		SignalBlock& block = GetMutableSignalBlock(blockID);
-		block.connections.insert(std::pair(placedSignal.id, backwardsSignals.first));
+		std::vector<SignalID> backwardsConnections;
+		for (auto backwardsSignal : backwardsSignals.first)
+		{
+			if (GetSignal(backwardsSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
+				backwardsConnections.push_back(backwardsSignal);
+		}
+		block.connections.insert(std::pair(placedSignal.id, backwardsConnections));
 		//Merge blocks that are half connected i.e a cross intersection
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(backwardsSignals.second, backwardsSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(backwardsSignals.first, backwardsSignals.second);
