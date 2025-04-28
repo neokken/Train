@@ -15,6 +15,7 @@ SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float d
 {
 	SignalID id = m_signalIDGenerator.GenerateID();
 	m_signals.insert(std::pair(id, Signal(id, segment, distanceOnSegment, directionTowardsNodeB, type, connectedSignal)));
+	if (connectedSignal != SignalID::Invalid) GetMutableSignal(connectedSignal).oppositeSignal = id;
 	m_trackManager->AddSignal(segment, id);
 	UpdateBlock(GetSignal(id));
 	return id;
@@ -23,6 +24,7 @@ SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float d
 void SignalManager::RemoveSignal( const SignalID signal )
 {
 	m_trackManager->RemoveSignal(GetSignal(signal).segment, signal);
+
 	m_signals.erase(signal);
 }
 
@@ -135,6 +137,12 @@ SignalBlock& SignalManager::GetMutableSignalBlock( const SignalBlockID block )
 	return m_blocks.at(block);
 }
 
+Signal& SignalManager::GetMutableSignal( SignalID signal )
+{
+	DEBUG_ASSERT(IsValidSignal(signal), "Signal ID Does not exist");
+	return m_signals.at(signal);
+}
+
 void SignalManager::UpdateBlock( const Signal& placedSignal )
 {
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
@@ -155,8 +163,13 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 		{
 			if (GetSignal(forwardSignal).directionTowardsNodeB == placedSignal.directionTowardsNodeB)
 				forwardConnections.push_back(forwardSignal);
+			else if (placedSignal.oppositeSignal != SignalID::Invalid)
+			{
+				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(forwardSignal, {placedSignal.oppositeSignal}));
+			}
 		}
 		block.connections.insert(std::pair(placedSignal.id, forwardConnections));
+
 		//Merge blocks that are half connected i.e a cross intersection
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(forwardSignals.second, forwardSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(forwardSignals.first, forwardSignals.second);
@@ -193,7 +206,13 @@ void SignalManager::UpdateBlock( const Signal& placedSignal )
 			{
 				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(backwardsSignal, {placedSignal.id}));
 			}
+			else if (placedSignal.oppositeSignal != SignalID::Invalid)
+			{
+				backwardsConnections.push_back(backwardsSignal);
+			}
 		}
+		if (placedSignal.oppositeSignal != SignalID::Invalid)
+			block.connections.insert(std::pair(placedSignal.oppositeSignal, backwardsConnections));
 		//Merge blocks that are half connected i.e a cross intersection
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(backwardsSignals.second, backwardsSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(backwardsSignals.first, backwardsSignals.second);
@@ -268,7 +287,11 @@ std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConne
 			}
 		}
 		if (closest != SignalID::Invalid)
+		{
 			directSignals.push_back(closest);
+			const Signal& closestSig = GetSignal(closest);
+			if (closestSig.oppositeSignal != SignalID::Invalid) directSignals.push_back(closestSig.oppositeSignal);
+		}
 	}
 
 	if (directSignals.empty())

@@ -1,6 +1,8 @@
 #include "precomp.h"
 #include "TrackDebugger.h"
 
+#include <imgui_internal.h>
+
 #include "Input/InputManager.h"
 #include "UI/UIManager.h"
 #include "Camera/Camera.h"
@@ -38,6 +40,7 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 
 		m_hoveredNode = m_trackManager->GetNodeByPosition(worldMousePosition, NODE_SELECTION_DIST, &distanceNode);
 		m_hoveredSegment = m_trackManager->GetSegmentByPosition(worldMousePosition, SEGMENT_SELECTION_DIST, &distanceSegment);
+		m_hoveredSignal = m_signalManager->FindClosestSignal(worldMousePosition, SIGNAL_SELECTION_DIST, true);
 
 		if (distanceNode < distanceSegment + .25f) // we add .25f since now we give nodes a bit more priority otherwise they are hard to select
 		{
@@ -60,6 +63,10 @@ void TrackDebugger::Update( const Engine::Camera& camera )
 			{
 				m_selectedSegment = m_selectedSegment == m_hoveredSegment ? TrackSegmentID::Invalid : m_hoveredSegment;
 				m_selectedNode = TrackNodeID::Invalid;
+			}
+			if (m_hoveredSignal != SignalID::Invalid)
+			{
+				m_selectedSignal = m_hoveredSignal == m_selectedSignal ? SignalID::Invalid : m_hoveredSignal;
 			}
 		}
 	}
@@ -161,6 +168,9 @@ void TrackDebugger::UI()
 {
 	if (!m_visible) return;
 
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+
 	if (Engine::UIManager::BeginDebugWindow("TrackDebugger", &m_visible))
 	{
 		ImGui::Checkbox("Render connectedSegments", &m_renderConnectedSegments);
@@ -220,8 +230,33 @@ void TrackDebugger::UI()
 
 	if (Engine::UIManager::BeginDebugWindow("BlockDebugger", &m_visible))
 	{
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		m_selectedSignal = SignalID::Invalid;
+		if (m_selectedSignal != SignalID::Invalid)
+		{
+			const Signal& selected = m_signalManager->GetSignal(m_selectedSignal);
+			ImGui::Text(("Selected Signal: " + std::to_string(static_cast<int>(m_selectedSignal))).c_str());
+
+			ImGui::Text("Opposite Signal: ");
+			if (selected.oppositeSignal != SignalID::Invalid)
+			{
+				ImGui::SameLine();
+				const ImVec2 cursor = ImGui::GetCursorScreenPos();
+				const std::string nodeText = std::to_string(static_cast<int>(selected.oppositeSignal)) + " ";
+				const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+				ImGui::InvisibleButton(("##oppsignal_" + std::to_string(static_cast<int>(selected.oppositeSignal))).c_str(), nodeTextSize);
+				if (ImGui::IsItemHovered())
+				{
+					drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+					ImGui::SetTooltip("Signal");
+					if (ImGui::IsItemClicked())
+					{
+						m_selectedSignal = selected.oppositeSignal;
+					}
+				}
+				drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+			}
+		}
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 1.f);
 
 		const auto& blocks = m_signalManager->GetBlockMap();
 		for (const auto& block : std::views::values(blocks))
@@ -281,8 +316,6 @@ void TrackDebugger::UI()
 		}
 	}
 	Engine::UIManager::EndDebugWindow();
-
-
 }
 
 void TrackDebugger::SetVisible( const bool value )

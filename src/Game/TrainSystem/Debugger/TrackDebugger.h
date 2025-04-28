@@ -15,6 +15,7 @@ namespace Engine
 
 constexpr float NODE_SELECTION_DIST = 1.f;
 constexpr float SEGMENT_SELECTION_DIST = 1.f;
+constexpr float SIGNAL_SELECTION_DIST = 1.f;
 
 class TrackDebugger
 {
@@ -66,6 +67,7 @@ private:
 
 	TrackNodeID m_hoveredNode{TrackNodeID::Invalid};
 	TrackSegmentID m_hoveredSegment{TrackSegmentID::Invalid};
+	SignalID m_hoveredSignal{SignalID::Invalid};
 
 	TrackNodeID m_selectedNode{TrackNodeID::Invalid};
 	TrackSegmentID m_selectedSegment{TrackSegmentID::Invalid};
