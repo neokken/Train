@@ -21,14 +21,91 @@ SignalID SignalManager::BuildSignal( const TrackSegmentID segment, const float d
 	return id;
 }
 
-void SignalManager::RemoveSignal( const SignalID signal )
+void SignalManager::RemoveSignal( const SignalID signalID )
 {
-	m_trackManager->RemoveSignal(GetSignal(signal).segment, signal);
+	//std::printf("Removing signal: %d \n", static_cast<int>(signalID));
+	const Signal signal = GetSignal(signalID);
+	m_trackManager->RemoveSignal(signal.segment, signalID);
+	m_signals.erase(signalID);
 
-	m_signals.erase(signal);
+	if (IsValidBlock(signal.blockInFront))
+	{
+		auto block = GetBlock(signal.blockInFront);
+		RemoveBlock(signal.blockInFront);
+		for (const auto& connection : block.connections)
+		{
+			if (connection.first == signalID) continue;
+			if (IsValidSignal(connection.first))
+			{
+				auto& signalBehind = GetMutableSignal(connection.first);
+				if (signalBehind.directionTowardsNodeB == signal.directionTowardsNodeB)
+				{
+					if (IsValidBlock(signalBehind.blockBehind)) RemoveBlock(signalBehind.blockBehind);
+				}
+				else if (IsValidBlock(signalBehind.blockInFront)) RemoveBlock(signalBehind.blockInFront);
+
+				UpdateBlock(signalBehind);
+			}
+		}
+		for (const auto& connection : block.connections)
+		{
+
+			for (auto connected : connection.second)
+			{
+				if (IsValidSignal(connected))
+				{
+					auto& signalInFront = GetMutableSignal(connected);
+					if (signalInFront.directionTowardsNodeB == signal.directionTowardsNodeB)
+					{
+						if (IsValidBlock(signalInFront.blockInFront)) RemoveBlock(signalInFront.blockInFront);
+					}
+					else if (IsValidBlock(signalInFront.blockBehind)) RemoveBlock(signalInFront.blockBehind);
+
+					UpdateBlock(signalInFront);
+				}
+			}
+		}
+	}
+	if (IsValidBlock(signal.blockBehind))
+	{
+		auto block = GetBlock(signal.blockBehind);
+		RemoveBlock(signal.blockBehind);
+		for (const auto& connection : block.connections)
+		{
+			if (IsValidSignal(connection.first))
+			{
+				auto& signalBehind = GetMutableSignal(connection.first);
+				if (signalBehind.directionTowardsNodeB == signal.directionTowardsNodeB)
+				{
+					if (IsValidBlock(signalBehind.blockBehind)) RemoveBlock(signalBehind.blockBehind);
+				}
+				else if (IsValidBlock(signalBehind.blockInFront)) RemoveBlock(signalBehind.blockInFront);
+
+				UpdateBlock(signalBehind);
+			}
+		}
+		for (const auto& connection : block.connections)
+		{
+			for (auto connected : connection.second)
+			{
+				if (connected == signalID) continue;
+				if (IsValidSignal(connected))
+				{
+					auto& signalInFront = GetMutableSignal(connected);
+					if (signalInFront.directionTowardsNodeB == signal.directionTowardsNodeB)
+					{
+						if (IsValidBlock(signalInFront.blockInFront)) RemoveBlock(signalInFront.blockInFront);
+					}
+					else if (IsValidBlock(signalInFront.blockBehind)) RemoveBlock(signalInFront.blockBehind);
+
+					UpdateBlock(signalInFront);
+				}
+			}
+		}
+	}
 }
 
-void SignalManager::RemoveSegmentSignals( const TrackSegmentID trackId )
+void SignalManager::RemoveSegmentSignalsAndBlocks( const TrackSegmentID trackId )
 {
 	std::vector<SignalID> signalsToRemove;
 	for (auto& signal : m_signals)
@@ -37,7 +114,7 @@ void SignalManager::RemoveSegmentSignals( const TrackSegmentID trackId )
 	}
 	for (auto& signal : signalsToRemove)
 	{
-		m_signals.erase(signal);
+		RemoveSignal(signal);
 	}
 }
 
@@ -145,6 +222,8 @@ Signal& SignalManager::GetMutableSignal( SignalID signal )
 
 void SignalManager::UpdateBlock( Signal& placedSignal )
 {
+	//std::printf("Updating Signal: %d's blocks \n", static_cast<int>(placedSignal.id));
+
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> forwardSignals = FindConnectedSignals(placedSignal.segment, placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	std::pair<std::vector<SignalID>, std::vector<SignalID>> backwardsSignals = FindConnectedSignals(placedSignal.segment, !placedSignal.directionTowardsNodeB, placedSignal.distanceOnSegment);
 	//find old blocks on this segment
@@ -248,7 +327,10 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 					{
 						if (from != to
 							&& std::ranges::find(backwardsSignals.second, from) == backwardsSignals.second.end()
-							&& std::ranges::find(backwardsSignals.second, to) == backwardsSignals.second.end())
+							&& std::ranges::find(backwardsSignals.second, to) == backwardsSignals.second.end()
+							&& IsValidSignal(to)
+							&& IsValidSignal(from)
+						)
 						{
 							if (ranges::find(block.connections[from], to) == block.connections[from].end())
 							{
@@ -332,6 +414,8 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 						if (from != to
 							&& std::ranges::find(forwardSignals.second, from) == forwardSignals.second.end()
 							&& std::ranges::find(forwardSignals.second, to) == forwardSignals.second.end()
+							&& IsValidSignal(to)
+							&& IsValidSignal(from)
 						)
 						{
 							if (ranges::find(block.connections[from], to) == block.connections[from].end())
@@ -355,6 +439,8 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 			RemoveBlock(block);
 	}
 }
+
+
 
 std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConnectedSignals(
 	const TrackSegmentID segment,

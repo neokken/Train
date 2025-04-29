@@ -46,8 +46,8 @@ public:
 	SignalManager() = default;
 	void Init( TrackManager& trackManager );
 	SignalID BuildSignal( TrackSegmentID segment, float distanceOnSegment, bool directionTowardsNodeB, SignalType type, SignalID connectedSignal = SignalID::Invalid );
-	void RemoveSignal( SignalID signal );
-	void RemoveSegmentSignals( TrackSegmentID trackId );
+	void RemoveSignal( SignalID signalID );
+	void RemoveSegmentSignalsAndBlocks( TrackSegmentID trackId );
 	const Signal& GetSignal( SignalID signalID ) const;
 	const SignalBlock& GetBlock( SignalBlockID blockID ) const;
 	[[nodiscard]] const std::unordered_map<SignalID, Signal>& GetSignalMap() const { return m_signals; }

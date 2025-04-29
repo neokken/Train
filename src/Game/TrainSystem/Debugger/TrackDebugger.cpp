@@ -147,12 +147,15 @@ void TrackDebugger::Render( const Engine::Camera& camera ) const
 			const SignalBlock& block = m_signalManager->GetBlock(m_selectedBlock);
 			for (const auto& connectionList : block.connections)
 			{
+				if (!m_signalManager->IsValidSignal(connectionList.first)) continue;
+
 				const Signal& startSig = m_signalManager->GetSignal(connectionList.first);
 				const TrackSegment& startSegment = m_trackManager->GetTrackSegment(startSig.segment);
 				Engine::CurveData curve{startSegment.nodeA_Position, startSegment.nodeA_Direction, startSegment.nodeB_Position, startSegment.nodeB_Direction};
 				float2 lStart = Engine::CurvedSegment::GetPositionOnCurvedSegment(startSig.distanceOnSegment, curve);
 				for (const auto& signal : connectionList.second)
 				{
+					if (!m_signalManager->IsValidSignal(signal)) continue;
 					const Signal& sig = m_signalManager->GetSignal(signal);
 					const TrackSegment& segment = m_trackManager->GetTrackSegment(sig.segment);
 					Engine::CurveData curve2{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};

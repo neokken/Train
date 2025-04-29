@@ -79,7 +79,7 @@ void TrackBuilder::Update( Engine::Camera& camera, [[maybe_unused]] float deltaT
 		if ((m_currentProgress == BuildProgress::StartNode || m_currentProgress == BuildProgress::FirstNodeFinished)
 			&& m_hoveredSegment != TrackSegmentID::Invalid)
 		{
-			m_signalManager->RemoveSegmentSignals(m_hoveredSegment);
+			m_signalManager->RemoveSegmentSignalsAndBlocks(m_hoveredSegment);
 			m_trackManager->DeleteTrackPart(m_hoveredSegment);
 			m_hoveredSegment = TrackSegmentID::Invalid;
 		}

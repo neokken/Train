@@ -25,6 +25,11 @@ void BlockRenderer::Render( Engine::Camera& camera )
 		uint color = (r << 16) | (g << 8) | b;
 		for (const auto& connectionList : block.second.connections)
 		{
+			if (!m_signalManager->IsValidSignal(connectionList.first))
+			{
+				printf("Rendering invalid signal??????????, %d \n", connectionList.first);
+				continue;
+			}
 			const Signal& startSig = m_signalManager->GetSignal(connectionList.first);
 			const TrackSegment& startSegment = m_trackManager->GetTrackSegment(startSig.segment);
 			Engine::CurveData curve{startSegment.nodeA_Position, startSegment.nodeA_Direction, startSegment.nodeB_Position, startSegment.nodeB_Direction};
@@ -34,6 +39,11 @@ void BlockRenderer::Render( Engine::Camera& camera )
 			if (startSig.directionTowardsNodeB) startDir *= -1, startDirRight *= -1;
 			for (const auto& signal : connectionList.second)
 			{
+				if (!m_signalManager->IsValidSignal(signal))
+				{
+					printf("Rendering invalid signal??????????, %d \n", signal);
+					continue;
+				}
 				const Signal& sig = m_signalManager->GetSignal(signal);
 				const TrackSegment& segment = m_trackManager->GetTrackSegment(sig.segment);
 				Engine::CurveData curve2{segment.nodeA_Position, segment.nodeA_Direction, segment.nodeB_Position, segment.nodeB_Direction};
