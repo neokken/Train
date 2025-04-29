@@ -246,13 +246,21 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 					if (iterator != backwardsSignals.first.end()) to = placedSignal.id;
 					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
 					{
-						GetMutableSignal(from).blockInFront = blockID;
-						GetMutableSignal(to).blockBehind = blockID;
-						block.connections[from].push_back(to);
+						if (from != to
+							&& std::ranges::find(backwardsSignals.second, from) == backwardsSignals.second.end()
+							&& std::ranges::find(backwardsSignals.second, to) == backwardsSignals.second.end())
+						{
+							if (ranges::find(block.connections[from], to) == block.connections[from].end())
+							{
+								block.connections[from].push_back(to);
+							}
+							GetMutableSignal(from).blockInFront = blockID;
+							GetMutableSignal(to).blockBehind = blockID;
+						}
 					}
 				}
 			}
-			RemoveBlock(mergeBlockID);
+			oldBlocks.push_back(mergeBlockID);
 		}
 	}
 	if (!backwardsSignals.first.empty())
@@ -303,6 +311,7 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 		std::vector<SignalBlockID> indirectBlocks = GetBlocksFromConnections(backwardsSignals.second, backwardsSignals.second);
 		std::vector<SignalBlockID> indirectBlocks2 = GetBlocksFromConnections(backwardsSignals.first, backwardsSignals.second);
 		indirectBlocks.insert(indirectBlocks.end(), indirectBlocks2.begin(), indirectBlocks2.end());
+
 		for (auto mergeBlockID : indirectBlocks)
 		{
 			if (!IsValidBlock(mergeBlockID)) continue;
@@ -320,14 +329,22 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 					if (iterator != forwardSignals.first.end()) to = placedSignal.id;
 					if (connected != placedSignal.oppositeSignal && connection.first != placedSignal.oppositeSignal)
 					{
-						GetMutableSignal(from).blockInFront = blockID;
-						GetMutableSignal(to).blockBehind = blockID;
-						block.connections[from].push_back(to);
+						if (from != to
+							&& std::ranges::find(forwardSignals.second, from) == forwardSignals.second.end()
+							&& std::ranges::find(forwardSignals.second, to) == forwardSignals.second.end()
+						)
+						{
+							if (ranges::find(block.connections[from], to) == block.connections[from].end())
+							{
+								block.connections[from].push_back(to);
+							}
+							GetMutableSignal(from).blockInFront = blockID;
+							GetMutableSignal(to).blockBehind = blockID;
+						}
 					}
 				}
 			}
-
-			RemoveBlock(mergeBlockID);
+			oldBlocks.push_back(mergeBlockID);
 		}
 	}
 
