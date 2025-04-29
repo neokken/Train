@@ -81,6 +81,7 @@ void TrackRenderer::RenderTrackSignal( const Engine::Camera& camera, const Signa
 	SignalPassState signalState = m_signalManager->GetSignalPassState(signal.id);
 	if (signalState == SignalPassState::Closed) lightColor = Color::SignalIndicator_AllBlocked;
 	else if (signalState == SignalPassState::Invalid) lightColor = Color::SignalIndicator_Invalid;
+	else if (signalState == SignalPassState::Half) lightColor = Color::SignalIndicator_SomeBlocked;
 
 	switch (signal.type)
 	{

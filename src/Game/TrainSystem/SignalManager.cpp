@@ -193,14 +193,50 @@ SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) con
 	const auto& block = GetBlock(signal.blockInFront);
 
 	//TODO: Chain signals
-
-	if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+	if (signal.type == SignalType::Chain)
 	{
-		return SignalPassState::Closed;
+		bool blocked = false;
+		bool open = false;
+		bool invalid = false;
+		for (auto signal : block.connections.at(signalID))
+		{
+			SignalPassState state = GetSignalPassState(signal);
+			switch (state)
+			{
+			case SignalPassState::Closed:
+				blocked = true;
+				break;
+			case SignalPassState::Open:
+				open = true;
+				break;
+			case SignalPassState::Invalid:
+				invalid = true;
+				break;
+			case SignalPassState::Half:
+				open = true, blocked = true;
+				break;
+			}
+		}
+		if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+		{
+			return SignalPassState::Closed;
+		}
+
+		if (open && !blocked && !invalid) return SignalPassState::Open;
+		if (blocked && !open && !invalid) return SignalPassState::Closed;
+		if (invalid && !open && !blocked) return SignalPassState::Invalid;
+		else return SignalPassState::Half;
 	}
 	else
 	{
-		return SignalPassState::Open;
+		if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+		{
+			return SignalPassState::Closed;
+		}
+		else
+		{
+			return SignalPassState::Open;
+		}
 	}
 }
 
