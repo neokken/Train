@@ -56,6 +56,7 @@ public:
 	[[nodiscard]] bool IsValidSignal( SignalID id ) const;
 	[[nodiscard]] bool IsValidBlock( SignalBlockID id ) const;
 
+	void SetBlockContainingTrain( SignalBlockID blockID, TrainID trainID );
 private:
 	SignalBlockID CreateBlock();
 	void RemoveBlock( SignalBlockID id );

@@ -166,6 +166,12 @@ bool SignalManager::IsValidBlock( const SignalBlockID id ) const
 	return id != SignalBlockID::Invalid && m_blocks.contains(id);
 }
 
+void SignalManager::SetBlockContainingTrain( const SignalBlockID blockID, const TrainID trainID )
+{
+	DEBUG_ASSERT(IsValidBlock(blockID), "Block ID is invalid!");
+	GetMutableSignalBlock(blockID).containingTrain = trainID;
+}
+
 SignalBlockID SignalManager::CreateBlock()
 {
 	SignalBlockID blockID = m_blockIDGenerator.GenerateID();

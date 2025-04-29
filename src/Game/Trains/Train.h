@@ -3,6 +3,7 @@
 #include "GameObject/GameObject.h"
 
 class Wagon;
+class SignalManager;
 
 class Train :
 	public Engine::GameObject
@@ -13,8 +14,7 @@ public:
 	 * Constructs a train and sets all wagons to be behind wagons[0]
 	 * @param wagons list of wagon objects, these should be part of the world too, does not take ownership
 	 */
-	explicit Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager );
-
+	explicit Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager, SignalManager& signalManager );
 
 	void Update( float deltaTime ) override;
 
@@ -51,14 +51,17 @@ public:
 	 */
 	[[nodiscard]] float GetMaxStoppingDistance() const;
 
-private:
+	void SetID( TrainID trainID ) { m_id = trainID; }
 
+private:
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
 	TrackManager& m_trackManager;
+	SignalManager* m_signalManager;
 	std::vector<Wagon*> m_wagons{};
 	TrackSegmentID m_targetSegment;
 	std::vector<std::pair<TrackSegmentID, int>> m_currentPath;
+	TrainID m_id{TrainID::Invalid};
 	float m_targetDistanceOnTargetSegment;
 	float m_wagonSpacing{4.5f}; // length of the link in between wagons
 	float m_targetVelocity{0.f};

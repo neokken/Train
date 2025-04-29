@@ -2165,3 +2165,12 @@ inline uint32_t BlendColors(uint32_t color1, uint32_t color2, float alpha)
 	// Combine the components back into a single color in 0xRRGGBB format
 	return (red << 16) | (green << 8) | blue;
 }
+
+/**
+ * Check if a value is in the range (inclusive)
+ */
+template <class _Ty>
+inline bool InRange( _Ty value, _Ty min, _Ty max )
+{
+	return value >= min && value <= max;
+}

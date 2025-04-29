@@ -55,7 +55,8 @@ void BlockRenderer::Render( Engine::Camera& camera )
 				Engine::LineSegment::RenderWorldPos(camera, (lStart) + startDirRight * 0.4f, (lStart + startDir * 0.3f) + startDirRight * .7f, color, HeightLayer::Debug, 0.05f);
 				Engine::LineSegment::RenderWorldPos(camera, (lEnd + endDir * 0.3f) + endDirRight * 0.1f, (lEnd) + endDirRight * 0.4f, color, HeightLayer::Debug, 0.05f);
 				Engine::LineSegment::RenderWorldPos(camera, (lEnd) + endDirRight * 0.4f, (lEnd + endDir * 0.3f) + endDirRight * .7f, color, HeightLayer::Debug, 0.05f);
-				Engine::LineSegment::RenderWorldPos(camera, lStart, lEnd, color, HeightLayer::Debug);
+				float width = block.second.containingTrain != TrainID::Invalid ? 0.5f : 0.07f;
+				Engine::LineSegment::RenderWorldPos(camera, lStart, lEnd, color, HeightLayer::Debug, width);
 			}
 		}
 	}

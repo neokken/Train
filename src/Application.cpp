@@ -34,11 +34,9 @@ void Application::Init()
 	m_world.AddObject(wag2);
 	m_world.AddObject(wag3);
 	m_world.AddObject(wag4);
-	Train* train = new Train({wag1, wag2, wag3, wag4}, m_world.GetTrackManager());
+	Train* train = new Train({wag1, wag2, wag3, wag4}, m_world.GetTrackManager(), m_world.GetSignalManager());
 	m_world.AddObject(train);
 	m_world.GetTrainManager().AddTrain(*train);
-
-
 }
 
 // -----------------------------------------------------------

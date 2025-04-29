@@ -41,6 +41,7 @@ namespace Engine
 		ParticleSystem& GetParticleSystem() { return m_particles; }
 		TrackManager& GetTrackManager() { return m_trackManager; }
 		TrainManager& GetTrainManager() { return m_trainManager; }
+		SignalManager& GetSignalManager() { return m_signalManager; }
 
 	private:
 		std::vector<GameObject*> m_objects;

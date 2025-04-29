@@ -76,13 +76,17 @@ void TrackRenderer::RenderTrackSignal( const Engine::Camera& camera, const Signa
 
 	float2 dir = Engine::CurvedSegment::GetDirectionOnCurvedSegment(signal.distanceOnSegment, curve);
 	float2 placeDir = signal.directionTowardsNodeB ? float2(-dir.y, dir.x) : float2(dir.y, -dir.x);
+
+	Color lightColor = Color::SignalIndicator_Go;
+	if (signal.blockInFront == SignalBlockID::Invalid || m_signalManager->GetBlock(signal.blockInFront).containingTrain != TrainID::Invalid) lightColor = Color::SignalIndicator_AllBlocked;
+
 	switch (signal.type)
 	{
 	case SignalType::Default:
 		{
 			pos += placeDir * 1.75f;
 			Engine::Renderer::GetRenderer().DrawLineRectangle(float3(camera.GetCameraPosition(pos), HeightLayer::Tracks + 1), dir, float2(1.1f, 1.1f) * camera.GetZoomLevel(), Engine::RGB8ToRGB32(GetColor(Color::Signal_Default)), 0.08f * camera.GetZoomLevel());
-			Engine::Renderer::GetRenderer().DrawRectangle(float3(camera.GetCameraPosition(pos), HeightLayer::Tracks + 2), dir, float2(0.35f, 0.35f) * camera.GetZoomLevel(), Engine::RGB8ToRGB32(GetColor(Color::SignalIndicator_Go)));
+			Engine::Renderer::GetRenderer().DrawRectangle(float3(camera.GetCameraPosition(pos), HeightLayer::Tracks + 2), dir, float2(0.35f, 0.35f) * camera.GetZoomLevel(), Engine::RGB8ToRGB32(GetColor(lightColor)));
 			break;
 		}
 	case SignalType::Chain:
@@ -90,7 +94,7 @@ void TrackRenderer::RenderTrackSignal( const Engine::Camera& camera, const Signa
 			pos += placeDir * 1.7f;
 			Engine::Circle::RenderWorldPos(camera, pos, 0.55f, GetColor(Color::Signal_Chain), 0.08f);
 
-			Engine::Renderer::GetRenderer().DrawRectangle(float3(camera.GetCameraPosition(pos), HeightLayer::Tracks + 2), dir, float2(0.2f, 0.2f) * camera.GetZoomLevel(), Engine::RGB8ToRGB32(GetColor(Color::SignalIndicator_Go)));
+			Engine::Renderer::GetRenderer().DrawRectangle(float3(camera.GetCameraPosition(pos), HeightLayer::Tracks + 2), dir, float2(0.2f, 0.2f) * camera.GetZoomLevel(), Engine::RGB8ToRGB32(GetColor(lightColor)));
 			break;
 		}
 	}
