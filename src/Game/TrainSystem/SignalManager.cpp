@@ -49,7 +49,6 @@ void SignalManager::RemoveSignal( const SignalID signalID )
 		}
 		for (const auto& connection : block.connections)
 		{
-
 			for (auto connected : connection.second)
 			{
 				if (IsValidSignal(connected))
@@ -236,6 +235,34 @@ SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) con
 		else
 		{
 			return SignalPassState::Open;
+		}
+	}
+}
+
+bool SignalManager::CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals )
+{
+	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal ID");
+	const auto& signal = GetSignal(signalID);
+
+	if (!IsValidBlock(signal.blockInFront)) return true;
+
+	const auto& block = GetBlock(signal.blockInFront);
+	if (signal.type == SignalType::Chain)
+	{
+		if (targetSignals.empty()) return false;
+		SignalID next = targetSignals[0];
+		targetSignals.erase(targetSignals.begin());
+		return CanPassSignal(next, targetSignals);
+	}
+	else
+	{
+		if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
 		}
 	}
 }
@@ -513,8 +540,6 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 			RemoveBlock(block);
 	}
 }
-
-
 
 std::pair<std::vector<SignalID>, std::vector<SignalID>> SignalManager::FindConnectedSignals(
 	const TrackSegmentID segment,

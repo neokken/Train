@@ -68,8 +68,16 @@ public:
 	void EnterBlock( SignalBlockID blockID, TrainID trainID );
 	void ExitBlock( SignalBlockID blockID, TrainID trainID );
 
+	//Get general passing state of a signal
 	SignalPassState GetSignalPassState( SignalID signalID ) const;
 
+	/**
+	 * Check if a signal is passable
+	 * @param signalID signal to check
+	 * @param targetSignals List of signals you want to go to via this signal
+	 * @return true if passable
+	 */
+	bool CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals );
 private:
 	SignalBlockID CreateBlock();
 	void RemoveBlock( SignalBlockID id );
