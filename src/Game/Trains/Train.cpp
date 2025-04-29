@@ -233,7 +233,6 @@ void Train::Update( const float deltaTime )
 				{
 					float newDist = m_wagons[i]->GetFrontWalker().GetDistance() / segment.distance;
 					//Check if it passed a signal
-					if (newDist < oldDist) newDist = 0.01f; // In case moved to new segment
 					for (SignalID signalID : segment.signals)
 					{
 						const auto& signal = m_signalManager->GetSignal(signalID);

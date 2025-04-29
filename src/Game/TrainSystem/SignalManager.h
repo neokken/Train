@@ -45,7 +45,8 @@ enum class SignalPassState
 {
 	Open,
 	Closed,
-	Half
+	Half,
+	Invalid
 };
 
 class SignalManager

@@ -63,6 +63,7 @@ enum class Color : std::uint8_t
 	SignalIndicator_Go,
 	SignalIndicator_SomeBlocked,
 	SignalIndicator_AllBlocked,
+	SignalIndicator_Invalid,
 };
 
 inline std::unordered_map<Color, uint> s_colorMap
@@ -89,6 +90,7 @@ inline std::unordered_map<Color, uint> s_colorMap
 	{Color::SignalIndicator_Go, 0x48E24C},
 	{Color::SignalIndicator_SomeBlocked, 0xEDE748},
 	{Color::SignalIndicator_AllBlocked, 0xE41B1B},
+	{Color::SignalIndicator_Invalid, 0x300909},
 };
 
 inline uint GetColor( const Color c )

@@ -188,7 +188,7 @@ SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) con
 	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal ID");
 	const auto& signal = GetSignal(signalID);
 
-	if (!IsValidBlock(signal.blockInFront)) return SignalPassState::Closed;
+	if (!IsValidBlock(signal.blockInFront)) return SignalPassState::Invalid;
 
 	const auto& block = GetBlock(signal.blockInFront);
 
