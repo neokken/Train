@@ -18,7 +18,7 @@ struct SignalBlock
 {
 	unordered_map<SignalID, std::vector<SignalID>> connections;
 	SignalBlockID id;
-	TrainID containingTrain;
+	std::unordered_set<TrainID> containingTrains;
 	TrainID reservedBy;
 };
 
@@ -40,6 +40,14 @@ struct Signal
 	SignalBlockID blockBehind = SignalBlockID::Invalid;
 };
 
+//Are connections through this signal possible i.e is it green, red or orange
+enum class SignalPassState
+{
+	Open,
+	Closed,
+	Half
+};
+
 class SignalManager
 {
 public:
@@ -56,7 +64,11 @@ public:
 	[[nodiscard]] bool IsValidSignal( SignalID id ) const;
 	[[nodiscard]] bool IsValidBlock( SignalBlockID id ) const;
 
-	void SetBlockContainingTrain( SignalBlockID blockID, TrainID trainID );
+	void EnterBlock( SignalBlockID blockID, TrainID trainID );
+	void ExitBlock( SignalBlockID blockID, TrainID trainID );
+
+	SignalPassState GetSignalPassState( SignalID signalID ) const;
+
 private:
 	SignalBlockID CreateBlock();
 	void RemoveBlock( SignalBlockID id );

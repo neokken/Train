@@ -78,7 +78,8 @@ void TrackRenderer::RenderTrackSignal( const Engine::Camera& camera, const Signa
 	float2 placeDir = signal.directionTowardsNodeB ? float2(-dir.y, dir.x) : float2(dir.y, -dir.x);
 
 	Color lightColor = Color::SignalIndicator_Go;
-	if (signal.blockInFront == SignalBlockID::Invalid || m_signalManager->GetBlock(signal.blockInFront).containingTrain != TrainID::Invalid) lightColor = Color::SignalIndicator_AllBlocked;
+	SignalPassState signalState = m_signalManager->GetSignalPassState(signal.id);
+	if (signalState == SignalPassState::Closed) lightColor = Color::SignalIndicator_AllBlocked;
 
 	switch (signal.type)
 	{

@@ -166,10 +166,42 @@ bool SignalManager::IsValidBlock( const SignalBlockID id ) const
 	return id != SignalBlockID::Invalid && m_blocks.contains(id);
 }
 
-void SignalManager::SetBlockContainingTrain( const SignalBlockID blockID, const TrainID trainID )
+void SignalManager::EnterBlock( SignalBlockID blockID, TrainID trainID )
 {
 	DEBUG_ASSERT(IsValidBlock(blockID), "Block ID is invalid!");
-	GetMutableSignalBlock(blockID).containingTrain = trainID;
+	GetMutableSignalBlock(blockID).containingTrains.insert(trainID);
+}
+
+void SignalManager::ExitBlock( SignalBlockID blockID, TrainID trainID )
+{
+	DEBUG_ASSERT(IsValidBlock(blockID), "Block ID is invalid!");
+	auto& block = GetMutableSignalBlock(blockID);
+	if (block.containingTrains.contains(trainID)) block.containingTrains.erase(trainID);
+	else
+	{
+		Engine::Logger::Warn("Tried to remove train {} from block {} But train was not part of the block\n", static_cast<int>(trainID), static_cast<int>(blockID));
+	}
+}
+
+SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) const
+{
+	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal ID");
+	const auto& signal = GetSignal(signalID);
+
+	if (!IsValidBlock(signal.blockInFront)) return SignalPassState::Closed;
+
+	const auto& block = GetBlock(signal.blockInFront);
+
+	//TODO: Chain signals
+
+	if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+	{
+		return SignalPassState::Closed;
+	}
+	else
+	{
+		return SignalPassState::Open;
+	}
 }
 
 SignalBlockID SignalManager::CreateBlock()
@@ -281,14 +313,14 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
 				{
 					sig.blockBehind = blockID;
-					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+					if (IsValidSignal(sig.oppositeSignal)) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
 				}
 				else
 				{
 					sig.blockInFront = blockID;
-					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+					if (IsValidSignal(sig.oppositeSignal)) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
 				}
-				if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+				if (IsValidSignal(sig.oppositeSignal)) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
 
 				forwardConnections.push_back(forwardSignal);
 			}
@@ -298,12 +330,12 @@ void SignalManager::UpdateBlock( Signal& placedSignal )
 				if (sig.directionTowardsNodeB == placedSignal.directionTowardsNodeB)
 				{
 					sig.blockBehind = blockID;
-					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
+					if (IsValidSignal(sig.oppositeSignal)) GetMutableSignal(sig.oppositeSignal).blockInFront = blockID;
 				}
 				else
 				{
 					sig.blockInFront = blockID;
-					if (sig.oppositeSignal != SignalID::Invalid) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
+					if (IsValidSignal(sig.oppositeSignal)) GetMutableSignal(sig.oppositeSignal).blockBehind = blockID;
 				}
 				block.connections.insert(std::pair<SignalID, std::vector<SignalID>>(forwardSignal, {placedSignal.oppositeSignal}));
 			}

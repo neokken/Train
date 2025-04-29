@@ -154,7 +154,7 @@ void Train::Update( const float deltaTime )
 					&& InRange(signal.distanceOnSegment, oldDist, newDist)
 				)
 				{
-					m_signalManager->SetBlockContainingTrain(signal.blockInFront, m_id);
+					m_signalManager->EnterBlock(signal.blockInFront, m_id);
 				}
 			}
 
@@ -185,9 +185,7 @@ void Train::Update( const float deltaTime )
 							&& InRange(signal.distanceOnSegment, oldDistBack, newDistBack)
 						)
 						{
-							std::printf("Unsubscribing %d\n", static_cast<int>(signalID));
-							if (m_signalManager->GetBlock(signal.blockBehind).containingTrain == m_id)
-								m_signalManager->SetBlockContainingTrain(signal.blockBehind, TrainID::Invalid);
+							m_signalManager->ExitBlock(signal.blockBehind, m_id);
 						}
 					}
 				}
@@ -198,7 +196,27 @@ void Train::Update( const float deltaTime )
 		{
 			//Flip the direction of movement if back wagon isnt aligned with front wagon direction
 			const int flipDirection = (m_wagons[m_wagons.size() - 1]->GetDirectionOnTrack() != GetDirectionOnTrack()) ? -1 : 0;
+
+			const TrackSegment& segment = m_trackManager.GetTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment());
+			float oldDist = m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance() / segment.distance;
 			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity * flipDirection, deltaTime);
+			float newDist = m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance() / segment.distance;
+			//Check if it passed a signal
+			if (newDist > oldDist) newDist = 0.01f; // In case moved to new segment
+			for (SignalID signalID : segment.signals)
+			{
+				const auto& signal = m_signalManager->GetSignal(signalID);
+
+				if (signal.blockInFront != SignalBlockID::Invalid
+					&& signal.directionTowardsNodeB == !GetDirectionOnTrack()
+					&& InRange(signal.distanceOnSegment, oldDist, newDist)
+				)
+				{
+					m_signalManager->EnterBlock(signal.blockInFront, m_id);
+				}
+			}
+
+
 
 			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
 			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
@@ -208,7 +226,27 @@ void Train::Update( const float deltaTime )
 				TrackWalker& back = m_wagons[i]->GetBackWalker();
 				float walkerDistance = length(front.GetPosition() - back.GetPosition());
 				float diff = m_wagonSpacing - walkerDistance;
+				const TrackSegment& segment = m_trackManager.GetTrackSegment(m_wagons[i]->GetFrontWalker().GetCurrentTrackSegment());
+				float oldDist = m_wagons[i]->GetFrontWalker().GetDistance() / segment.distance;
 				WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
+				if (i == 0)
+				{
+					float newDist = m_wagons[i]->GetFrontWalker().GetDistance() / segment.distance;
+					//Check if it passed a signal
+					if (newDist < oldDist) newDist = 0.01f; // In case moved to new segment
+					for (SignalID signalID : segment.signals)
+					{
+						const auto& signal = m_signalManager->GetSignal(signalID);
+
+						if (signal.blockBehind != SignalBlockID::Invalid
+							&& signal.directionTowardsNodeB == !GetDirectionOnTrack()
+							&& InRange(signal.distanceOnSegment, oldDist, newDist)
+						)
+						{
+							m_signalManager->ExitBlock(signal.blockBehind, m_id);
+						}
+					}
+				}
 				velocityChange += moveInfo.velocityChangeAmount;
 			}
 		}

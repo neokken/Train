@@ -2170,7 +2170,8 @@ inline uint32_t BlendColors(uint32_t color1, uint32_t color2, float alpha)
  * Check if a value is in the range (inclusive)
  */
 template <class _Ty>
-inline bool InRange( _Ty value, _Ty min, _Ty max )
+inline bool InRange( _Ty value, _Ty r1, _Ty r2 )
 {
-	return value >= min && value <= max;
+	return (value >= r1 && value <= r2)
+		|| (value >= r2 && value <= r1);
 }
