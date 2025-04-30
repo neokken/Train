@@ -332,7 +332,7 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 	return it->second;
 }
 
-const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b ) const
+TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b ) const
 {
 	const TrackNode& nodeA = GetTrackNode(a);
 	for (auto connectionList : nodeA.validConnections)
@@ -350,7 +350,7 @@ const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b
 	return TrackSegmentID::Invalid;
 }
 
-const TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
+TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
 {
 	TrackSegmentID closest = TrackSegmentID::Invalid;
 	float closestDistance = INFINITY;

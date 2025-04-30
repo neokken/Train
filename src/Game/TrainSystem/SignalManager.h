@@ -38,6 +38,7 @@ struct Signal
 	SignalID oppositeSignal = SignalID::Invalid;
 	SignalBlockID blockInFront = SignalBlockID::Invalid;
 	SignalBlockID blockBehind = SignalBlockID::Invalid;
+	bool overrideClosed = false;
 };
 
 //Are connections through this signal possible i.e is it green, red or orange
@@ -68,6 +69,9 @@ public:
 	void EnterBlock( SignalBlockID blockID, TrainID trainID );
 	void ExitBlock( SignalBlockID blockID, TrainID trainID );
 
+	std::vector<std::vector<SignalID>> GetPathSignals( const std::vector<int>& path, TrackSegmentID startLocation, bool startDirectionTowardsB, float startDistance ) const;
+
+
 	//Get general passing state of a signal
 	SignalPassState GetSignalPassState( SignalID signalID ) const;
 
@@ -75,9 +79,13 @@ public:
 	 * Check if a signal is passable
 	 * @param signalID signal to check
 	 * @param targetSignals List of signals you want to go to via this signal
+	 * @param passingTrain train that is trying to pass
 	 * @return true if passable
 	 */
-	bool CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals );
+	bool CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals, TrainID passingTrain );
+
+	void SetSignalOverrideState( SignalID signalID, bool overrideClosed );
+
 private:
 	SignalBlockID CreateBlock();
 	void RemoveBlock( SignalBlockID id );

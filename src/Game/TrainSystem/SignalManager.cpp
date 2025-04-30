@@ -182,11 +182,63 @@ void SignalManager::ExitBlock( SignalBlockID blockID, TrainID trainID )
 	}
 }
 
+std::vector<std::vector<SignalID>> SignalManager::GetPathSignals( const std::vector<int>& path, const TrackSegmentID startLocation, const bool startDirectionTowardsB, float startDistance ) const
+{
+	std::vector<std::vector<SignalID>> list;
+
+	//Show path
+	TrackSegmentID currentSegment = startLocation;
+	Engine::CurveData curve;
+	TrackSegment currentSeg = m_trackManager->GetTrackSegment(currentSegment);
+	TrackNodeID currentNode = startDirectionTowardsB ? currentSeg.nodeB : currentSeg.nodeA;
+
+	for (int i = 0; i <= static_cast<int>(path.size()); ++i)
+	{
+		std::vector<SignalID> found = {};
+		for (SignalID signalID : currentSeg.signals)
+		{
+			const Signal& signal = GetSignal(signalID);
+			if (i == 0)
+			{
+				if (startDirectionTowardsB)
+				{
+					if (signal.directionTowardsNodeB && signal.distanceOnSegment > startDistance) found.push_back(signalID);
+				}
+				else if (!signal.directionTowardsNodeB && signal.distanceOnSegment < startDistance) found.push_back(signalID);
+			}
+			else
+			{
+				if (currentSeg.nodeB == currentNode)
+				{
+					if (signal.directionTowardsNodeB) found.push_back(signalID);
+				}
+				else
+				{
+					if (!signal.directionTowardsNodeB) found.push_back(signalID);
+				}
+			}
+		}
+		if (i == static_cast<int>(path.size()))
+		{
+			list.push_back(found);
+			break;
+		}
+		const TrackNode& node = m_trackManager->GetTrackNode(currentNode);
+		currentSegment = node.validConnections.at(currentSegment)[path[i]];
+		currentSeg = m_trackManager->GetTrackSegment(currentSegment);
+		if (currentNode == currentSeg.nodeB) currentNode = currentSeg.nodeA;
+		else currentNode = currentSeg.nodeB;
+		list.push_back(found);
+	}
+	return list;
+}
+
 SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) const
 {
 	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal ID");
 	const auto& signal = GetSignal(signalID);
 
+	if (signal.overrideClosed) return SignalPassState::Closed;
 	if (!IsValidBlock(signal.blockInFront)) return SignalPassState::Invalid;
 
 	const auto& block = GetBlock(signal.blockInFront);
@@ -239,32 +291,42 @@ SignalPassState SignalManager::GetSignalPassState( const SignalID signalID ) con
 	}
 }
 
-bool SignalManager::CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals )
+bool SignalManager::CanPassSignal( SignalID signalID, std::vector<SignalID> targetSignals, TrainID passingTrain )
 {
 	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal ID");
 	const auto& signal = GetSignal(signalID);
 
+	if (signal.overrideClosed) return false;
 	if (!IsValidBlock(signal.blockInFront)) return true;
+	if (targetSignals.empty()) return false;
 
 	const auto& block = GetBlock(signal.blockInFront);
 	if (signal.type == SignalType::Chain)
 	{
-		if (targetSignals.empty()) return false;
 		SignalID next = targetSignals[0];
 		targetSignals.erase(targetSignals.begin());
-		return CanPassSignal(next, targetSignals);
+		return CanPassSignal(next, targetSignals, passingTrain);
 	}
 	else
 	{
-		if (!block.containingTrains.empty() || block.connections.at(signalID).empty())
+		if ((!block.containingTrains.empty() && !(block.containingTrains.size() == 1 && block.containingTrains.contains(passingTrain)))
+			|| block.connections.at(signalID).empty())
 		{
 			return false;
 		}
 		else
 		{
-			return true;
+			if (std::ranges::find(block.connections.at(signalID), targetSignals[0]) != block.connections.at(signalID).end())
+				return true;
+			else return false;
 		}
 	}
+}
+
+void SignalManager::SetSignalOverrideState( const SignalID signalID, const bool overrideClosed )
+{
+	DEBUG_ASSERT(IsValidSignal(signalID), "Invalid Signal");
+	GetMutableSignal(signalID).overrideClosed = overrideClosed;
 }
 
 SignalBlockID SignalManager::CreateBlock()

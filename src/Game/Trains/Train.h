@@ -1,9 +1,9 @@
 #pragma once
 #include "Game/TrainSystem/TrainWalker/TrackWalker.h"
 #include "GameObject/GameObject.h"
+#include "Game/TrainSystem/SignalManager.h"
 
 class Wagon;
-class SignalManager;
 
 class Train :
 	public Engine::GameObject
@@ -51,16 +51,20 @@ public:
 	 */
 	[[nodiscard]] float GetMaxStoppingDistance() const;
 
-	void SetID( TrainID trainID ) { m_id = trainID; }
+	void SetID( const TrainID trainID ) { m_id = trainID; }
 
 private:
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
+	void CheckPathAvailability();
 	TrackManager& m_trackManager;
 	SignalManager* m_signalManager;
 	std::vector<Wagon*> m_wagons{};
 	TrackSegmentID m_targetSegment;
 	std::vector<std::pair<TrackSegmentID, int>> m_currentPath;
+	std::vector<std::vector<SignalID>> m_pathSignals;
+	std::vector<SignalID> m_pathSignalsRaw;
+	SignalID m_upcomingSignal{SignalID::Invalid};
 	TrainID m_id{TrainID::Invalid};
 	float m_targetDistanceOnTargetSegment;
 	float m_wagonSpacing{4.5f}; // length of the link in between wagons

@@ -235,7 +235,8 @@ void TrackDebugger::UI()
 		{
 			const Signal& selected = m_signalManager->GetSignal(m_selectedSignal);
 			ImGui::Text(("Selected Signal: " + std::to_string(static_cast<int>(m_selectedSignal))).c_str());
-
+			bool forceClosed = selected.overrideClosed;
+			if (ImGui::Checkbox("Force Closed", &forceClosed)) m_signalManager->SetSignalOverrideState(m_selectedSignal, forceClosed);
 			ImGui::Text("Opposite Signal: ");
 			if (selected.oppositeSignal != SignalID::Invalid)
 			{
