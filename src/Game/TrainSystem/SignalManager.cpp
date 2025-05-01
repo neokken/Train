@@ -190,12 +190,18 @@ std::vector<std::vector<SignalID>> SignalManager::GetPathSignals( const std::vec
 	TrackSegmentID currentSegment = startLocation;
 	Engine::CurveData curve;
 	TrackSegment currentSeg = m_trackManager->GetTrackSegment(currentSegment);
-	TrackNodeID currentNode = startDirectionTowardsB ? currentSeg.nodeB : currentSeg.nodeA;
+	bool dir = startDirectionTowardsB;
+	TrackNodeID currentNode = dir ? currentSeg.nodeB : currentSeg.nodeA;
 
 	for (int i = 0; i <= static_cast<int>(path.size()); ++i)
 	{
 		std::vector<SignalID> found = {};
-		for (SignalID signalID : currentSeg.signals)
+		std::vector<SignalID> segSignals = currentSeg.signals;
+		ranges::sort(segSignals, [this]( SignalID a, SignalID b )
+		{
+			return GetSignal(a).distanceOnSegment < GetSignal(b).distanceOnSegment;
+		});
+		for (SignalID signalID : segSignals)
 		{
 			const Signal& signal = GetSignal(signalID);
 			if (i == 0)
@@ -226,8 +232,15 @@ std::vector<std::vector<SignalID>> SignalManager::GetPathSignals( const std::vec
 		const TrackNode& node = m_trackManager->GetTrackNode(currentNode);
 		currentSegment = node.validConnections.at(currentSegment)[path[i]];
 		currentSeg = m_trackManager->GetTrackSegment(currentSegment);
-		if (currentNode == currentSeg.nodeB) currentNode = currentSeg.nodeA;
-		else currentNode = currentSeg.nodeB;
+		if (currentNode == currentSeg.nodeB)
+		{
+			currentNode = currentSeg.nodeA;
+		}
+		else
+		{
+			dir = !dir;
+			currentNode = currentSeg.nodeB;
+		}
 		list.push_back(found);
 	}
 	return list;

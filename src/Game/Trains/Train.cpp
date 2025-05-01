@@ -51,7 +51,7 @@ void Train::Update( const float deltaTime )
 	if (m_wagons.empty()) return;
 
 	//Pathfinding
-	if (!m_currentPath.empty()) CheckPathAvailability();
+	if (!m_currentPath.empty() || m_targetDistance > 0.f || (m_upcomingSignal != SignalID::Invalid)) CheckPathAvailability();
 	if (m_targetDistance > 0)
 	{
 		if (m_targetDistance < GetMaxStoppingDistance())
@@ -461,7 +461,11 @@ void Train::CheckPathAvailability()
 	const TrackSegment& segment = m_trackManager.GetTrackSegment(curr);
 		float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
 	float distance = segment.distance - currentDistance;
-		std::vector<SignalID> signals = m_pathSignalsRaw;
+	if (segment.id == m_targetSegment)
+	{
+		distance = m_targetDistanceOnTargetSegment * segment.distance - currentDistance;
+	}
+	std::vector<SignalID> signals = m_pathSignalsRaw;
 
 	for (const SignalID signal : m_pathSignals.at(0))
 	{
