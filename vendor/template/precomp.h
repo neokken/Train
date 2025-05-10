@@ -21,6 +21,7 @@
 #include <ranges>
 #include <queue>
 #include <set>
+#include <unordered_set>
 
 // header for AVX, and every technology before it.
 // if your CPU does not support this (unlikely), include the appropriate header instead.

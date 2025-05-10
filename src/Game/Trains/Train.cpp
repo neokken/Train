@@ -12,10 +12,10 @@
 #include <algorithm>
 #include "Locomotive.h"
 
-Train::Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager )
+Train::Train( const std::vector<Wagon*>& wagons, TrackManager& trackManager, SignalManager& signalManager )
 	: GameObject()
 	  , m_trackManager(trackManager)
-
+	  , m_signalManager(&signalManager)
 {
 	for (auto wagon : wagons)
 	{
@@ -51,6 +51,7 @@ void Train::Update( const float deltaTime )
 	if (m_wagons.empty()) return;
 
 	//Pathfinding
+	if (!m_currentPath.empty() || m_targetDistance > 0.f || (m_upcomingSignal != SignalID::Invalid)) CheckPathAvailability();
 	if (m_targetDistance > 0)
 	{
 		if (m_targetDistance < GetMaxStoppingDistance())
@@ -139,7 +140,31 @@ void Train::Update( const float deltaTime )
 		float velocityChange = 0.f;
 		if (m_velocity > 0)
 		{
+			const TrackSegment& segment = m_trackManager.GetTrackSegment(m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment());
+			float oldDist = m_wagons[0]->GetFrontWalker().GetDistance() / segment.distance;
 			m_wagons[0]->Move(deltaTime * m_velocity, deltaTime);
+			float newDist = m_wagons[0]->GetFrontWalker().GetDistance() / segment.distance;
+			//Check if it passed a signal
+			if (newDist < oldDist) newDist = 1.01f; // In case moved to new segment
+			for (SignalID signalID : segment.signals)
+			{
+				const auto& signal = m_signalManager->GetSignal(signalID);
+
+				if (signal.blockInFront != SignalBlockID::Invalid
+					&& signal.directionTowardsNodeB == GetDirectionOnTrack()
+					&& InRange(signal.distanceOnSegment, oldDist, newDist)
+				)
+				{
+					m_signalManager->EnterBlock(signal.blockInFront, m_id);
+					if (!m_pathSignalsRaw.empty() && m_pathSignalsRaw[0] == signalID)
+					{
+						m_pathSignalsRaw.erase(m_pathSignalsRaw.begin());
+						m_pathSignals[0].erase(m_pathSignals[0].begin());
+					}
+				}
+			}
+
+
 			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
 			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
 			for (int i = 1; i < static_cast<int>(m_wagons.size()); ++i)
@@ -149,7 +174,27 @@ void Train::Update( const float deltaTime )
 
 				float walkerDistance = length(front.GetPosition() - back.GetPosition());
 				float diff = walkerDistance - m_wagonSpacing;
+
+				const TrackSegment& backsegment = m_trackManager.GetTrackSegment(m_wagons[i]->GetBackWalker().GetCurrentTrackSegment());
+
+				float oldDistBack = m_wagons[i]->GetBackWalker().GetDistance() / backsegment.distance;
 				WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
+				if (i == static_cast<int>(m_wagons.size()) - 1)
+				{
+					float newDistBack = m_wagons[i]->GetBackWalker().GetDistance() / backsegment.distance;
+					//Check if it passed a signal
+					for (SignalID signalID : backsegment.signals)
+					{
+						const auto& signal = m_signalManager->GetSignal(signalID);
+						if (signal.blockBehind != SignalBlockID::Invalid
+							&& signal.directionTowardsNodeB == GetDirectionOnTrack()
+							&& InRange(signal.distanceOnSegment, oldDistBack, newDistBack)
+						)
+						{
+							m_signalManager->ExitBlock(signal.blockBehind, m_id);
+						}
+					}
+				}
 				velocityChange += moveInfo.velocityChangeAmount;
 			}
 		}
@@ -157,7 +202,27 @@ void Train::Update( const float deltaTime )
 		{
 			//Flip the direction of movement if back wagon isnt aligned with front wagon direction
 			const int flipDirection = (m_wagons[m_wagons.size() - 1]->GetDirectionOnTrack() != GetDirectionOnTrack()) ? -1 : 0;
+
+			const TrackSegment& segment = m_trackManager.GetTrackSegment(m_wagons[m_wagons.size() - 1]->GetBackWalker().GetCurrentTrackSegment());
+			float oldDist = m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance() / segment.distance;
 			m_wagons[m_wagons.size() - 1]->Move(deltaTime * m_velocity * flipDirection, deltaTime);
+			float newDist = m_wagons[m_wagons.size() - 1]->GetBackWalker().GetDistance() / segment.distance;
+			//Check if it passed a signal
+			if (newDist > oldDist) newDist = 0.01f; // In case moved to new segment
+			for (SignalID signalID : segment.signals)
+			{
+				const auto& signal = m_signalManager->GetSignal(signalID);
+
+				if (signal.blockInFront != SignalBlockID::Invalid
+					&& signal.directionTowardsNodeB == !GetDirectionOnTrack()
+					&& InRange(signal.distanceOnSegment, oldDist, newDist)
+				)
+				{
+					m_signalManager->EnterBlock(signal.blockInFront, m_id);
+				}
+			}
+
+
 
 			if (m_targetDistance > 0) m_targetDistance = max(0.f, m_targetDistance - deltaTime * m_velocity);
 			else if (m_targetDistance < 0) m_targetDistance = min(0.f, m_targetDistance - deltaTime * m_velocity);
@@ -167,7 +232,26 @@ void Train::Update( const float deltaTime )
 				TrackWalker& back = m_wagons[i]->GetBackWalker();
 				float walkerDistance = length(front.GetPosition() - back.GetPosition());
 				float diff = m_wagonSpacing - walkerDistance;
+				const TrackSegment& segment = m_trackManager.GetTrackSegment(m_wagons[i]->GetFrontWalker().GetCurrentTrackSegment());
+				float oldDist = m_wagons[i]->GetFrontWalker().GetDistance() / segment.distance;
 				WagonMovementInfo moveInfo = m_wagons[i]->Move(diff, deltaTime);
+				if (i == 0)
+				{
+					float newDist = m_wagons[i]->GetFrontWalker().GetDistance() / segment.distance;
+					//Check if it passed a signal
+					for (SignalID signalID : segment.signals)
+					{
+						const auto& signal = m_signalManager->GetSignal(signalID);
+
+						if (signal.blockBehind != SignalBlockID::Invalid
+							&& signal.directionTowardsNodeB == !GetDirectionOnTrack()
+							&& InRange(signal.distanceOnSegment, oldDist, newDist)
+						)
+						{
+							m_signalManager->ExitBlock(signal.blockBehind, m_id);
+						}
+					}
+				}
 				velocityChange += moveInfo.velocityChangeAmount;
 			}
 		}
@@ -190,7 +274,8 @@ void Train::Update( const float deltaTime )
 			                            [this]( const std::pair<TrackSegmentID, int>& element ) { return element.first == m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment(); });
 			if (iter != m_currentPath.end())
 			{
-				m_currentPath.erase(m_currentPath.begin(), iter);
+				m_currentPath.erase(m_currentPath.begin(), std::next(iter));
+				m_pathSignals.erase(m_pathSignals.begin());
 			}
 		}
 	}
@@ -281,19 +366,23 @@ void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSe
 	TrackSegmentID curr = m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment();
 	std::vector<int> path = m_trackManager.CalculatePath(curr, towardsB, m_targetSegment);
 
-	//Get path distance (in the future this should be the distance until the first blocked signal)
+	//Get path distance
 	TrackNodeID currentNode = towardsB ? m_trackManager.GetTrackSegment(curr).nodeB : m_trackManager.GetTrackSegment(curr).nodeA;
 	TrackSegmentID currentSegment = curr;
 	float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
 	float distance = m_trackManager.GetTrackSegment(curr).distance - currentDistance;
 	if (path.empty())
 	{
-		distance *= distanceOnSegment;
+		distance = distanceOnSegment - currentDistance;
 	}
-
+	m_pathSignals = m_signalManager->GetPathSignals(path, curr, towardsB, currentDistance / m_trackManager.GetTrackSegment(curr).distance);
+	m_pathSignalsRaw.clear();
 	m_currentPath.clear();
+	m_upcomingSignal = SignalID::Invalid;
+	m_pathSignalsRaw.insert(m_pathSignalsRaw.begin(), m_pathSignals[0].begin(), m_pathSignals[0].end());
 	for (int i = 0; i < path.size(); ++i)
 	{
+		m_pathSignalsRaw.insert(m_pathSignalsRaw.end(), m_pathSignals[i + 1].begin(), m_pathSignals[i + 1].end());
 		m_trackManager.SetNodeLever(currentNode, currentSegment, path[i]);
 		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[path[i]];
 		m_currentPath.push_back(std::pair(currentSegment, path[i]));
@@ -311,6 +400,7 @@ void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSe
 		else currentNode = seg.nodeA;
 	}
 	m_targetDistance = distance;
+	CheckPathAvailability();
 }
 
 bool Train::GetDirectionOnTrack() const
@@ -352,4 +442,58 @@ void Train::CalculateWagons()
 	m_maxAccelerationBackwards = backwardAccel;
 	m_maxBrakingForce = brakingForce;
 	m_mass = mass;
+}
+
+void Train::CheckPathAvailability()
+{
+	if (m_pathSignalsRaw.empty()) return;
+	std::vector<SignalID> nextSignals;
+	if (m_pathSignalsRaw.size() > 1) nextSignals.insert(nextSignals.begin(), std::next(m_pathSignalsRaw.begin()), m_pathSignalsRaw.end());
+	if (m_upcomingSignal != SignalID::Invalid)
+	{
+		if (!m_signalManager->CanPassSignal(m_upcomingSignal, nextSignals, m_id))
+		{
+			return;
+		}
+		m_upcomingSignal = SignalID::Invalid;
+	}
+	TrackSegmentID curr = m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment();
+	const TrackSegment& segment = m_trackManager.GetTrackSegment(curr);
+		float currentDistance = m_wagons[0]->GetFrontWalker().GetDistance();
+	float distance = segment.distance - currentDistance;
+	if (segment.id == m_targetSegment)
+	{
+		distance = m_targetDistanceOnTargetSegment * segment.distance - currentDistance;
+	}
+	std::vector<SignalID> signals = m_pathSignalsRaw;
+
+	for (const SignalID signal : m_pathSignals.at(0))
+	{
+		signals.erase(signals.begin());
+		if (!m_signalManager->CanPassSignal(signal, nextSignals, m_id))
+		{
+			distance = m_signalManager->GetSignal(signal).distanceOnSegment * segment.distance - currentDistance;
+			m_targetDistance = distance - 5.f; // Small offset for safety
+			m_upcomingSignal = signal;
+			return;
+		}
+	}
+
+	for (int i = 0; i < m_currentPath.size(); ++i)
+		{
+			for (const SignalID signal : m_pathSignals.at(i + 1))
+			{
+				signals.erase(signals.begin());
+				if (!m_signalManager->CanPassSignal(signal, nextSignals, m_id))
+				{
+					distance += m_signalManager->GetSignal(signal).distanceOnSegment * m_trackManager.GetTrackSegment(m_currentPath[i].first).distance;
+					m_targetDistance = distance - 5.f; // Small offset for safety
+					m_upcomingSignal = signal;
+					return;
+				}
+			}
+			distance += m_trackManager.GetTrackSegment(m_currentPath[i].first).distance;
+		}
+		m_targetDistance = distance;
+		m_upcomingSignal = SignalID::Invalid;
 }

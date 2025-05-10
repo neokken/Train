@@ -332,7 +332,7 @@ const TrackSegment& TrackManager::GetTrackSegment( const TrackSegmentID id ) con
 	return it->second;
 }
 
-const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b ) const
+TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b ) const
 {
 	const TrackNode& nodeA = GetTrackNode(a);
 	for (auto connectionList : nodeA.validConnections)
@@ -350,7 +350,7 @@ const TrackSegmentID TrackManager::GetTrackSegment( TrackNodeID a, TrackNodeID b
 	return TrackSegmentID::Invalid;
 }
 
-const TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
+TrackSegmentID TrackManager::GetClosestTrackSegment( const float2 position, const float sqrMaxDistance, const bool returnFirstFound ) const
 {
 	TrackSegmentID closest = TrackSegmentID::Invalid;
 	float closestDistance = INFINITY;
@@ -401,6 +401,25 @@ TrackSegmentID TrackManager::GetNextSegmentNegative( const TrackSegmentID id ) c
 	if (connectionDir == -1) return TrackSegmentID::Invalid;
 
 	return node.validConnections.at(id).at(connectionDir);
+}
+
+void TrackManager::AddSignal( const TrackSegmentID segment, const SignalID signal )
+{
+	GetMutableTrackSegment(segment).signals.push_back(signal);
+}
+
+void TrackManager::RemoveSignal( TrackSegmentID segment, SignalID signal )
+{
+	std::vector<SignalID>& signals = GetMutableTrackSegment(segment).signals;
+	auto iter = std::find(signals.begin(), signals.end(), signal);
+	if (iter == signals.end())
+	{
+		Engine::Logger::Critical("Tried to remove signal {} from segment {} but it did not exist there", static_cast<int>(signal), static_cast<int>(segment));
+	}
+	else
+	{
+		signals.erase(iter);
+	}
 }
 
 nlohmann::json TrackManager::SerializeData() const
