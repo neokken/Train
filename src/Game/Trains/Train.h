@@ -57,6 +57,8 @@ private:
 	//Recalculate mass and accelerations of the whole train
 	void CalculateWagons();
 	void CheckPathAvailability();
+	//Reserves path and signals in front of the train
+	void ReservePath() const;
 	TrackManager& m_trackManager;
 	SignalManager* m_signalManager;
 	std::vector<Wagon*> m_wagons{};

@@ -182,6 +182,27 @@ void SignalManager::ExitBlock( SignalBlockID blockID, TrainID trainID )
 	}
 }
 
+void SignalManager::ReserveSignal( SignalID signalID, TrainID trainID, float expectedMaxDuration )
+{
+	const Signal& signal = GetSignal(signalID);
+	if (!IsValidBlock(signal.blockInFront)) return;
+	SignalBlock& block = GetMutableSignalBlock(signal.blockInFront);
+	if (std::ranges::find_if(block.reservations, [trainID]( const Reservation& a ) { return a.reservingTrain == trainID; }) == block.reservations.end())
+	{
+		block.reservations.push_back({signalID, trainID, expectedMaxDuration});
+	}
+}
+
+void SignalManager::ClearReservation( SignalBlockID blockThatWasReservedID, TrainID trainID )
+{
+	SignalBlock& block = GetMutableSignalBlock(blockThatWasReservedID);
+	auto iterator = std::ranges::find_if(block.reservations, [trainID]( const Reservation& a ) { return a.reservingTrain == trainID; });
+	if (iterator != block.reservations.end())
+	{
+		block.reservations.erase(iterator);
+	}
+}
+
 std::vector<std::vector<SignalID>> SignalManager::GetPathSignals( const std::vector<int>& path, const TrackSegmentID startLocation, const bool startDirectionTowardsB, float startDistance ) const
 {
 	std::vector<std::vector<SignalID>> list;

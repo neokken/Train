@@ -346,6 +346,26 @@ void TrackDebugger::UI()
 						drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
 					}
 				}
+				ImGui::Text("Reservations: ");
+				for (const auto& reservation : block.reservations)
+				{
+					ImGui::Text("incoming signal: ");
+					ImGui::SameLine();
+					const ImVec2 cursor = ImGui::GetCursorScreenPos();
+					const std::string nodeText = std::to_string(static_cast<int>(reservation.incomingSignal));
+					const ImVec2 nodeTextSize = ImGui::CalcTextSize(nodeText.c_str());
+
+					ImGui::InvisibleButton(("##signal_" + std::to_string(static_cast<int>(reservation.incomingSignal))).c_str(), nodeTextSize);
+					if (ImGui::IsItemHovered())
+					{
+						m_selectedSignal = reservation.incomingSignal;
+						drawList->AddRectFilled(cursor, ImVec2(cursor.x + nodeTextSize.x, cursor.y + nodeTextSize.y), IM_COL32(100, 100, 100, 50));
+						ImGui::SetTooltip("Signal");
+					}
+					drawList->AddText(cursor, IM_COL32(255, 255, 255, 255), nodeText.c_str());
+					ImGui::SameLine();
+					ImGui::Text((" Train: " + std::to_string(static_cast<int>(reservation.reservingTrain))).c_str());
+				}
 			}
 		}
 	}

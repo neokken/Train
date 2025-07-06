@@ -14,12 +14,20 @@ enum class SignalID : uint32_t // NOLINT(performance-enum-size) since they are u
 	Invalid = 0,
 };
 
+struct Reservation
+{
+	SignalID incomingSignal;
+	TrainID reservingTrain;
+	float maxDuration; // CURRENTLY UNUSED
+};
+
 struct SignalBlock
 {
 	unordered_map<SignalID, std::vector<SignalID>> connections;
 	SignalBlockID id;
 	std::unordered_set<TrainID> containingTrains;
 	TrainID reservedBy;
+	std::vector<Reservation> reservations;
 };
 
 enum class SignalType : uint
@@ -68,6 +76,15 @@ public:
 
 	void EnterBlock( SignalBlockID blockID, TrainID trainID );
 	void ExitBlock( SignalBlockID blockID, TrainID trainID );
+	/**
+	 * Reserve the block in front of the signal
+	 * @param signalID Signal passing through
+	 * @param trainID Train reserving
+	 * @param expectedMaxDuration Expected duration this block will be reserved this should be the MAX duration if you understate collisions will happen
+	 */
+	void ReserveSignal( SignalID signalID, TrainID trainID, float expectedMaxDuration );
+	void ClearReservation( SignalBlockID blockThatWasReservedID, TrainID trainID );
+
 
 	std::vector<std::vector<SignalID>> GetPathSignals( const std::vector<int>& path, TrackSegmentID startLocation, bool startDirectionTowardsB, float startDistance ) const;
 

@@ -62,6 +62,7 @@ void Train::Update( const float deltaTime )
 		{
 			m_targetVelocity = 1000000.f; // TODO: implement max speed track rules or something
 		}
+		ReservePath();
 	}
 	else if (m_targetDistance < 0)
 	{
@@ -192,6 +193,7 @@ void Train::Update( const float deltaTime )
 						)
 						{
 							m_signalManager->ExitBlock(signal.blockBehind, m_id);
+							m_signalManager->ClearReservation(signal.blockBehind, m_id);
 						}
 					}
 				}
@@ -383,7 +385,7 @@ void Train::SetNavTarget( const TrackSegmentID segment, const float distanceOnSe
 	for (int i = 0; i < path.size(); ++i)
 	{
 		m_pathSignalsRaw.insert(m_pathSignalsRaw.end(), m_pathSignals[i + 1].begin(), m_pathSignals[i + 1].end());
-		m_trackManager.SetNodeLever(currentNode, currentSegment, path[i]);
+		//m_trackManager.SetNodeLever(currentNode, currentSegment, path[i]);
 		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[path[i]];
 		m_currentPath.push_back(std::pair(currentSegment, path[i]));
 		const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
@@ -496,4 +498,69 @@ void Train::CheckPathAvailability()
 		}
 		m_targetDistance = distance;
 		m_upcomingSignal = SignalID::Invalid;
+}
+
+void Train::ReservePath() const
+{
+	float brakingDistance = GetMaxStoppingDistance();
+	float currentDistance = 0;
+	float trainOffset = 0.f;
+	TrackSegmentID currentSegment;
+	TrackNodeID currentNode;
+	if (m_velocity > 0)
+	{
+		trainOffset = m_wagons[0]->GetFrontWalker().GetDistance();
+		currentSegment = m_wagons[0]->GetFrontWalker().GetCurrentTrackSegment();
+		if (GetDirectionOnTrack())
+		{
+			currentNode = m_trackManager.GetTrackSegment(currentSegment).nodeB;
+		}
+		else
+		{
+			currentNode = m_trackManager.GetTrackSegment(currentSegment).nodeA;
+		}
+	}
+	else
+	{
+		return;
+	}
+	//Set signals
+	const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
+	for (auto signalID : seg.signals)
+	{
+		const Signal& signal = m_signalManager->GetSignal(signalID);
+		float signalDist = signal.distanceOnSegment * seg.distance;
+		if (signalDist >= trainOffset
+			&& signalDist - trainOffset + currentDistance < brakingDistance)
+		{
+			m_signalManager->ReserveSignal(signalID, m_id, 999999.f);
+		}
+		else
+		{
+			break;
+		}
+	}
+	currentDistance = seg.distance - trainOffset;
+	for (int i = 0; i < m_currentPath.size(); ++i)
+	{
+		m_trackManager.SetNodeLever(currentNode, currentSegment, m_currentPath[i].second); // set lever
+		currentSegment = m_trackManager.GetTrackNode(currentNode).validConnections.at(currentSegment)[m_currentPath[i].second];
+		const TrackSegment& seg = m_trackManager.GetTrackSegment(currentSegment);
+		//Set signals
+		for (auto signalID : seg.signals)
+		{
+			const Signal& signal = m_signalManager->GetSignal(signalID);
+			if (currentDistance + signal.distanceOnSegment * seg.distance < brakingDistance)
+			{
+				m_signalManager->ReserveSignal(signalID, m_id, 999999.f);
+			}
+			else
+			{
+				break;
+			}
+		}
+		currentDistance += seg.distance;
+		if (seg.nodeA == currentNode) currentNode = seg.nodeB;
+		else currentNode = seg.nodeA;
+	}
 }
