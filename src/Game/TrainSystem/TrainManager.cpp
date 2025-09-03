@@ -5,6 +5,7 @@
 TrainID TrainManager::AddTrain( Train& train )
 {
 	TrainID id = m_idGenerator.GenerateID();
+	train.SetID(id);
 	m_trains.insert(std::pair(id, &train));
 	return id;
 }

@@ -4,10 +4,14 @@
 #include "Renderables/Grid.h"
 #include "Camera/Camera.h"
 #include "Data/ParticleSystem.h"
+#include "Game/TrainSystem/BlockRenderer.h"
+#include "Game/TrainSystem/SignalManager.h"
 #include "Game/TrainSystem/TrackBuilder.h"
 #include "Game/TrainSystem/TrackRenderer.h"
 #include "Game/TrainSystem/Debugger/TrainDebugger.h"
 #include "Game/TrainSystem/Debugger/TrackDebugger.h"
+
+class BlockRenderer;
 
 namespace Engine
 {
@@ -37,6 +41,7 @@ namespace Engine
 		ParticleSystem& GetParticleSystem() { return m_particles; }
 		TrackManager& GetTrackManager() { return m_trackManager; }
 		TrainManager& GetTrainManager() { return m_trainManager; }
+		SignalManager& GetSignalManager() { return m_signalManager; }
 
 	private:
 		std::vector<GameObject*> m_objects;
@@ -48,6 +53,8 @@ namespace Engine
 		TrainManager m_trainManager;
 		TrackBuilder m_trackBuilder;
 		TrackRenderer m_trackRenderer;
+		SignalManager m_signalManager;
+		BlockRenderer m_blockRenderer;
 
 		TrackDebugger m_trackDebugger;
 		TrainDebugger m_trainDebugger;

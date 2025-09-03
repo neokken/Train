@@ -35,7 +35,7 @@ namespace Engine
 		[[nodiscard]] bool IsMouseUp( const int button ) const;
 		[[nodiscard]] bool IsMouseJustDown( const int button ) const;
 		[[nodiscard]] bool IsMouseJustUp( const int button ) const;
-		[[nodiscard]] bool IsMouseClicked( const int button, float clickThreshold = .3f ) const;
+		[[nodiscard]] bool IsMouseClicked( const int button, float clickThreshold = .2f ) const;
 
 		[[nodiscard]] int2 GetMousePos() const { return m_mousePosition; }
 		[[nodiscard]] int2 GetMouseDelta() const { return m_mouseDelta; }

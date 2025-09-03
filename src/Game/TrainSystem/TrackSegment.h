@@ -1,5 +1,7 @@
 #pragma once
 
+enum class SignalID : uint32_t;
+
 enum class TrackNodeID : uint32_t // NOLINT(performance-enum-size) since they are used as int types
 {
 	Invalid = 0,
@@ -90,6 +92,7 @@ struct TrackSegment
 	float2 nodeA_Direction{0.f}; // points towards B
 	float2 nodeB_Direction{0.f}; // points toward A
 
+	std::vector<SignalID> signals;
 	TrackSegmentID id{TrackSegmentID::Invalid};
 
 	TrackNodeID nodeA{TrackNodeID::Invalid};

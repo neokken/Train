@@ -55,6 +55,15 @@ enum class Color : std::uint8_t
 	TrackHover_DEBUG,
 	TrackSelect_DEBUG,
 	TrackHoverSelect_DEBUG,
+
+	SignalSelected,
+	SignalInvalid,
+	Signal_Default,
+	Signal_Chain,
+	SignalIndicator_Go,
+	SignalIndicator_SomeBlocked,
+	SignalIndicator_AllBlocked,
+	SignalIndicator_Invalid,
 };
 
 inline std::unordered_map<Color, uint> s_colorMap
@@ -74,6 +83,14 @@ inline std::unordered_map<Color, uint> s_colorMap
 	{Color::TrackSelect_DEBUG, 0xFF8C42},
 	{Color::TrackHoverSelect_DEBUG, 0x00E5FF},
 
+	{Color::SignalSelected, 0xA7BCC3},
+	{Color::SignalInvalid, 0xB95666},
+	{Color::Signal_Default, 0x6B95A3},
+	{Color::Signal_Chain, 0x576F77},
+	{Color::SignalIndicator_Go, 0x48E24C},
+	{Color::SignalIndicator_SomeBlocked, 0xEDE748},
+	{Color::SignalIndicator_AllBlocked, 0xE41B1B},
+	{Color::SignalIndicator_Invalid, 0x300909},
 };
 
 inline uint GetColor( const Color c )
@@ -101,14 +118,12 @@ namespace HeightLayer
 #define DEBUG_ASSERT
 #endif
 
-
 //Debug assert
 #if _DEBUG
 #define DEBUG_ASSERT(expression, message) if(!(expression)) printf("Assertion Failed:"#message"\n"), DebugBreak();
 #else
 #define DEBUG_ASSERT
 #endif
-
 
 #include "imgui.h"
 #include <imgui_impl_glfw.h>

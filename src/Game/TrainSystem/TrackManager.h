@@ -34,12 +34,15 @@ public:
 	[[nodiscard]] const TrackNode& GetTrackNode( TrackNodeID id ) const;
 	[[nodiscard]] const TrackSegment& GetTrackSegment( TrackSegmentID id ) const;
 	//Get a track segment from its connecting nodes
-	[[nodiscard]] const TrackSegmentID GetTrackSegment( TrackNodeID a, TrackNodeID b ) const;
-	[[nodiscard]] const TrackSegmentID GetClosestTrackSegment( float2 position, float sqrMaxDistance = 50.f, bool returnFirstFound = false ) const;
+	[[nodiscard]] TrackSegmentID GetTrackSegment( TrackNodeID a, TrackNodeID b ) const;
+	[[nodiscard]] TrackSegmentID GetClosestTrackSegment( float2 position, float sqrMaxDistance = 50.f, bool returnFirstFound = false ) const;
 	[[nodiscard]] float GetClosestDistanceOnTrackSegment( TrackSegmentID segmentID, float2 position ) const;
 
 	[[nodiscard]] TrackSegmentID GetNextSegmentPositive( TrackSegmentID id ) const;
 	[[nodiscard]] TrackSegmentID GetNextSegmentNegative( TrackSegmentID id ) const;
+
+	void AddSignal( TrackSegmentID segment, SignalID signal );
+	void RemoveSignal( TrackSegmentID segment, SignalID signal );
 
 	// saving & loading data
 	[[nodiscard]] nlohmann::json SerializeData() const;
@@ -48,7 +51,7 @@ public:
 	[[nodiscard]] const std::unordered_map<TrackSegmentID, TrackSegment>& GetSegmentMap() const { return m_segments; }
 	[[nodiscard]] const std::unordered_map<TrackNodeID, TrackNode>& GetNodeMap() const { return m_nodes; }
 
-	std::vector<int> CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const;
+	[[nodiscard]] std::vector<int> CalculatePath( const TrackSegmentID startID, bool startDirectionTowardsB, const TrackSegmentID targetID ) const;
 
 	void SetNodeLever( const TrackNodeID node, TrackSegmentID segment, const int leverValue );
 

@@ -316,3 +316,5 @@ half float_to_half( const float x )
 	const uint b = as_uint(x) + 0x00001000, e = (b & 0x7F800000) >> 23, m = b & 0x007FFFFF;
 	return (half)((b & 0x80000000) >> 16 | (e > 112) * ((((e - 112) << 10) & 0x7C00) | m >> 13) | ((e < 113) & (e > 101)) * ((((0x007FF000 + m) >> (125 - e)) + 1) >> 1) | (e > 143) * 0x7FFF); // sign : normalized : denormalized : saturate
 }
+
+

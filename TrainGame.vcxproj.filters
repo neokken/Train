@@ -106,6 +106,11 @@
     <ClCompile Include="src\Engine\Helpers\Renderer.cpp">
       <Filter>Engine\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\TrainSystem\Debugger\TrainDebugger.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\SignalManager.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\TrainManager.cpp" />
+    <ClCompile Include="src\Game\Trains\Locomotive.cpp" />
+    <ClCompile Include="src\Game\TrainSystem\BlockRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -198,6 +203,11 @@
     <ClInclude Include="src\Engine\Helpers\Renderer.h">
       <Filter>Engine\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\TrainSystem\Debugger\TrainDebugger.h" />
+    <ClInclude Include="src\Game\TrainSystem\SignalManager.h" />
+    <ClInclude Include="src\Game\TrainSystem\TrainManager.h" />
+    <ClInclude Include="src\Game\Trains\Locomotive.h" />
+    <ClInclude Include="src\Game\TrainSystem\BlockRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -215,6 +225,7 @@
     <None Include="assets\shaders\rectangle.geom">
       <Filter>Engine\Shaders</Filter>
     </None>
+    <None Include="Documentation.md" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template">
